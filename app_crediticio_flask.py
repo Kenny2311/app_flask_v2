@@ -58,10 +58,11 @@ except FileNotFoundError:
 # ========================
 def conectar():
     return psycopg2.connect(
-        host="localhost",
+        host="dpg-d1vle395pdvs73e8gjeg-a",
         database="creditos_fintech",
         user="postgres",
-        password="NEWPASSWORD" # Asegúrate de que esta sea tu contraseña real
+        password="NEWPASSWORD",
+        port="5432" # Asegúrate de que esta sea tu contraseña real
     )
 
 def encriptar(contrasena):
