@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de Usuario{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">  <!-- Añadido mt-5 para margen superior -->
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <!-- Resto del código del formulario -->
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow">
+      <div class="card-body p-4">
+        <h2 class="card-title text-center mb-4">Registro de Usuario</h2>
+        
+        <form method="POST" class="needs-validation" novalidate>
+          <!-- Sección de Información Personal -->
+          <div class="mb-4">
+            <h5 class="mb-3 text-primary">Información Personal</h5>
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nombres" class="form-label">Nombres</label>
+                <input type="text" class="form-control" id="nombres" name="nombres" 
+                       placeholder="Ingrese sus nombres" required>
+                <div class="invalid-feedback">
+                  Por favor ingrese sus nombres
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="apellidos" class="form-label">Apellidos</label>
+                <input type="text" class="form-control" id="apellidos" name="apellidos" 
+                       placeholder="Ingrese sus apellidos" required>
+                <div class="invalid-feedback">
+                  Por favor ingrese sus apellidos
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="dni" class="form-label">DNI</label>
+                <input type="text" class="form-control" id="dni" name="dni" 
+                       placeholder="Ingrese su DNI" required pattern="[0-9]{8}"
+                       title="Debe tener 8 dígitos">
+                <div class="invalid-feedback">
+                  Por favor ingrese un DNI válido (8 dígitos)
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="genero" class="form-label">Género</label>
+                <select class="form-select" id="genero" name="genero" required>
+                  <option value="" selected disabled>Seleccione...</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                </select>
+                <div class="invalid-feedback">
+                  Por favor seleccione su género
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sección de Contacto -->
+          <div class="mb-4">
+            <h5 class="mb-3 text-primary">Información de Contacto</h5>
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="correo" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="correo" name="correo" 
+                       placeholder="ejemplo@dominio.com" required>
+                <div class="invalid-feedback">
+                  Por favor ingrese un correo válido
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="celular" class="form-label">Celular</label>
+                <input type="tel" class="form-control" id="celular" name="celular" 
+                       placeholder="Ingrese su número" required pattern="[0-9]{9}"
+                       title="Debe tener 9 dígitos">
+                <div class="invalid-feedback">
+                  Por favor ingrese un número válido (9 dígitos)
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sección de Credenciales -->
+          <div class="mb-4">
+            <h5 class="mb-3 text-primary">Credenciales de Acceso</h5>
+            
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="usuario" class="form-label">Nombre de usuario</label>
+                <input type="text" class="form-control" id="usuario" name="usuario" 
+                       placeholder="Cree un nombre de usuario" required autocomplete="off">
+                <div class="invalid-feedback">
+                  Por favor ingrese un nombre de usuario
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="rol" class="form-label">Rol</label>
+                <select class="form-select" id="rol" name="rol" required>
+                  <option value="" selected disabled>Seleccione...</option>
+                  <option value="usuario_basico">Usuario Básico</option>
+                  <option value="analista">Analista</option>
+                  <option value="administrador">Administrador</option>
+                </select>
+                <div class="invalid-feedback">
+                  Por favor seleccione un rol
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="contrasena" name="contrasena" 
+                       placeholder="Cree una contraseña" required autocomplete="new-password">
+                <div class="invalid-feedback">
+                  Por favor ingrese una contraseña
+                </div>
+                <small class="form-text text-muted">Mínimo 8 caracteres</small>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="confirmar_contrasena" class="form-label">Confirmar Contraseña</label>
+                <input type="password" class="form-control" id="confirmar_contrasena" 
+                       name="confirmar_contrasena" placeholder="Repita la contraseña" required>
+                <div class="invalid-feedback">
+                  Las contraseñas deben coincidir
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Botón de Registro -->
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">Registrarse</button>
+          </div>
+        </form>
+        
+        <!-- Enlace a Login -->
+        <div class="text-center mt-3">
+          <a href="{{ url_for('login') }}" class="text-decoration-none">
+            ¿Ya tienes cuenta? <strong>Inicia sesión aquí</strong>
+          </a>
+        </div>
+        
+        <!-- Botón Volver -->
+        <div class="text-center mt-3">
+          <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Validación de formulario
+(function() {
+  'use strict';
+  
+  // Verificar coincidencia de contraseñas
+  const password = document.getElementById('contrasena');
+  const confirmPassword = document.getElementById('confirmar_contrasena');
+  
+  function validatePassword() {
+    if (password.value !== confirmPassword.value) {
+      confirmPassword.setCustomValidity("Las contraseñas no coinciden");
+    } else {
+      confirmPassword.setCustomValidity('');
+    }
+  }
+  
+  password.onchange = validatePassword;
+  confirmPassword.onkeyup = validatePassword;
+  
+  // Validación general del formulario
+  const forms = document.querySelectorAll('.needs-validation');
+  
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+{% endblock %}

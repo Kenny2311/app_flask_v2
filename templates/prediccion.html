@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Predicción Crediticia - Sistema Crediticio{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header Section -->
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-primary">
+      <i class="bi bi-graph-up me-2"></i>Evaluación Crediticia
+    </h1>
+    <p class="lead text-muted">
+      Complete el formulario para obtener una predicción precisa de aprobación de crédito
+    </p>
+  </div>
+
+  <!-- Form Section -->
+  <div class="card border-0 shadow-lg">
+    <div class="card-body p-4 p-md-5">
+      <form method="POST" class="needs-validation" novalidate>
+        <!-- Personal Information Section -->
+        <div class="mb-5">
+          <h3 class="h4 mb-4 text-primary">
+            <i class="bi bi-person-vcard me-2"></i>Datos Personales
+          </h3>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Género</label>
+              <select name="genero" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione su género
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Estado Civil</label>
+              <select name="casado" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="Sí">Casado(a)</option>
+                <option value="No">Soltero(a)</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione su estado civil
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Personas Dependientes</label>
+              <select name="dependientes" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="0">Ninguno</option>
+                <option value="1">1 dependiente</option>
+                <option value="2">2 dependientes</option>
+                <option value="3+">3+ dependientes</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione el número de dependientes
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Education & Employment Section -->
+        <div class="mb-5">
+          <h3 class="h4 mb-4 text-primary">
+            <i class="bi bi-mortarboard me-2"></i>Educación y Empleo
+          </h3>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nivel de Educación</label>
+              <select name="educacion" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="Graduado">Graduado Universitario</option>
+                <option value="No graduado">No Graduado</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione su nivel educativo
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Tipo de Empleo</label>
+              <select name="independiente" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="Sí">Independiente</option>
+                <option value="No">Dependiente</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione su tipo de empleo
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Ingreso Mensual (S/.)</label>
+              <div class="input-group">
+                <span class="input-group-text">S/.</span>
+                <input type="number" name="ingreso_solicitante" class="form-control" 
+                       placeholder="0.00" min="0" step="0.01" required>
+              </div>
+              <div class="invalid-feedback">
+                Por favor ingrese su ingreso mensual
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loan Information Section -->
+        <div class="mb-5">
+          <h3 class="h4 mb-4 text-primary">
+            <i class="bi bi-cash-coin me-2"></i>Información del Préstamo
+          </h3>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Ingreso Co-Solicitante (S/.)</label>
+              <div class="input-group">
+                <span class="input-group-text">S/.</span>
+                <input type="number" name="ingreso_cosolicitante" class="form-control" 
+                       placeholder="0.00" min="0" step="0.01" required>
+              </div>
+              <div class="invalid-feedback">
+                Por favor ingrese el ingreso del co-solicitante
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Monto Solicitado (S/.)</label>
+              <div class="input-group">
+                <span class="input-group-text">S/.</span>
+                <input type="number" name="monto_prestamo" class="form-control" 
+                       placeholder="0.00" min="0" step="0.01" required>
+              </div>
+              <div class="invalid-feedback">
+                Por favor ingrese el monto solicitado
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Plazo del Préstamo (días)</label>
+              <input type="number" name="plazo_prestamo" class="form-control" 
+                     placeholder="180" min="0" step="1" required>
+              <div class="invalid-feedback">
+                Por favor ingrese el plazo en días
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Credit History Section -->
+        <div class="mb-4">
+          <h3 class="h4 mb-4 text-primary">
+            <i class="bi bi-file-earmark-text me-2"></i>Historial Crediticio
+          </h3>
+          
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Historial Crediticio</label>
+              <select name="historial_credito" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="Sí">Positivo</option>
+                <option value="No">Negativo</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione su historial crediticio
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <label class="form-label">Ubicación Propiedad</label>
+              <select name="zona" class="form-select" required>
+                <option value="" selected disabled>Seleccione...</option>
+                <option value="Rural">Rural</option>
+                <option value="Semiurbano">Semiurbano</option>
+                <option value="Urbano">Urbano</option>
+              </select>
+              <div class="invalid-feedback">
+                Por favor seleccione la ubicación
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="text-center mt-5">
+          <button type="submit" class="btn btn-primary btn-lg px-5 py-2">
+            <i class="bi bi-calculator me-2"></i>Calcular Predicción
+          </button>
+        <div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary">⬅️ Volver al menú</a>
+        </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Result Section -->
+  {% if resultado %}
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body text-center p-4">
+      <h3 class="h4 mb-3">
+        <i class="bi bi-clipboard2-check text-primary me-2"></i>Resultado de la Evaluación
+      </h3>
+      <div class="alert alert-{{ 'success' if 'Aprobado' in resultado else 'warning' }} mb-0">
+        <strong>{{ resultado }}</strong>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+// Form validation
+(function() {
+  'use strict';
+  
+  const forms = document.querySelectorAll('.needs-validation');
+  
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+
+<style>
+  .card {
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+  
+  .form-control, .form-select {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  .form-select {
+    background-position: right 1rem center;
+  }
+  
+  .input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+  
+  .btn-lg {
+    min-width: 220px;
+  }
+</style>
+{% endblock %}
+

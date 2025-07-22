@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - Sistema Crediticio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="row mb-5">
+    <div class="col-12 text-center">
+      <h1 class="display-5 fw-bold text-primary">
+        <i class="bi bi-person-badge me-2"></i>Mi Perfil
+      </h1>
+      <p class="lead text-muted">Gestiona tu información personal y preferencias</p>
+    </div>
+  </div>
+
+  <!-- Profile Card -->
+  <div class="row justify-content-center">
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-lg overflow-hidden">
+        <!-- Profile Header -->
+        <div class="profile-header bg-gradient-primary text-white p-2">
+          <div class="d-flex align-items-center">
+            <div class="profile-avatar me-4">
+              <div class="avatar-circle bg-white text-primary d-flex align-items-center justify-content-center">
+                <i class="bi bi-person-fill fs-1"></i>
+              </div>
+            </div>
+            <div>
+              <h2 class="h3 mb-1">{{ usuario.nombres }} {{ usuario.apellidos }}</h2>
+              <p class="mb-0 opacity-75">
+                <i class="bi bi-shield-lock me-1"></i> {{ usuario.rol|capitalize }}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Profile Details -->
+        <div class="card-body p-4">
+          <div class="row g-4">
+            {% for campo, valor in {
+              'Nombre de Usuario': usuario.nombre_usuario,
+              'DNI': usuario.dni,
+              'Correo Electrónico': usuario.correo,
+              'Teléfono': usuario.celular,
+              'Género': usuario.genero
+
+            }.items() %}
+            <div class="col-md-6">
+              <div class="profile-detail-card p-3 h-100 border rounded">
+                <div class="d-flex align-items-center mb-2">
+                  <div class="detail-icon bg-primary bg-opacity-10 text-primary rounded-circle me-3">
+                    <i class="bi bi-{% if campo == 'Nombre de Usuario' %}person{% elif campo == 'DNI' %}credit-card{% elif campo == 'Correo Electrónico' %}envelope{% elif campo == 'Teléfono' %}telephone{% elif campo == 'Género' %}gender-ambiguous{% else %}calendar{% endif %}"></i>
+                  </div>
+                  <h3 class="h6 mb-0 text-muted">{{ campo }}</h3>
+                </div>
+                <p class="mb-0 fw-bold fs-5">{{ valor }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        
+        <!-- Profile Actions -->
+        <div class="card-footer bg-light border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                
+                <div>
+                <a href="{{ url_for('editar_perfil') }}" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil-square me-2"></i>Editar Perfil
+                </a>
+                </div>
+
+                <div>
+                <a href="/" class="btn btn-outline-primary">⬅️ Volver al menú</a>
+                </div>
+
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .profile-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+  }
+  
+  .avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-detail-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .profile-detail-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .detail-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+  }
+</style>
+{% endblock %}

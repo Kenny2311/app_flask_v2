@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finctech</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --celeste-suave: #e0f0ff;
+      --azul-primario: #007bff;
+    }
+    
+    .navbar-custom {
+      padding: 0.5rem 2rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo-text {
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .btn-celeste-suave {
+      background-color: var(--celeste-suave);
+      color: var(--azul-primario);
+      border: 1px solid var(--azul-primario);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-celeste-suave:hover {
+      background-color: #cfe8ff;
+    }
+    
+    .nav-link {
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+    }
+    
+    .navbar-nav .nav-item {
+      margin: 0 0.2rem;
+    }
+    
+    @media (max-width: 991.98px) {
+      .navbar-custom {
+        padding: 0.5rem 1rem;
+      }
+      
+      .navbar-nav {
+        padding-top: 1rem;
+      }
+      
+      .navbar-nav .nav-item {
+        margin: 0.2rem 0;
+      }
+    }
+
+    #chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+    z-index: 1000;
+    }
+
+    #chatbot-header {
+    background-color: #0d6efd;
+    color: white;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    }
+
+    #chatbot-messages {
+    height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    }
+
+    #chatbot-input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-top: 1px solid #ccc;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-sizing: border-box;
+    }
+
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-white navbar-custom">
+    <div class="container-fluid">
+
+      <!-- Logo + Texto como enlace al inicio -->
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('inicio') }}">
+        <img src="{{ url_for('static', filename='img/logo3.png') }}" alt="Logo" height="40">
+        <span class="logo-text">Fintech</span>
+      </a>
+      
+      <!-- Botón para móviles -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <!-- Contenido colapsable -->
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <!-- Menú central -->
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Financiamiento</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Inversiones</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Vermés</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Centro de ayuda</a>
+          </li>
+        </ul>
+        
+        <!-- Menú de usuario -->
+        <ul class="navbar-nav">
+          {% if session.get('usuario') %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                <span class="me-2">{{ session['usuario'] }}</span>
+                <i class="bi bi-person-circle"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('ver_perfil') }}">Ver perfil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="nav-item">
+                <a class="btn btn-celeste-suave me-2" href="{{ url_for('registro') }}" style="width: 120px;">Regístrate</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-outline-primary" href="{{ url_for('login') }}" style="width: 120px;">Iniciar sesión</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="{% block container_class %}container{% endblock %}">
+    {% block content %}{% endblock %}
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Bootstrap Bundle JS + Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+  {% block body_scripts %}{% endblock %}
+
+  <!-- Chatbot básico -->
+<div id="chatbot-container">
+  <div id="chatbot-header">Asistente Virtual</div>
+  <div id="chatbot-messages"></div>
+  <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje...">
+</div>
+
+<script>
+  const respuestas = {
+    "hola": "¡Hola! ¿En qué puedo ayudarte?",
+    "¿cómo solicito un crédito?": "Puedes hacerlo desde el menú principal, sección 'Solicitar Crédito'.",
+    "gracias": "¡Con gusto! 😊",
+    "adiós": "¡Hasta luego!",
+  };
+
+  const mensajes = document.getElementById("chatbot-messages");
+  const input = document.getElementById("chatbot-input");
+
+  input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter" && input.value.trim() !== "") {
+      const pregunta = input.value.toLowerCase().trim();
+      agregarMensaje("Tú", pregunta);
+      const respuesta = respuestas[pregunta] || "Lo siento, aún no tengo una respuesta para eso.";
+      agregarMensaje("Bot", respuesta);
+      input.value = "";
+    }
+  });
+
+  function agregarMensaje(remitente, texto) {
+    const nuevoMensaje = document.createElement("div");
+    nuevoMensaje.innerHTML = `<strong>${remitente}:</strong> ${texto}`;
+    mensajes.appendChild(nuevoMensaje);
+    mensajes.scrollTop = mensajes.scrollHeight;
+  }
+</script>
+
+</body>
+</html>
+

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block container_class %}container" style="max-width: 1000px;"{% endblock %}
+
+{% block head_styles %}
+<style>
+    .dashboard-content {
+        max-width: 900px;
+        margin: auto;
+        padding: 30px 15px;
+    }
+    h2 {
+        color: #007bff;
+        font-weight: bold;
+    }
+    .alert-info {
+        background-color: #e0f7fa;
+        border-color: #b2ebf2;
+        color: #007bff;
+        border-radius: 10px;
+        font-size: 18px;
+    }
+    .chart-box {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+    }
+    #chart1, #chart2, #chart3 {
+        min-height: 400px;
+    }
+    form select, form button {
+        margin: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="mt-5"></div>  
+
+<div class="dashboard-content">
+    <h2 class="text-center mb-3">Dashboard de Solicitudes de Crédito</h2>
+    <p class="text-muted text-center">Visualiza resúmenes gráficos según los filtros seleccionados.</p>
+
+    <!-- Filtros -->
+    <form method="GET" action="/dashboard" class="text-center mb-4">
+        <label for="filtro_mes">Mes:</label>
+        <select name="filtro_mes" id="filtro_mes" class="form-control d-inline-block w-auto">
+            <option value="">Todos</option>
+            {% for mes in meses_disponibles %}
+                <option value="{{ mes }}" {% if mes == filtro_seleccionado %}selected{% endif %}>{{ mes }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="ver_grafico">Gráfico:</label>
+        <select name="ver_grafico" id="ver_grafico" class="form-control d-inline-block w-auto">
+            <option value="">Seleccionar...</option>
+            <option value="solicitudes_mes" {% if ver_grafico == 'solicitudes_mes' %}selected{% endif %}>📅 Solicitudes por mes</option>
+            <option value="resultados" {% if ver_grafico == 'resultados' %}selected{% endif %}>📈 Resultados</option>
+            <option value="zonas" {% if ver_grafico == 'zonas' %}selected{% endif %}>🌍 Zonas de ubicación</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </form>
+
+    <!-- Total de solicitudes -->
+    {% if total_solicitudes > 0 %}
+    <div class="alert alert-info text-center">
+        🔢 Total de solicitudes registradas: <strong>{{ total_solicitudes }}</strong>
+    </div>
+    {% endif %}
+
+    <!-- Mostrar gráficos solo si hay filtro aplicado -->
+    {% if filtro_seleccionado %}
+        {% if chart1 and chart1 != 'null' %}
+        <div class="chart-box">
+            <h5>📅 Solicitudes por mes</h5>
+            <div id="chart1"></div>
+        </div>
+        {% endif %}
+
+        {% if chart2 and chart2 != 'null' %}
+        <div class="chart-box">
+            <h5>📈 Resultados de las predicciones</h5>
+            <div id="chart2"></div>
+        </div>
+        {% endif %}
+
+        {% if chart3 and chart3 != 'null' %}
+        <div class="chart-box">
+            <h5>🌍 Zonas de ubicación de propiedades</h5>
+            <div id="chart3"></div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- Mensajes según estado -->
+    {% if not filtro_seleccionado and total_solicitudes > 0 %}
+        <div class="text-center text-muted mt-4">
+            <p>🔍 Usa los filtros para ver los gráficos del dashboard.</p>
+        </div>
+    {% elif total_solicitudes == 0 %}
+        <div class="text-center text-muted mt-4">
+            <p>⚠️ No hay solicitudes registradas aún.</p>
+        </div>
+    {% elif filtro_seleccionado and chart1 == 'null' and chart2 == 'null' and chart3 == 'null' %}
+        <div class="text-center text-muted mt-4">
+            <p>⚠️ No hay datos disponibles para el filtro y gráfico seleccionados.</p>
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-outline-primary">⬅️ Volver al menú</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_scripts %}
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function renderChart(id, jsonData) {
+            if (!jsonData || Object.keys(jsonData).length === 0) return;
+            try {
+                Plotly.newPlot(id, jsonData.data || [], jsonData.layout || {});
+            } catch (e) {
+                document.getElementById(id).innerHTML = "<p class='text-danger'>⚠️ Error al cargar el gráfico.</p>";
+                console.error(`Error al renderizar ${id}:`, e, jsonData);
+            }
+        }
+
+        {% if filtro_seleccionado %}
+            renderChart("chart1", {{ chart1 | safe }});
+            renderChart("chart2", {{ chart2 | safe }});
+            renderChart("chart3", {{ chart3 | safe }});
+        {% endif %}
+    });
+</script>
+{% endblock %}

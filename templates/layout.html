@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Sistema Crediticio{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+        <a class="navbar-brand" href="/">🏦 Evaluación Crediticia</a>
+        <div class="collapse navbar-collapse">
+            {% if session['usuario'] %}
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/prediccion">Predicción</a></li>
+                <li class="nav-item"><a class="nav-link" href="/historial">Historial</a></li>
+                <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+            </ul>
+            <span class="navbar-text me-3 text-white">👤 {{ session['usuario'] }}</span>
+            <a class="btn btn-outline-light" href="/logout">Cerrar sesión</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

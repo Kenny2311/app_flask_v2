@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">  <!-- Añadido mt-5 para margen superior -->
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+      <!-- Resto del código del formulario -->
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <div class="card shadow">
+      <div class="card-body p-4">
+        <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>
+        
+        <form method="POST" class="needs-validation" novalidate>
+          <div class="mb-3">
+            <label for="usuario" class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="usuario" name="usuario" 
+                   placeholder="Ingrese su usuario" required autocomplete="off">
+            <div class="invalid-feedback">
+              Por favor ingrese su usuario
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="contrasena" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="contrasena" name="contrasena" 
+                   placeholder="Ingrese su contraseña" required autocomplete="new-password">
+            <div class="invalid-feedback">
+              Por favor ingrese su contraseña
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Entrar</button>
+          </div>
+        </form>
+        
+        <div class="text-center mt-3">
+          <a href="{{ url_for('registro') }}" class="text-decoration-none">
+            ¿No tienes cuenta? <strong>Regístrate aquí</strong>
+          </a>
+        </div>
+        
+        <div class="text-center mt-3">
+          <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al inicio
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Validación de formulario
+(function() {
+  'use strict';
+  
+  const forms = document.querySelectorAll('.needs-validation');
+  
+  Array.from(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+</script>
+{% endblock %}
