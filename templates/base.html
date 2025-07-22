@@ -182,43 +182,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
   {% block body_scripts %}{% endblock %}
-
-  <!-- Chatbot básico -->
-<div id="chatbot-container">
-  <div id="chatbot-header">Asistente Virtual</div>
-  <div id="chatbot-messages"></div>
-  <input type="text" id="chatbot-input" placeholder="Escribe tu mensaje...">
-</div>
-
-<script>
-  const respuestas = {
-    "hola": "¡Hola! ¿En qué puedo ayudarte?",
-    "¿cómo solicito un crédito?": "Puedes hacerlo desde el menú principal, sección 'Solicitar Crédito'.",
-    "gracias": "¡Con gusto! 😊",
-    "adiós": "¡Hasta luego!",
-  };
-
-  const mensajes = document.getElementById("chatbot-messages");
-  const input = document.getElementById("chatbot-input");
-
-  input.addEventListener("keypress", function (e) {
-    if (e.key === "Enter" && input.value.trim() !== "") {
-      const pregunta = input.value.toLowerCase().trim();
-      agregarMensaje("Tú", pregunta);
-      const respuesta = respuestas[pregunta] || "Lo siento, aún no tengo una respuesta para eso.";
-      agregarMensaje("Bot", respuesta);
-      input.value = "";
-    }
-  });
-
-  function agregarMensaje(remitente, texto) {
-    const nuevoMensaje = document.createElement("div");
-    nuevoMensaje.innerHTML = `<strong>${remitente}:</strong> ${texto}`;
-    mensajes.appendChild(nuevoMensaje);
-    mensajes.scrollTop = mensajes.scrollHeight;
-  }
-</script>
-
 </body>
 </html>
 
