@@ -24,7 +24,12 @@ from functools import wraps # Asegurarse de que solo haya una importación
 import bcrypt
 
 load_dotenv() 
-print("CLAVE CARGADA:", os.getenv("OPENAI_API_KEY")[:8] + "...")
+#print("CLAVE CARGADA:", os.getenv("OPENAI_API_KEY")[:8] + "...")
+api_key = os.getenv("OPENAI_API_KEY")
+if api_key:
+    print("CLAVE CARGADA:", api_key[:8] + "...")
+else:
+    print("No se encontró OPENAI_API_KEY en las variables de entorno.")
 client = OpenAI()
 
 app = Flask(__name__)
