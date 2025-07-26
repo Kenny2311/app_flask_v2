@@ -1,3 +1,5 @@
+import os
+from openai import OpenAI
 from flask import Flask, render_template, request, redirect, url_for, session, Response, flash # Añadido 'flash'
 import psycopg2
 import hashlib
@@ -8,14 +10,70 @@ import datetime
 import plotly.express as px
 import plotly
 import json
+import re
 from math import ceil
 from collections import namedtuple
+from flask_paginate import Pagination, get_page_args
+
+from dotenv import load_dotenv
+from flask import jsonify
+import traceback 
 
 from functools import wraps # Asegurarse de que solo haya una importación
+
+import bcrypt
+
+load_dotenv() 
+print("CLAVE CARGADA:", os.getenv("OPENAI_API_KEY")[:8] + "...")
+client = OpenAI()
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_para_sesiones' # Reemplaza con una clave secreta fuerte
 
+# ========================
+# ecriptar contraseña
+# ========================
+# Contraseña en texto plano
+contrasena = "Kenny2311".encode('utf-8')
+# Generar hash
+hashed = bcrypt.hashpw(contrasena, bcrypt.gensalt())
+# Mostrar el hash
+print(hashed.decode())
+
+# Función para encriptar contraseña (fuera de la función de registro)
+def encriptar(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+# ========================
+# gpt-3.5-turbo
+# ========================
+@app.route('/asistente', methods=['POST'])
+def asistente():
+    user_input = request.json.get('message')
+    nombre_usuario = session.get('usuario', 'Usuario')
+
+    system_prompt = (
+        f"Eres un asistente experto en análisis crediticio, préstamos personales y fintechs en Perú. "
+        f"Responde de forma clara y profesional. El usuario que te escribe se llama {nombre_usuario}, "
+        f"así que puedes dirigirte a él por su nombre si es útil para hacer la respuesta más cercana."
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_input}
+            ]
+        )
+        reply = response.choices[0].message.content
+        return jsonify({"reply": reply})
+
+    except Exception as e:
+        print("Error con OpenAI:", str(e))
+        # Simulación de respuesta por defecto
+        return jsonify({"reply": "Hola, soy tu asistente. Actualmente no puedo acceder a OpenAI, pero estoy aquí para ayudarte en lo que pueda."})
+    
 # ========================
 # Decorador para verificar sesión
 # ========================
@@ -61,11 +119,9 @@ def conectar():
         host="dpg-d1vle395pdvs73e8gjeg-a",
         database="creditos_fintech",
         user="creditos_fintech_user",
-        password="sPoe16PxHqXrTwsZQpzbqmw9DSggAYoW" # Asegúrate de que esta sea tu contraseña real
+        password="sPoe16PxHqXrTwsZQpzbqmw9DSggAYoW", # Asegúrate de que esta sea tu contraseña realS
+        port ="5432"
     )
-
-def encriptar(contrasena):
-    return hashlib.sha256(contrasena.encode()).hexdigest()
 
 # ========================
 # Rutas
@@ -82,31 +138,32 @@ def index():
 def inicio():
     return render_template('inicio.html')
 
-# Login
+#Login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         usuario = request.form['usuario']
-        contrasena = encriptar(request.form['contrasena'])
+        contrasena = request.form['contrasena']
 
         conn = conectar()
         cur = conn.cursor()
 
-        cur.execute("SELECT id, rol FROM usuarios WHERE nombre_usuario=%s AND contrasena=%s", (usuario, contrasena))
+        # Trae la contraseña encriptada de la base de datos
+        cur.execute("SELECT id, contrasena, rol FROM usuarios WHERE nombre_usuario = %s", (usuario,))
         user = cur.fetchone()
         conn.close()
 
-        if user:
+        if user and bcrypt.checkpw(contrasena.encode('utf-8'), user[1].encode('utf-8')):
             session['usuario'] = usuario
             session['usuario_id'] = user[0]
-            session['rol'] = user[1]
+            session['rol'] = user[2]
             return redirect(url_for('index'))
         else:
-            flash('Usuario o contraseña incorrectos')
+            flash('Usuario o contraseña incorrectos', "danger")
             return render_template('login.html')
     else:
         return render_template('login.html')
-
+    
 # Registro
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -118,28 +175,41 @@ def registro():
         celular = request.form['celular']
         genero = request.form['genero']
         usuario = request.form['usuario']
-        contrasena = request.form['contrasena'] # No encriptar antes de comparar
-        confirmar_contrasena = request.form['confirmar_contrasena'] # No encriptar antes de comparar
-        rol = request.form.get('rol', 'usuario_basico')
+        contrasena = request.form['contrasena'] 
+        confirmar_contrasena = request.form['confirmar_contrasena'] 
+        
+        #rol = request.form.get('rol', 'usuario_basico')
+        rol = 'usuario_basico'
 
         # Validar contraseña
         if contrasena != confirmar_contrasena:
-            flash("Las contraseñas no coinciden. Por favor, vuelve a intentarlo.")
-            return render_template('registro.html') # Retornar la plantilla para mostrar el mensaje
+            #flash("Las contraseñas no coinciden. Por favor, vuelve a intentarlo.")
+            return render_template('registro.html') 
+        
+        if not re.search(r'[A-Za-z]', contrasena) or not re.search(r'\d', contrasena):
+            #flash("La contraseña debe contener letras y números.")
+            return render_template('registro.html')
 
         contrasena_encriptada = encriptar(contrasena) # Encriptar solo si coinciden
 
         conn = conectar()
         cur = conn.cursor()
 
+        # Validar si el DNI ya existe en la base de datos
+        cur.execute("SELECT 1 FROM usuarios WHERE dni = %s", (dni,))
+        if cur.fetchone():
+            conn.close()
+            #flash("El DNI ya está registrado. Por favor, ingresa otro.")
+            return render_template('registro.html')  
+
         # Verificar si el usuario ya existe
         cur.execute("SELECT * FROM usuarios WHERE nombre_usuario=%s", (usuario,))
         if cur.fetchone():
             conn.close()
-            flash("El usuario ya existe. Por favor, elige otro nombre de usuario.")
+            #flash("El usuario ya existe. Por favor, elige otro nombre de usuario.")
             return render_template('registro.html') # Retornar la plantilla para mostrar el mensaje
 
-        # Insertar nuevo usuario
+        # Guardar nuevo usuario
         cur.execute("""
             INSERT INTO usuarios (
                 nombre_usuario, contrasena, rol,
@@ -149,16 +219,28 @@ def registro():
 
         conn.commit()
         conn.close()
-        flash("Registro exitoso. ¡Ahora puedes iniciar sesión!")
-        return redirect(url_for('login'))
+        flash("Registro exitoso. ¡Ahora puedes iniciar sesión!", "success")
+        return redirect(url_for('registro'))
 
     return render_template('registro.html')
+
+#Verificar dni
+@app.route('/verificar_dni', methods=['POST'])
+def verificar_dni():
+    dni = request.json.get('dni')  # Obtener el DNI desde el JSON
+    conn = conectar()
+    cur = conn.cursor()
+    cur.execute("SELECT 1 FROM usuarios WHERE dni = %s", (dni,))
+    existe = cur.fetchone() is not None  # Si se encuentra un resultado, el DNI ya existe
+    cur.close()
+    conn.close()
+    return jsonify({'existe': existe})  # Retorna si el DNI ya existe o no
 
 #Perfil
 @app.route('/perfil')
 @login_requerido 
 def ver_perfil():
-    usuario_nombre = session.get('usuario')  # Este es el nombre de usuario guardado al iniciar sesión
+    usuario_nombre = session.get('usuario')  
 
     conn = conectar()
     cur = conn.cursor()
@@ -195,30 +277,16 @@ def editar_perfil():
         correo = request.form['correo']
         celular = request.form['celular']
 
-        nueva_contraseña = request.form.get('nueva_contraseña')
-        confirmar_contraseña = request.form.get('confirmar_contraseña')
-
-        # Actualiza los datos en la base de datos
-        if nueva_contraseña:
-            if nueva_contraseña != confirmar_contraseña:
-                flash("Las contraseñas no coinciden.", "danger")
-                return redirect(url_for('editar_perfil'))
-            else:
-                contraseña_hash = generate_password_hash(nueva_contraseña)
-                cur.execute("""
-                    UPDATE usuarios SET nombres=%s, apellidos=%s, correo=%s, celular=%s, contraseña=%s
-                    WHERE nombre_usuario=%s
-                """, (nombres, apellidos, correo, celular, contraseña_hash, usuario_nombre))
-        else:
-            cur.execute("""
-                UPDATE usuarios SET nombres=%s, apellidos=%s, correo=%s, celular=%s
-                WHERE nombre_usuario=%s
-            """, (nombres, apellidos, correo, celular, usuario_nombre))
+        # Actualiza los datos en la base de datos sin contraseña
+        cur.execute("""
+            UPDATE usuarios SET nombres=%s, apellidos=%s, correo=%s, celular=%s
+            WHERE nombre_usuario=%s
+        """, (nombres, apellidos, correo, celular, usuario_nombre))
 
         conn.commit()
         conn.close()
-        flash("Perfil actualizado correctamente.")
-        return redirect(url_for('ver_perfil'))
+        flash("Perfil actualizado correctamente.", "success")
+        return redirect(url_for('editar_perfil'))
 
     # GET: obtener datos actuales
     cur.execute("""
@@ -233,8 +301,88 @@ def editar_perfil():
         usuario = dict(zip(campos, datos))
         return render_template('editar_perfil.html', usuario=usuario)
     else:
-        flash("No se encontró el usuario.")
-        return redirect(url_for('ver_perfil'))
+        flash("No se encontró el usuario.", "danger")
+        return redirect(url_for('editar_perfil'))
+
+#cambiar contraseña
+@app.route('/cambiar_contrasena', methods=['GET', 'POST'])
+@login_requerido
+def cambiar_contrasena():
+    usuario_nombre = session.get('usuario')
+
+    if request.method == 'POST':
+        nueva_contrasena = request.form.get('nueva_contrasena')
+        confirmar_contrasena = request.form.get('confirmar_contrasena')
+
+        # Validar campos vacíos
+        if not nueva_contrasena or not confirmar_contrasena:
+           # flash("Debes completar ambos campos de contraseña.", "danger")
+            return redirect(url_for('cambiar_contrasena'))
+
+        # Validar que coincidan
+        if nueva_contrasena != confirmar_contrasena:
+           # flash("Las contraseñas no coinciden.", "danger")
+            return redirect(url_for('cambiar_contrasena'))
+
+        # Validar que contenga letras y números
+        if not re.search(r'[A-Za-z]', nueva_contrasena) or not re.search(r'\d', nueva_contrasena):
+            # flash("La contraseña debe contener al menos una letra y un número.", "danger")
+            return redirect(url_for('cambiar_contrasena'))
+        
+        # Encriptar y actualizar contraseña
+        contrasena_encriptar = encriptar(nueva_contrasena)
+
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE usuarios SET contrasena=%s
+            WHERE nombre_usuario=%s
+        """, (contrasena_encriptar, usuario_nombre))
+        conn.commit()
+        conn.close()
+
+        flash("Contraseña actualizada correctamente.", "success")
+        return redirect(url_for('cambiar_contrasena'))
+
+    return render_template('cambiar_contrasena.html')
+
+
+#Cambiar rol    
+@app.route('/cambiar_rol/<int:id>', methods=['POST'])
+@login_requerido
+def cambiar_rol(id):
+    nuevo_rol = request.form.get('rol')  # Más seguro
+    if not nuevo_rol:
+        flash('No se recibió el nuevo rol', 'danger')
+        return redirect(url_for('listar_usuarios'))
+
+    try:
+        conexion = conectar()
+        with conexion.cursor() as cursor:
+            cursor.execute('UPDATE usuarios SET rol = %s WHERE id = %s', (nuevo_rol, id))
+            conexion.commit()
+        flash('Rol actualizado correctamente', 'success')
+    except Exception as e:
+        flash(f'Error al actualizar el rol: {str(e)}', 'danger')
+    finally:
+        conexion.close()
+    
+    return redirect(url_for('listar_usuarios'))
+
+#Listar usuarios
+@app.route('/usuarios')
+def listar_usuarios():
+    if 'rol' not in session or session['rol'].lower() != 'administrador':
+        flash("Acceso denegado")
+        return redirect(url_for('index'))
+
+    conn = conectar()
+    cur = conn.cursor()
+    cur.execute("SELECT id, nombre_usuario, rol FROM usuarios")
+    usuarios = cur.fetchall()
+    conn.close()
+
+    return render_template('usuarios.html', usuarios=usuarios)
 
 
 # Predicción
@@ -293,13 +441,13 @@ def prediccion():
                     genero, casado, dependientes, educacion, independiente,
                     ingreso_solicitante, ingreso_cosolicitante, monto_prestamo,
                     plazo_prestamo, historial_credito, zona, resultado_prediccion,
-                    fecha, usuario_id
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    fecha, usuario_id, creado_por
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (
                 genero_val, casado_val, dependientes_num, educacion_val, independiente_val,
                 float(data['ingreso_solicitante']), float(data['ingreso_cosolicitante']), float(data['monto_prestamo']),
                 float(data['plazo_prestamo']), historial_credito_val, zona_val,
-                resultado, datetime.datetime.now(), session['usuario_id']
+                resultado, datetime.datetime.now(), session['usuario_id'], session['usuario_id']
             ))
 
             conn.commit()
@@ -312,9 +460,8 @@ def prediccion():
 
     return render_template('prediccion.html', usuario=session['usuario'], resultado=resultado)
 
-# Historial
-from flask_paginate import Pagination, get_page_args
 
+# Historial
 @app.route('/historial')
 @login_requerido
 @role_requerido(['administrador', 'analista', 'usuario_basico'])
@@ -489,4 +636,4 @@ def logout():
 
 # Ejecutar app
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

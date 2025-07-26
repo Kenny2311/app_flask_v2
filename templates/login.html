@@ -17,7 +17,7 @@
     <div class="card shadow">
       <div class="card-body p-4">
         <h2 class="card-title text-center mb-4">Iniciar Sesión</h2>
-        
+
         <form method="POST" class="needs-validation" novalidate>
           <div class="mb-3">
             <label for="usuario" class="form-label">Usuario</label>
@@ -41,6 +41,32 @@
             <button type="submit" class="btn btn-primary">Entrar</button>
           </div>
         </form>
+
+        <div class="mb-4"></div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <script>
+        // Espera 3 segundos y luego oculta los mensajes flash
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+            alert.classList.remove('show'); // Remueve visibilidad
+            alert.classList.add('fade');    // Aplica desvanecido
+            alert.style.display = 'none';   // Oculta completamente
+            });
+        }, 5000); // 3000 milisegundos = 3 segundos
+        </script>
+
         
         <div class="text-center mt-3">
           <a href="{{ url_for('registro') }}" class="text-decoration-none">
@@ -48,14 +74,13 @@
           </a>
         </div>
         
-        <div class="text-center mt-3">
-          <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al inicio
-          </a>
-        </div>
+       <!--<div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary">⬅️ Volver al inicio</a>
+        </div>-->
       </div>
     </div>
   </div>
+
 </div>
 
 <script>

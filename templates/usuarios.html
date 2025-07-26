@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <div class="d-flex flex-column" style="min-height: 100vh;">
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 pt-4">
+        <div class="mb-3 mb-md-0">
+        <h1 class="h2 fw-bold text-primary">Gestión de Roles de Usuarios
+        </h1>
+        <p class="text-muted mb-0">Lista de usuarios:</p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a href="/" class="btn btn-outline-primary">⬅️ Volver al menú</a>
+        </div>
+    </div>
+
+
+    {% for usuario in usuarios %}
+      <div class="card mb-4">
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('cambiar_rol', id=usuario[0]) }}">
+            <p class="fw-bold">{{ usuario[1] }} (Rol actual: <span class="text-primary">{{ usuario[2] }}</span>)</p>
+
+            <div class="d-flex align-items-center gap-2">
+              <select name="rol" class="form-select w-auto" required>
+                <option value="" disabled selected>Seleccione un rol</option>
+                <option value="administrador" {% if usuario[2] == 'administrador' %}selected{% endif %}>Administrador</option>
+                <option value="analista" {% if usuario[2] == 'analista' %}selected{% endif %}>Analista</option>
+                <option value="usuario_basico" {% if usuario[2] == 'usuario_basico' %}selected{% endif %}>Usuario_basico</option>
+              </select>
+
+              <button type="submit" class="btn btn-primary">Cambiar rol</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+    
+{% endblock %}

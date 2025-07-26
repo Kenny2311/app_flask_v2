@@ -8,8 +8,9 @@
 <body class="bg-light">
 
 <div class="container mt-5">
+
     <div class="card shadow">
-        <div class="card-header bg-info text-white">
+        <div class="card-header bg-primary text-white">
             <h4>Editar Perfil</h4>
         </div>
         <div class="card-body">
@@ -31,24 +32,45 @@
                     <input type="text" name="celular" class="form-control" value="{{ usuario.celular }}" required>
                 </div>
 
-                <hr>
-                <h5>Cambiar Contraseña</h5>
-                <div class="mb-3">
-                    <label>Nueva contraseña</label>
-                    <input type="password" name="nueva_contraseña" class="form-control">
-                </div>
-                <div class="mb-3">
-                    <label>Confirmar nueva contraseña</label>
-                    <input type="password" name="confirmar_contraseña" class="form-control">
-                </div>
-
                 <div class="text-end">
-                    <a href="{{ url_for('ver_perfil') }}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                    <!--<a href="{{ url_for('ver_perfil') }}" class="btn btn-danger">Cancelar</a>-->
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <div class="mb-4"></div> 
+
+    <div class="d-flex justify-content-end">
+      <a href="{{ url_for('ver_perfil') }}" class="btn btn-outline-primary">⬅️ Volver al perfil</a>
+    </div>
+
+    <div class="mb-4"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <script>
+        // Espera 3 segundos y luego oculta los mensajes flash
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+            alert.classList.remove('show'); // Remueve visibilidad
+            alert.classList.add('fade');    // Aplica desvanecido
+            alert.style.display = 'none';   // Oculta completamente
+            });
+        }, 5000); // 3000 milisegundos = 3 segundos
+        </script>
+
 </div>
 
 </body>

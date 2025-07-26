@@ -45,12 +45,39 @@
               <div class="col-md-6">
                 <label for="dni" class="form-label">DNI</label>
                 <input type="text" class="form-control" id="dni" name="dni" 
-                       placeholder="Ingrese su DNI" required pattern="[0-9]{8}"
-                       title="Debe tener 8 dígitos">
-                <div class="invalid-feedback">
-                  Por favor ingrese un DNI válido (8 dígitos)
+                      placeholder="Ingrese su DNI" required pattern="\d{8}" maxlength="8" title="Debe tener 8 dígitos">
+                <div id="feedback-dni" class="invalid-feedback d-none">
+                  Este DNI ya está registrado.
                 </div>
               </div>
+
+              <script>
+                const inputDni = document.getElementById('dni');
+                const feedbackDni = document.getElementById('feedback-dni');
+
+                // Validación del DNI en tiempo real (cuando el usuario termine de escribir)
+                inputDni.addEventListener('blur', function () {
+                  const dni = inputDni.value;
+
+                  if (!/^\d{8}$/.test(dni)) return; // Solo valida si tiene 8 dígitos
+
+                  fetch('/verificar_dni', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ dni: dni })
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data.existe) {
+                      inputDni.classList.add('is-invalid');
+                      feedbackDni.classList.remove('d-none');
+                    } else {
+                      inputDni.classList.remove('is-invalid');
+                      feedbackDni.classList.add('d-none');
+                    }
+                  });
+                });
+              </script>
               
               <div class="col-md-6">
                 <label for="genero" class="form-label">Género</label>
@@ -74,7 +101,7 @@
               <div class="col-md-6">
                 <label for="correo" class="form-label">Correo electrónico</label>
                 <input type="email" class="form-control" id="correo" name="correo" 
-                       placeholder="ejemplo@dominio.com" required>
+                       placeholder="ejemplo@gmail.com" required>
                 <div class="invalid-feedback">
                   Por favor ingrese un correo válido
                 </div>
@@ -97,7 +124,7 @@
             <h5 class="mb-3 text-primary">Credenciales de Acceso</h5>
             
             <div class="row g-3">
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <label for="usuario" class="form-label">Nombre de usuario</label>
                 <input type="text" class="form-control" id="usuario" name="usuario" 
                        placeholder="Cree un nombre de usuario" required autocomplete="off">
@@ -106,30 +133,36 @@
                 </div>
               </div>
               
-              <div class="col-md-6">
-                <label for="rol" class="form-label">Rol</label>
-                <select class="form-select" id="rol" name="rol" required>
-                  <option value="" selected disabled>Seleccione...</option>
-                  <option value="usuario_basico">Usuario Básico</option>
-                  <option value="analista">Analista</option>
-                  <option value="administrador">Administrador</option>
-                </select>
-                <div class="invalid-feedback">
-                  Por favor seleccione un rol
-                </div>
-              </div>
-              
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <label for="contrasena" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="contrasena" name="contrasena" 
-                       placeholder="Cree una contraseña" required autocomplete="new-password">
-                <div class="invalid-feedback">
-                  Por favor ingrese una contraseña
+                      placeholder="Cree una contraseña" required autocomplete="new-password">
+                <div id="feedback-contrasena" class="invalid-feedback d-none">
+                  La contraseña debe tener al menos 8 caracteres e incluir letras y números.
                 </div>
-                <small class="form-text text-muted">Mínimo 8 caracteres</small>
               </div>
+
+              <script>
+                const inputContrasena = document.getElementById('contrasena');
+                const feedback = document.getElementById('feedback-contrasena');
+
+                inputContrasena.addEventListener('input', function () {
+                  const value = inputContrasena.value;
+
+                  // Condición: mínimo 8 caracteres, al menos una letra y un número
+                  const valido = value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value);
+
+                  if (!valido) {
+                    inputContrasena.classList.add('is-invalid');
+                    feedback.classList.remove('d-none');
+                  } else {
+                    inputContrasena.classList.remove('is-invalid');
+                    feedback.classList.add('d-none');
+                  }
+                });
+              </script>
               
-              <div class="col-md-6">
+              <div class="col-md-12">
                 <label for="confirmar_contrasena" class="form-label">Confirmar Contraseña</label>
                 <input type="password" class="form-control" id="confirmar_contrasena" 
                        name="confirmar_contrasena" placeholder="Repita la contraseña" required>
@@ -154,15 +187,41 @@
         </div>
         
         <!-- Botón Volver -->
-        <div class="text-center mt-3">
-          <a href="{{ url_for('inicio') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Volver al inicio
-          </a>
-        </div>
+        <!--<div class="text-center mt-4">
+            <a href="/" class="btn btn-outline-primary">⬅️ Volver al inicio</a>
+        </div>-->
+
+        <div class="mb-4"></div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <script>
+        // Espera 3 segundos y luego oculta los mensajes flash
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+            alert.classList.remove('show'); // Remueve visibilidad
+            alert.classList.add('fade');    // Aplica desvanecido
+            alert.style.display = 'none';   // Oculta completamente
+            });
+        }, 5000); // 3000 milisegundos = 3 segundos
+        </script>
+
       </div>
     </div>
   </div>
 </div>
+
+<div class="mb-4"></div>
 
 <script>
 // Validación de formulario

@@ -3,19 +3,25 @@
 {% block title %}Predicción Crediticia - Sistema Crediticio{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="d-flex flex-column" style="min-height: 100vh;">
   <!-- Header Section -->
-  <div class="text-center mb-5">
-    <h1 class="display-5 fw-bold text-primary">
-      <i class="bi bi-graph-up me-2"></i>Evaluación Crediticia
-    </h1>
-    <p class="lead text-muted">
-      Complete el formulario para obtener una predicción precisa de aprobación de crédito
-    </p>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 pt-5">
+    <div class="mb-3 mb-md-0">
+      <h1 class="display-5 fw-bold text-primary">
+        <i class="bi bi-graph-up me-2"></i>Evaluación Crediticia
+      </h1>
+      <p class="lead text-muted">
+        Complete el formulario para obtener una predicción precisa de aprobación de crédito
+      </p>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <a href="/" class="btn btn-outline-primary">⬅️ Volver al menú</a>
+    </div>
   </div>
 
   <!-- Form Section -->
-  <div class="card border-0 shadow-lg">
+  <div class="card border-1 shadow-lg mb-5">
     <div class="card-body p-4 p-md-5">
       <form method="POST" class="needs-validation" novalidate>
         <!-- Personal Information Section -->
@@ -56,7 +62,7 @@
                 <option value="0">Ninguno</option>
                 <option value="1">1 dependiente</option>
                 <option value="2">2 dependientes</option>
-                <option value="3+">3+ dependientes</option>
+                <option value="3">3 o mas dependientes</option>
               </select>
               <div class="invalid-feedback">
                 Por favor seleccione el número de dependientes
@@ -191,9 +197,6 @@
           <button type="submit" class="btn btn-primary btn-lg px-5 py-2">
             <i class="bi bi-calculator me-2"></i>Calcular Predicción
           </button>
-        <div class="text-center mt-4">
-            <a href="/" class="btn btn-outline-primary">⬅️ Volver al menú</a>
-        </div>
         </div>
       </form>
     </div>
@@ -211,6 +214,9 @@
       </div>
     </div>
   </div>
+
+  <div class="mb-4"></div>
+
   {% endif %}
 </div>
 

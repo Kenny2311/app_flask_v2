@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finctech</title>
+  <title>Sistema Crediticio</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -113,22 +113,26 @@
       </button>
       
       <!-- Contenido colapsable -->
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <!-- Menú central -->
-        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Financiamiento</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Inversiones</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Vermés</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Centro de ayuda</a>
-          </li>
-        </ul>
+      {% if 'usuario' not in session %}
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <!-- Menú central -->
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="#">Financiamiento</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Inversiones</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Ver mas</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Centro de ayuda</a>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
         
         <!-- Menú de usuario -->
         <ul class="navbar-nav">
@@ -161,7 +165,7 @@
     {% block content %}{% endblock %}
   </div>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
+  <!--{% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div class="container mt-3">
         {% for category, message in messages %}
@@ -172,7 +176,7 @@
         {% endfor %}
       </div>
     {% endif %}
-  {% endwith %}
+  {% endwith %}-->
 
   <!-- Bootstrap Bundle JS + Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -182,6 +186,58 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
   {% block body_scripts %}{% endblock %}
+
+  <!-- Asistente GPT flotante -->
+<div id="chatbot-container" style="display: none;">
+  <div id="chatbot-header">Asistente Fintech</div>
+  <div id="chatbot-messages"></div>
+  <input type="text" id="chatbot-input" placeholder="Haz una pregunta..." />
+</div>
+
+<!-- Botón flotante para abrir el asistente -->
+<button id="chatbot-toggle" class="btn btn-primary rounded-circle" style="position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; z-index: 1001;">
+  💬
+</button>
+
+<script>
+  const toggleBtn = document.getElementById('chatbot-toggle');
+  const chatContainer = document.getElementById('chatbot-container');
+  const chatInput = document.getElementById('chatbot-input');
+  const chatMessages = document.getElementById('chatbot-messages');
+
+  toggleBtn.addEventListener('click', () => {
+    chatContainer.style.display = chatContainer.style.display === 'none' ? 'block' : 'none';
+  });
+
+  chatInput.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+      const userText = chatInput.value.trim();
+      appendMessage('Tú', userText, 'text-primary');
+      chatInput.value = '';
+
+      try {
+        const res = await fetch('/asistente', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userText })
+        });
+
+        const data = await res.json();
+        appendMessage('Asistente', data.reply, 'text-dark');
+      } catch (err) {
+        appendMessage('Error', 'No se pudo conectar con el asistente.', 'text-danger');
+      }
+    }
+  });
+
+  function appendMessage(sender, text, className) {
+    const msg = document.createElement('div');
+    msg.innerHTML = `<strong class="${className}">${sender}:</strong> ${text}`;
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+</script>
+
 </body>
 </html>
 

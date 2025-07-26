@@ -10,6 +10,12 @@
       <h1 class="display-4 fw-bold mb-4">Bienvenido al Sistema Crediticio</h1>
       <p class="lead mb-4">La solución integral para tus necesidades financieras. Gestiona tus créditos, inversiones y más con nuestra plataforma segura y confiable.</p>
     
+{% if 'usuario' in session %}
+  <div style="position: absolute; top: 100px; right: 40px; z-index: 1000;">
+    <a href="{{ url_for('index') }}" class="btn btn-success">🏠 Ir al menú principal</a>
+  </div>
+{% endif %}
+
     <div class="col-lg-6">
       <img src="{{ url_for('static', filename='img/finance-hero.png') }}" alt="Finanzas digitales" class="img-fluid rounded">
     </div>
