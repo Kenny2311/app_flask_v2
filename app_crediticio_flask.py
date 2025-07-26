@@ -28,6 +28,7 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 if api_key:
     print("CLAVE CARGADA:", api_key[:8] + "...")
+    client = OpenAI(api_key=api_key)
 else:
     print("No se encontró OPENAI_API_KEY en las variables de entorno.")
 client = OpenAI()
