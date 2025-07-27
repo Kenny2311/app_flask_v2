@@ -30,8 +30,7 @@ if api_key:
     print("CLAVE CARGADA:", api_key[:8] + "...")
     client = OpenAI(api_key=api_key)
 else:
-    print("No se encontró OPENAI_API_KEY en las variables de entorno.")
-client = OpenAI()
+    raise Exception("No se encontró OPENAI_API_KEY en las variables de entorno.")
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_para_sesiones' # Reemplaza con una clave secreta fuerte
