@@ -1,1 +1,1 @@
-web: gunicorn app_crediticio_flask:app
+web: gunicorn app_fintech_flask:app

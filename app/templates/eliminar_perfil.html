@@ -1,0 +1,212 @@
+{% extends "menu_perfil.html" %}
+
+{% block private_content %}
+
+<!--  Estilos personalizados -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base_perfil.css') }}">
+
+
+<div class="eliminar-perfil-container">
+
+  <!-- Sidebar opciones historial -->
+    <h2 class="eliminar-perfil-titulo bi bi-trash"> Historial de Predicciones</h2>
+
+
+    <div id="eliminar-perfil">
+
+            <!-- Info principal -->
+            <div class="eliminar-perfil-info">
+                Necesitas el código de verificación para eliminar tu perfil
+            </div>
+
+            <!-- Advertencia -->
+            <div class="eliminar-perfil-advertencia">
+                Si eliminas tu perfil, no podrás recuperar el contenido ni la información <br>
+                de tus prediciones realizadas.
+            </div>
+
+            <!-- Código de verificación -->
+            <div class="eliminar-perfil-codigo-grupo mb-3">
+                <div>
+                    <label class="form-label eliminar-perfil-label">Código de verificación</label>
+                    <input type="text" name="codigo_verificacion" class="form-control eliminar-perfil-input">
+                </div>
+
+                <div class="eliminar-perfil-boton-codigo">
+                    <button type="button" class="btn eliminar-perfil-btn-primary" onclick="enviarCodigoCorreo()">Obtener código</button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="codigoCorreoModal" tabindex="-1" aria-hidden="true"> 
+                    <div class="modal-dialog"> 
+                        <div class="modal-content"> 
+                            <div class="modal-header bg-success text-white"> 
+                                <h5 class="modal-title">Código enviado</h5> 
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                            </div> 
+                            <div class="modal-body"> 
+                                ✅ El código de verificación se ha enviado correctamente a tu correo. 
+                            </div> 
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div>
+            </div>
+
+            <!-- Motivo -->
+            <div class="eliminar-perfil-motivo">
+                <label class="form-label eliminar-perfil-label">Indica el motivo</label>
+                <textarea name="motivo_eliminar" class="form-control eliminar-perfil-textarea" placeholder=""></textarea>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="eliminar-perfil-grupo mb-3">
+                <label class="form-label eliminar-perfil-label">Contraseña actual</label>
+                <input type="password" id="contrasena_actual_eliminar" name="contrasena_actual_eliminar" class="form-control eliminar-perfil-input" autocomplete="new-password">
+                <i class="fa-solid fa-eye eliminar-perfil-icon" id="togglePasswordEliminar"></i>
+            </div>
+
+            <!-- Botón eliminar -->
+            <button type="button" id="btnEliminarPerfil" class="btn btn-danger eliminar-perfil-boton">
+                Eliminar
+            </button>
+
+            <!-- Modal Confirmación -->
+            <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            ⚠️ ¿Estás seguro que deseas eliminar tu perfil? Esta acción no se puede deshacer.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- Toast de aviso que aun no se completo la funcionalidad -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="avisoToast" class="toast align-items-center text-white bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                ⚠️ Esta funcionalidad aún no está completa.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
+<!----------------------------------- Eliminar perfil  ---------------------------------------->
+<script>
+const contrasenaInput = document.getElementById('contrasena_actual_eliminar');
+const motivoInput = document.querySelector('textarea[name="motivo_eliminar"]');
+const btnEliminarPerfil = document.getElementById('btnEliminarPerfil');
+
+// Abrir modal solo si los campos están llenos
+btnEliminarPerfil.addEventListener('click', function() {
+    let valid = true;
+
+    // Resetear estilos
+    contrasenaInput.classList.remove('is-invalid');
+    motivoInput.classList.remove('is-invalid');
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+
+    // Validar contraseña
+    if(!contrasenaInput.value){
+        valid = false;
+        contrasenaInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar tu contraseña';
+        contrasenaInput.parentNode.appendChild(msg);
+    }
+
+    // Validar motivo
+    if(!motivoInput.value){
+        valid = false;
+        motivoInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes indicar un motivo';
+        motivoInput.parentNode.appendChild(msg);
+    }
+
+    if(valid){
+        const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+        modal.show();
+    }
+});
+
+// Confirmar eliminación
+document.getElementById('btnConfirmarEliminar').addEventListener('click', function(e) {
+    e.preventDefault(); // <--- evita el envío por defecto
+    const contrasena = contrasenaInput.value;
+    const motivo = motivoInput.value;
+
+    fetch('{{ url_for("usuarios.eliminar_perfil") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contrasena, motivo })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarModal'));
+            modal.hide();
+
+            // Redirigir al inicio y pasar query param
+            window.location.href = '{{ url_for("auth.inicio") }}?deleted=1';
+        } else {
+            // Mostrar error debajo del input
+            contrasenaInput.classList.add('is-invalid');
+            const feedback = document.createElement('div');
+            feedback.classList.add('invalid-feedback');
+            feedback.innerText = data.message;
+            contrasenaInput.parentNode.appendChild(feedback);
+        }
+    })
+    .catch(err => console.error(err));
+});
+</script>
+
+<script>
+const togglePasswordEliminar = document.getElementById('togglePasswordEliminar');
+const passwordEliminar = document.getElementById('contrasena_actual_eliminar');
+
+togglePasswordEliminar.addEventListener('click', function() {
+    const type = passwordEliminar.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordEliminar.setAttribute('type', type);
+    // Cambiar icono
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+</script>
+
+<script>
+    function enviarCodigoCorreo() {
+    // Crear instancia del toast
+    const toastEl = document.getElementById('avisoToast');
+    const toast = new bootstrap.Toast(toastEl);
+
+    // Mostrar el toast
+    toast.show();
+}
+</script>
+
+{% endblock %}

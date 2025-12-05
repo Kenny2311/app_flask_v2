@@ -1,0 +1,818 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil - Sistema Crediticio{% endblock %}
+
+{% block content %}
+<!--  Estilos personalizados -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil.css') }}">
+
+
+<div class="perfil-contenedor">
+
+  <!-- Sidebar -->
+  <div class="perfil-sidebar">
+    
+    <a href="{{ url_for('auth.inicio') }}" class="btn btn-primary w-100 mb-4 d-flex justify-content-center align-items-center">
+      <i class="bi bi-arrow-left me-2"></i> Ir a inicio
+    </a>
+    
+    <h6 class="perfil-sidebar-titulo">
+      Configuración de perfil
+    </h6>
+    
+      <!-- opciones del sidebar -->
+      <ul class="list-unstyled">
+        <li><span class="sidebar-option active" data-section="datos-personales">Datos personales</span></li>
+        <li><span class="sidebar-option" data-section="cambiar-contrasena">Cambiar contraseña</span></li>
+        <li><span class="sidebar-option" data-section="cambiar-correo">Cambiar correo</span></li>
+        <li><span class="sidebar-option" data-section="eliminar-perfil">Eliminar perfil</span></li>
+      </ul>
+  </div>
+
+  <!-- Contenido principal al lado derecho -->
+  <div class="perfil-contenido-derecho">
+
+<!------------------------------- Contenido Datos Personales ---------------------------------->
+<div id="datos-personales">
+
+    <!-- Título sección -->
+    <div class="datos-personales-titulo">
+        <h4 class="mb-0">Datos Personales</h4>
+    </div>
+
+    <div class="datos-personales-contenedor">
+
+        <!-- Bloque de información básica -->
+        <div class="datos-personales-principal">
+
+            <!-- Avatar o logo -->
+            <div class="datos-personales-logo">
+                <i class="bi bi-person-fill fs-1 text-primary"></i>
+            </div>
+
+            <!-- Información del usuario -->
+            <div class="datos-personales-info">
+                <div class="fw-bold nombre-usuario">{{ session.get('nombres', '') }} {{ session.get('apellidos', '') }}</div>
+
+                <div class="info-detalle">
+                    <i class="bi bi-person me-2"></i> {{ session.get('usuario', '') }}
+                </div>
+                <div class="info-detalle">
+                    <i class="bi bi-credit-card me-2"></i> DNI: ****{{ usuario.dni[-4:] }}
+                </div>
+                <div class="info-detalle">
+                    <i class="bi bi-gender-ambiguous me-2"></i> {{ usuario.genero }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de edición -->
+        <form method="POST" action="{{ url_for('usuarios.datos_personales') }}" class="perfil-form">
+
+            <h5 class="perfil-form-titulo">Información Editable</h5>
+
+            <!-- Teléfono (editable para todos) -->
+            <div class="perfil-form-group">
+                <label for="celular" class="perfil-form-label">Teléfono</label>
+                <input type="text" id="celular" name="celular" value="{{ usuario.celular }}" class="perfil-form-control">
+            </div>
+
+            <!-- Correo (editable si aplica) -->
+            <div class="perfil-form-group">
+                <label for="correo" class="perfil-form-label">Correo electrónico</label>
+                <input type="email" id="correo" name="correo" value="{{ usuario.correo }}" class="perfil-form-control">
+            </div>
+
+            <!-- Campos opcionales para admins/analistas -->
+            {% if session.get('rol') in ['administrador', 'analista'] %}
+                {% for campo, etiqueta, tipo in campos_opcionales %}
+                    <div class="form-group">
+                        <label for="{{ campo }}" class="form-label">{{ etiqueta }} (Opcional)</label>
+                        <input type="{{ tipo }}" id="{{ campo }}" name="{{ campo }}" class="form-control" value="">
+                    </div>
+                {% endfor %}
+
+                <!-- Información financiera básica -->
+                <div class="form-group">
+                    <label for="num_cuenta" class="form-label">Número de cuenta bancaria</label>
+                    <input type="text" id="num_cuenta" name="num_cuenta" class="form-control" placeholder="Opcional">
+                </div>
+                <div class="form-group">
+                    <label for="tipo_cuenta" class="form-label">Tipo de cuenta</label>
+                    <select id="tipo_cuenta" name="tipo_cuenta" class="form-control">
+                        <option value="">Seleccione</option>
+                        <option value="ahorros">Ahorros</option>
+                        <option value="corriente">Corriente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="moneda_preferida" class="form-label">Moneda preferida</label>
+                    <select id="moneda_preferida" name="moneda_preferida" class="form-control">
+                        <option value="">Seleccione</option>
+                        <option value="PEN">Soles (PEN)</option>
+                        <option value="USD">Dólares (USD)</option>
+                    </select>
+                </div>
+            {% endif %}
+
+            <!-- Botón guardar cambios -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-guardar">Guardar cambios</button>
+            </div>
+        </form>
+
+
+    </div>
+</div>
+
+
+<!------------------------------ Contenido Cambiar contraseña --------------------------------->
+    <div id="cambiar-contrasena" style="display:none;">
+          <!-- Título sección -->
+          <div class="cambiar-contrasena-titulo">
+            <h4 class="mb-0">Cambiar contraseña</h4>
+          </div>
+
+        <div class="cambiar-contrasena-contenedor flex-fill">
+
+        <div class="cambiar-contrasena-texto1">
+            Necesitas el código de verificación para cambiar tu contraseña
+        </div>
+      
+      <div class="cambiar-contrasena-codigo-verificacion mb-3">
+        <div>
+          <label class="cambiar-contrasena-label form-label">Código de verificación</label>
+          <input type="password" name="contrasena_actual" class="cambiar-contrasena-input form-control">
+        </div>
+
+        <!-- Botón --> 
+        <div class="cambiar-contrasena-boton-container"> 
+          <button type="button" class="btn btn-primary" onclick="enviarCodigo()">Obtener código</button> 
+        </div> 
+        
+        <!-- Modal de confirmación --> 
+         <div class="modal fade" id="codigoModal" tabindex="-1" aria-hidden="true"> 
+          <div class="modal-dialog"> 
+            <div class="modal-content"> 
+              <div class="modal-header bg-success text-white"> 
+                <h5 class="modal-title">Código enviado</h5> 
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+              </div> 
+              <div class="modal-body"> ✅ El código de verificación se ha enviado correctamente a tu correo. </div> 
+              <div class="modal-footer"> 
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+              </div> 
+            </div> 
+          </div> 
+        </div>
+      </div>
+
+      <form method="POST" action="{{ url_for('usuarios.cambiar_contrasena') }}">
+      
+      <!-- Font Awesome -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+        <div class="mb-3 cambiar-contrasena-grupo">
+          <label class="form-label cambiar-contrasena-label">Contraseña actual</label>
+          <input type="password" id="contrasena_actual" name="contrasena_actual" class="form-control" style="width: 250px;">
+        <!-- Icono del ojito -->
+          <i class="fa-solid fa-eye cambiar-contrasena-icon" id="togglePasswordActual"></i>
+        </div>
+
+        <div class="mb-3 cambiar-contrasena-grupo">
+          <label class="form-label cambiar-contrasena-label">Nueva contraseña</label>
+          <input type="password" id="nueva_contrasena" name="nueva_contrasena" class="form-control" style="width: 250px;">
+        <!-- Icono del ojito -->
+          <i class="fa-solid fa-eye cambiar-contrasena-icon" id="togglePasswordNueva"></i>
+        </div>
+
+        <div class="mb-3 cambiar-contrasena-grupo">
+          <label class="form-label cambiar-contrasena-label">Confirmar nueva contraseña</label>
+          <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" class="form-control" style="width: 250px;">
+        <!-- Icono del ojito -->
+          <i class="fa-solid fa-eye cambiar-contrasena-icon" id="togglePasswordConfirmar"></i>
+        </div>
+
+        <!-- Botón Guardar cambios -->
+        <div class="text-align mt-4">
+          <button type="button" id="btnGuardarContrasena" class="btn btn-success" style="width: 250px; margin-bottom: 30px;">
+            Guardar cambios
+          </button>
+        </div>
+
+        <!-- Modal de confirmación para cambio de contraseña -->
+        <div class="modal fade" id="contrasenaModal" tabindex="-1" aria-hidden="true"> 
+          <div class="modal-dialog"> 
+            <div class="modal-content"> 
+              <div class="modal-header bg-success text-white"> 
+                <h5 class="modal-title">Cambio de contraseña</h5> 
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+              </div> 
+              <div class="modal-body"> ✅ Tu contraseña se ha cambiado correctamente. </div> 
+              <div class="modal-footer"> 
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+              </div> 
+            </div> 
+          </div> 
+        </div>
+      </form>
+    </div>
+    </div> 
+
+<!-------------------------------- Contenido Cambiar correo ----------------------------------->
+    <div id="cambiar-correo" style="display:none;">
+
+        <!-- Título sección -->
+        <div class="cambiar-correo-titulo">
+            <h4 class="mb-0 fw-bold">Cambiar correo</h4>
+        </div>
+
+        <div class="cambiar-correo-contenedor">
+
+            <div class="cambiar-correo-info">
+                Necesitas el código de verificación para cambiar tu correo
+            </div>
+
+            <!-- Mostrar correo actual -->
+            <div class="cambiar-correo-actual">
+                Correo actual: <strong>{{ usuario.correo }}</strong>
+            </div>
+
+            <!-- Código de verificación -->
+            <div class="cambiar-correo-codigo-grupo mb-3">
+                <div>
+                    <label class="form-label cambiar-correo-label">Código de verificación</label>
+                    <input type="text" name="codigo_verificacion" class="form-control cambiar-correo-input">
+                </div>
+
+                <div class="cambiar-correo-boton-codigo">
+                    <button type="button" class="btn btn-primary" onclick="enviarCodigoCorreo()">Obtener código</button>
+                </div>
+
+                <!-- Modal de confirmación -->
+                <div class="modal fade" id="codigoCorreoModal" tabindex="-1" aria-hidden="true"> 
+                    <div class="modal-dialog"> 
+                        <div class="modal-content"> 
+                            <div class="modal-header bg-success text-white"> 
+                                <h5 class="modal-title">Código enviado</h5> 
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                            </div> 
+                            <div class="modal-body"> 
+                                ✅ El código de verificación se ha enviado correctamente a tu correo.
+                            </div> 
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <form method="POST" action="{{ url_for('usuarios.cambiar_correo') }}">
+
+                <!-- Nuevo correo -->
+                <div class="cambiar-correo-grupo mb-3">
+                    <label class="form-label cambiar-correo-label">Nuevo correo</label>
+                    <input type="email" id="nuevo_correo" name="nuevo_correo" class="form-control cambiar-correo-input" autocomplete="off">
+                </div>
+
+                <!-- Contraseña actual -->
+                <div class="cambiar-correo-grupo mb-3">
+                    <label class="form-label cambiar-correo-label">Contraseña actual</label>
+                    <input type="password" id="contrasena_actual_correo" name="contrasena_actual_correo" class="form-control cambiar-cortrasena-input" autocomplete="new-password">
+                    <i class="fa-solid fa-eye cambiar-correo-icon" id="togglePasswordCorreo"></i>
+                </div>
+
+                <!-- Botón Guardar cambios -->
+                <div class="cambiar-correo-boton-guardar">
+                    <button type="button" id="btnGuardarCorreo" class="btn btn-success">
+                        Guardar cambios
+                    </button>
+                </div>
+
+                <!-- Modal cambio exitoso -->
+                <div class="modal fade" id="correoModal" tabindex="-1" aria-hidden="true"> 
+                    <div class="modal-dialog"> 
+                        <div class="modal-content"> 
+                            <div class="modal-header bg-success text-white"> 
+                                <h5 class="modal-title">Cambio de correo</h5> 
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                            </div> 
+                            <div class="modal-body"> 
+                                ✅ Tu correo se ha cambiado correctamente. 
+                            </div> 
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+<!--------------------------------- Contenido Eliminar Perfil --------------------------------->
+    <div id="eliminar-perfil" style="display:none;">
+
+        <!-- Título -->
+        <div class="eliminar-perfil-titulo">
+            <h4 class="mb-0 fw-bold">Eliminar perfil</h4>
+        </div>
+
+        <div class="eliminar-perfil-contenedor">
+
+            <!-- Info principal -->
+            <div class="eliminar-perfil-info">
+                Necesitas el código de verificación para eliminar tu perfil
+            </div>
+
+            <!-- Advertencia -->
+            <div class="eliminar-perfil-advertencia">
+                Si eliminas tu perfil, no podrás recuperar el contenido ni la información <br>
+                de tus prediciones realizadas.
+            </div>
+
+            <!-- Código de verificación -->
+            <div class="eliminar-perfil-codigo-grupo mb-3">
+                <div>
+                    <label class="form-label eliminar-perfil-label">Código de verificación</label>
+                    <input type="text" name="codigo_verificacion" class="form-control eliminar-perfil-input">
+                </div>
+
+                <div class="eliminar-perfil-boton-codigo">
+                    <button type="button" class="btn btn-primary" onclick="enviarCodigoCorreo()">Obtener código</button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="codigoCorreoModal" tabindex="-1" aria-hidden="true"> 
+                    <div class="modal-dialog"> 
+                        <div class="modal-content"> 
+                            <div class="modal-header bg-success text-white"> 
+                                <h5 class="modal-title">Código enviado</h5> 
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                            </div> 
+                            <div class="modal-body"> 
+                                ✅ El código de verificación se ha enviado correctamente a tu correo. 
+                            </div> 
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div>
+            </div>
+
+            <!-- Motivo -->
+            <div class="eliminar-perfil-motivo">
+                <label class="form-label eliminar-perfil-label">Indica el motivo</label>
+                <textarea name="motivo_eliminar" class="form-control eliminar-perfil-textarea" placeholder=""></textarea>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="eliminar-perfil-grupo mb-3">
+                <label class="form-label eliminar-perfil-label">Contraseña actual</label>
+                <input type="password" id="contrasena_actual_eliminar" name="contrasena_actual_eliminar" class="form-control eliminar-perfil-input" autocomplete="new-password">
+                <i class="fa-solid fa-eye eliminar-perfil-icon" id="togglePasswordEliminar"></i>
+            </div>
+
+            <!-- Botón eliminar -->
+            <button type="button" id="btnEliminarPerfil" class="btn btn-danger eliminar-perfil-boton">
+                Eliminar
+            </button>
+
+            <!-- Modal Confirmación -->
+            <div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">Confirmar eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            ⚠️ ¿Estás seguro que deseas eliminar tu perfil? Esta acción no se puede deshacer.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+<!------------------------------------ Menu de opciones --------------------------------------->
+<script>
+const opciones = document.querySelectorAll('.sidebar-option');
+
+opciones.forEach(opcion => {
+  opcion.addEventListener('click', () => {
+    // Marcar opción activa
+    opciones.forEach(o => o.classList.remove('active'));
+    opcion.classList.add('active');
+
+    // Ocultar todas las secciones
+    document.querySelectorAll('#datos-personales, #cambiar-contrasena, #cambiar-correo, #eliminar-perfil')
+      .forEach(sec => sec.style.display = 'none');
+
+    // Mostrar la sección seleccionada
+    const id = opcion.getAttribute('data-section');
+    document.getElementById(id).style.display = 'block';
+
+    // --- Limpiar formularios al cambiar de sección ---
+    resetFormularioContrasena();  // formulario de contraseña
+    resetFormularioCorreo();      // formulario de correo
+    resetFormularioEliminar();    // formulario de eliminar perfil
+  });
+});
+
+// Función para limpiar formulario de contraseña
+function resetFormularioContrasena() {
+  const actualInput = document.getElementById('contrasena_actual');
+  const nuevaInput = document.getElementById('nueva_contrasena');
+  const confirmarInput = document.getElementById('confirmar_contrasena');
+
+  [actualInput, nuevaInput, confirmarInput].forEach(input => {
+    input.value = '';
+    input.classList.remove('is-invalid');
+    const feedback = input.parentNode.querySelector('.invalid-feedback');
+    if(feedback) feedback.remove();
+  });
+}
+
+// Función para limpiar formulario de correo
+function resetFormularioCorreo() {
+  const correoInput = document.getElementById('nuevo_correo');
+  const contrasenaCorreo = document.getElementById('contrasena_actual_correo');
+
+  [correoInput, contrasenaCorreo].forEach(input => {
+    input.value = '';
+    input.classList.remove('is-invalid');
+    const feedback = input.parentNode.querySelector('.invalid-feedback');
+    if(feedback) feedback.remove();
+  });
+}
+
+// Función para limpiar formulario de eliminar perfil
+function resetFormularioEliminar() {
+  // Contraseña
+  const contrasenaEliminar = document.getElementById('contrasena_actual_eliminar');
+  if (contrasenaEliminar) {
+    contrasenaEliminar.value = '';
+    contrasenaEliminar.classList.remove('is-invalid');
+    const feedback = contrasenaEliminar.parentNode.querySelector('.invalid-feedback');
+    if (feedback) feedback.remove();
+  }
+
+  // Código de verificación
+  const codigoVerificacion = document.querySelector('#eliminar-perfil input[name="codigo_verificacion"]');
+  if (codigoVerificacion) {
+    codigoVerificacion.value = '';
+    codigoVerificacion.classList.remove('is-invalid');
+    const feedback = codigoVerificacion.parentNode.querySelector('.invalid-feedback');
+    if (feedback) feedback.remove();
+  }
+
+  // Motivo de eliminación
+  const motivoTextarea = document.querySelector('#eliminar-perfil textarea[name="motivo_eliminar"]');
+  if (motivoTextarea) {
+    motivoTextarea.value = '';
+    motivoTextarea.classList.remove('is-invalid');
+    const feedback = motivoTextarea.parentNode.querySelector('.invalid-feedback');
+    if (feedback) feedback.remove();
+  }
+}
+</script>
+
+
+<!----------------------------------- Cambiar contraseña -------------------------------------->
+<script>
+const actualInput = document.getElementById('contrasena_actual');
+const nuevaInput = document.getElementById('nueva_contrasena');
+const confirmarInput = document.getElementById('confirmar_contrasena');
+const btnGuardarContrasena = document.getElementById('btnGuardarContrasena');
+
+function resetFormularioContrasena() {
+    const actualInput = document.getElementById('contrasena_actual');
+    const nuevaInput = document.getElementById('nueva_contrasena');
+    const confirmarInput = document.getElementById('confirmar_contrasena');
+
+    // Limpiar valores
+    [actualInput, nuevaInput, confirmarInput].forEach(input => input.value = '');
+
+    // Limpiar errores
+    [actualInput, nuevaInput, confirmarInput].forEach(input => {
+        input.classList.remove('is-invalid');
+        const feedback = input.parentNode.querySelector('.invalid-feedback');
+        if(feedback) feedback.remove();
+    });
+}
+
+btnGuardarContrasena.addEventListener('click', function() {
+    let valid = true;
+
+    // Limpiar errores anteriores
+    [actualInput, nuevaInput, confirmarInput].forEach(input => {
+        input.classList.remove('is-invalid');
+        const feedback = input.parentNode.querySelector('.invalid-feedback');
+        if(feedback) feedback.remove();
+    });
+
+    // Validar campos vacíos
+    if (!actualInput.value) {
+        valid = false;
+        actualInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar tu contraseña actual';
+        actualInput.parentNode.appendChild(msg);
+    }
+
+    if (!nuevaInput.value) {
+        valid = false;
+        nuevaInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar la nueva contraseña';
+        nuevaInput.parentNode.appendChild(msg);
+    }
+
+    if (!confirmarInput.value) {
+        valid = false;
+        confirmarInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes confirmar la nueva contraseña';
+        confirmarInput.parentNode.appendChild(msg);
+    }
+
+    // Validar que la nueva contraseña sea diferente a la actual
+    if (actualInput.value && nuevaInput.value && actualInput.value === nuevaInput.value) {
+        valid = false;
+        nuevaInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'La nueva contraseña no puede ser igual a la actual';
+        nuevaInput.parentNode.appendChild(msg);
+    }
+
+    // Validar que nueva y confirmar coincidan
+    if (nuevaInput.value && confirmarInput.value && nuevaInput.value !== confirmarInput.value) {
+        valid = false;
+        confirmarInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'La confirmación no coincide con la nueva contraseña';
+        confirmarInput.parentNode.appendChild(msg);
+    }
+
+    if (!valid) return; // Si hay errores, no continuar
+
+    // Preparar FormData
+    const formData = new FormData();
+    formData.append('actual', actualInput.value);
+    formData.append('nueva', nuevaInput.value);
+    formData.append('confirmar', confirmarInput.value);
+
+    // Enviar al backend
+    fetch('{{ url_for("usuarios.cambiar_contrasena") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            // Mostrar modal de éxito
+            const myModal = new bootstrap.Modal(document.getElementById('contrasenaModal'));
+            myModal.show();
+
+            // Limpiar campos después de mostrar el modal
+            [actualInput, nuevaInput, confirmarInput].forEach(input => input.value = '');
+        } else {
+            // Mostrar mensaje de error debajo de la contraseña actual
+            actualInput.classList.add('is-invalid');
+            const msg = document.createElement('div');
+            msg.classList.add('invalid-feedback');
+            msg.innerText = data.message; // Mensaje que venga del backend
+            actualInput.parentNode.appendChild(msg);
+        }
+    })
+    .catch(err => console.error(err));
+});
+
+</script>
+
+<script>
+// Función para activar el toggle de mostrar/ocultar contraseña
+function togglePasswordVisibility(toggleId, inputId) {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+
+    if (toggle && input) {
+        toggle.addEventListener('click', function () {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            // Cambiar icono
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+}
+
+// Llamadas para cada campo de contraseña
+togglePasswordVisibility('togglePasswordActual', 'contrasena_actual');
+togglePasswordVisibility('togglePasswordNueva', 'nueva_contrasena');
+togglePasswordVisibility('togglePasswordConfirmar', 'confirmar_contrasena');
+</script>
+
+<!-------------------------------------- Obtner Código ---------------------------------------->
+<script>
+    function enviarCodigo() {
+        const email = "{{ session.get('correo', '') }}"; // <-- aquí debe ser el correo real del usuario
+
+        if(!email){
+            alert('No se encontró un correo válido para enviar el código.');
+            return;
+        }
+
+        fetch('http://127.0.0.1:5000/enviar-codigo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                var modal = new bootstrap.Modal(document.getElementById('codigoModal'));
+                modal.show();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+</script>
+
+<!------------------------------------- Cambiar correo  --------------------------------------->
+
+<script>
+const btnGuardarCorreo = document.getElementById('btnGuardarCorreo');
+const nuevoCorreoInput = document.getElementById('nuevo_correo');
+const contrasenaInputCorreo = document.getElementById('contrasena_actual_correo');
+
+btnGuardarCorreo.addEventListener('click', function() {
+    let valid = true;
+
+    // Limpiar mensajes anteriores
+    [nuevoCorreoInput, contrasenaInputCorreo].forEach(input => {
+        input.classList.remove('is-invalid');
+        const prevMsg = input.parentNode.querySelector('.invalid-feedback');
+        if(prevMsg) prevMsg.remove();
+    });
+
+    // Validar nuevo correo
+    if(!nuevoCorreoInput.value){
+        valid = false;
+        nuevoCorreoInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar un nuevo correo';
+        nuevoCorreoInput.parentNode.appendChild(msg);
+    }
+
+    // Validar contraseña
+    if(!contrasenaInputCorreo.value){
+        valid = false;
+        contrasenaInputCorreo.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar tu contraseña';
+        contrasenaInputCorreo.parentNode.appendChild(msg);
+    }
+
+    if(!valid) return;
+
+    // Si todo está bien, enviar datos al backend
+    const formData = new FormData();
+    formData.append('nuevo_correo', nuevoCorreoInput.value);
+    formData.append('contrasena_actual_correo', contrasenaInputCorreo.value);
+
+    fetch('{{ url_for("usuarios.cambiar_correo") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            const modal = new bootstrap.Modal(document.getElementById('correoModal'));
+            modal.show();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => console.error(err));
+});
+</script>
+
+<script>
+const togglePasswordCorreo = document.getElementById('togglePasswordCorreo');
+const passwordCorreo = document.getElementById('contrasena_actual_correo');
+
+togglePasswordCorreo.addEventListener('click', function() {
+    const type = passwordCorreo.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordCorreo.setAttribute('type', type);
+    // Cambiar icono
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+</script>
+
+
+<!----------------------------------- Eliminar perfil  ---------------------------------------->
+<script>
+const contrasenaInput = document.getElementById('contrasena_actual_eliminar');
+const motivoInput = document.querySelector('textarea[name="motivo_eliminar"]');
+const btnEliminarPerfil = document.getElementById('btnEliminarPerfil');
+
+// Abrir modal solo si los campos están llenos
+btnEliminarPerfil.addEventListener('click', function() {
+    let valid = true;
+
+    // Resetear estilos
+    contrasenaInput.classList.remove('is-invalid');
+    motivoInput.classList.remove('is-invalid');
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+
+    // Validar contraseña
+    if(!contrasenaInput.value){
+        valid = false;
+        contrasenaInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar tu contraseña';
+        contrasenaInput.parentNode.appendChild(msg);
+    }
+
+    // Validar motivo
+    if(!motivoInput.value){
+        valid = false;
+        motivoInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes indicar un motivo';
+        motivoInput.parentNode.appendChild(msg);
+    }
+
+    if(valid){
+        const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+        modal.show();
+    }
+});
+
+// Confirmar eliminación
+document.getElementById('btnConfirmarEliminar').addEventListener('click', function() {
+    const contrasena = contrasenaInput.value;
+    const motivo = motivoInput.value;
+
+    fetch('{{ url_for("usuarios.eliminar_perfil") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contrasena, motivo })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        if(data.success){
+            const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarModal'));
+            modal.hide();
+            window.location.href = '{{ url_for("auth.inicio") }}';
+        }
+    })
+    .catch(err => console.error(err));
+});
+</script>
+
+<script>
+const togglePasswordEliminar = document.getElementById('togglePasswordEliminar');
+const passwordEliminar = document.getElementById('contrasena_actual_eliminar');
+
+togglePasswordEliminar.addEventListener('click', function() {
+    const type = passwordEliminar.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordEliminar.setAttribute('type', type);
+    // Cambiar icono
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+</script>
+
+{% endblock %}

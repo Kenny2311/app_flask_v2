@@ -1,0 +1,467 @@
+:root {
+    --morado-base: #6a1b9a;
+    --morado-oscuro: #4a0072;
+    --morado-claro: #9c4dcc;
+
+    --gris-texto: #555;
+    --gris-fondo: #f2f2f2;
+
+    --blanco: #ffffff;
+    --transparente: rgba(255, 255, 255, 0.15);
+}
+
+
+/* ----------------------------------------
+   ESTILOS DATOS PERSONALES
+------------------------------------------*/
+/* Contenedor principal */
+.datos-personales-contenedor {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* Título de sección */
+.datos-personales-titulo {
+    
+    color: #6a1b9a;
+    padding: 20px 20px;
+    border-radius: 0px;
+    margin-bottom: 20px;
+}
+
+/* Bloque de información principal */
+.datos-personales-principal {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.icon-morado {
+    color: purple;
+}
+/* Logo del usuario */
+.datos-personales-logo {
+    width: 90px;
+    height: 90px;
+    background-color: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Información del usuario */
+.datos-personales-info .nombre-usuario {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.datos-personales-info .info-detalle {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Contenedor general del formulario */
+.datos-personales-form {
+    width: 100%;
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+/* Títulos de secciones */
+.datos-personales-titulo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #6a1b9a; /* morado */
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0d4f0;
+    padding-bottom: 5px;
+}
+
+/* Grid para los campos (dos columnas) */
+.datos-personales-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Grupo de inputs */
+.datos-personales-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Labels */
+.datos-personales-label {
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* Inputs y selects */
+.datos-personales-control {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.datos-personales-control:focus {
+    border-color: #6a1b9a;
+    box-shadow: 0 0 5px rgba(111, 66, 193, 0.3);
+    outline: none;
+}
+
+/* Botón Guardar */
+.datos-personales-btn-guardar {
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 10px 25px;
+    background-color: #6a1b9a;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.datos-personales-btn-guardar:hover {
+    background-color: #6a1b9a;
+    color: #fff;
+}
+
+/* Centrar botón */
+.datos-personales-text-center {
+    text-align: center;
+    margin-top: 25px;
+}
+
+
+
+
+
+
+/* =========================================================
+   📌 CONTENEDOR DEL CAMBIAR CONTRASEÑA
+   ========================================================= */
+.cambiar-contrasena-contenedor {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* =========================================================
+   🏷️ TÍTULO PRINCIPAL DE CAMBIAR CONTRASEÑA
+   ========================================================= */
+.cambiar-contrasena-titulo  {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+.cambiar-contrasena-texto1 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6a06a0;
+    margin-top: 20px;   /* espacio arriba */
+    margin-bottom: 20px; /* espacio abajo */
+    text-align: left;    /* alineación a la izquierda */
+}
+
+.cambiar-contrasena-codigo-verificacion {
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+}
+
+.cambiar-contrasena-btn-primary {
+    background-color: #6a1b9a;
+    color: #ffffff;
+}
+
+.cambiar-contrasena-btn-primary:hover {
+    background-color: #6a1b9a; /* un tono más claro */
+    color:#ffffff;
+    cursor: pointer;
+}
+
+/* Grupo de cada campo */
+.cambiar-contrasena-grupo {
+    position: relative;
+    width: 250px;
+}
+
+/* Estilo del label */
+.cambiar-contrasena-label {
+    color: #6a1b9a;
+}
+
+/* Estilo del input */
+.cambiar-contrasena-input {
+    width: 250px;
+}
+
+/* Contenedor del botón */
+.cambiar-contrasena-boton-container {
+    margin-top: 30px;
+}
+
+/* Icono del ojito */
+.cambiar-contrasena-icon {
+    position: absolute;
+    right: 10px;
+    top: 42px;
+    cursor: pointer;
+    color: gray;
+}
+
+
+
+
+
+
+
+/* =========================================================
+   📌 CONTENEDOR DEL CAMBIAR CORREO
+   ========================================================= */
+.cambiar-correo-contenedor {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* =========================================================
+   🏷️ TÍTULO PRINCIPAL DE CAMBIAR CORREO
+   ========================================================= */
+.cambiar-correo-titulo  {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+.cambiar-correo-texto1 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6a1b9a;
+    margin-top: 20px;   /* espacio arriba */
+    margin-bottom: 20px; /* espacio abajo */
+    text-align: left;    /* alineación a la izquierda */
+}
+
+/* Texto principal azul */
+.cambiar-correo-info {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6a1b9a;
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Correo actual */
+.cambiar-correo-actual {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #4a0072;
+    background-color: #e8d1f7;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #e8d1f7;
+    margin-bottom: 15px;
+}
+
+.cambiar-correo-btn-primary {
+    background-color: #6a1b9a;
+    color: #ffffff;
+}
+
+.cambiar-correo-btn-primary:hover {
+    background-color: #6a1b9a; /* un tono más claro */
+    color:#ffffff;
+    cursor: pointer;
+}
+
+/* Grupo código de verificación */
+.cambiar-correo-codigo-grupo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botón obtener código */
+.cambiar-correo-boton-codigo {
+    margin-top: 30px;
+}
+
+/* Reutilización de estilos */
+.cambiar-correo-label {
+    color: #6a1b9a;
+}
+
+.cambiar-correo-input {
+    width: 250px;
+}
+
+/* Grupo inputs */
+.cambiar-correo-grupo {
+    position: relative;
+    width: 250px;
+}
+
+/* Icono ojito */
+.cambiar-correo-icon {
+    position: absolute;
+    right: 10px;
+    top: 42px;
+    cursor: pointer;
+    color: gray;
+}
+
+/* Botón Guardar Cambios */
+.cambiar-correo-boton-guardar {
+    margin-top: 20px;
+}
+
+.cambiar-correo-boton-guardar button {
+    width: 250px;
+    margin-bottom: 25px;
+}
+
+
+
+
+
+/* =========================================================
+   📌 CONTENEDOR DE ELIMINAR PERFIL
+   ========================================================= */
+.eliminar-perfil-contenedor {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* =========================================================
+   🏷️ TÍTULO PRINCIPAL DE ELIMINAR PERFIL
+   ========================================================= */
+.eliminar-perfil-titulo  {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+.eliminar-perfil-texto1 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6a1b9a;
+    margin-top: 20px;   /* espacio arriba */
+    margin-bottom: 20px; /* espacio abajo */
+    text-align: left;    /* alineación a la izquierda */
+}
+
+
+/* Texto principal */
+.eliminar-perfil-info {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #6a1b9a;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.eliminar-perfil-btn-primary {
+    background-color: #6a1b9a;
+    color: #ffffff;
+
+}
+
+.eliminar-perfil-btn-primary:hover {
+    background-color: #6a1b9a; /* un tono más claro */
+    color:#ffffff;
+    cursor: pointer;
+}
+
+/* Advertencia */
+.eliminar-perfil-advertencia {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #000000;
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Código de verificación */
+.eliminar-perfil-codigo-grupo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eliminar-perfil-boton-codigo {
+    margin-top: 30px;
+}
+
+/* Etiquetas */
+.eliminar-perfil-label {
+    color: #6a1b9a;
+}
+
+/* Inputs */
+.eliminar-perfil-input {
+    width: 250px;
+}
+
+/* Motivo */
+.eliminar-perfil-motivo {
+    margin-bottom: 20px;
+}
+
+.eliminar-perfil-textarea {
+    width: 400px;
+    height: 100px;
+}
+
+/* Grupo password */
+.eliminar-perfil-grupo {
+    position: relative;
+    width: 250px;
+}
+
+/* Icono ojito */
+.eliminar-perfil-icon {
+    position: absolute;
+    right: 10px;
+    top: 42px;
+    cursor: pointer;
+    color: gray;
+}
+
+/* Botón eliminar */
+.eliminar-perfil-boton {
+    width: 250px;
+    margin-bottom: 25px;
+}

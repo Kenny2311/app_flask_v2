@@ -1,0 +1,394 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+<div class="gestion-roles-container">
+
+  <h2 class="gestion-roles-title bi-shield-lock"> Administre los permisos y niveles de acceso de los usuarios del sistema</h2>
+
+  
+  <!----------------------------- Contenido principal al lado derecho ----------------------------->
+    <div id="gestion-roles">
+
+        <!------------------------------- Administrador principal ------------------------------->
+        {% if admin_usuario %}
+        <div class="admin-card">
+
+            <div class="admin-card__header">
+                <div class="admin-card__avatar">
+                    {{ admin_usuario[1][0]|upper }}
+                </div>
+
+                <div class="admin-card__info">
+                    <div class="admin-card__name-role">
+                        <span class="admin-card__name">{{ admin_usuario[1] }}</span>
+
+                        <span class="admin-card__badge-principal">
+                            <i class="bi bi-shield-check me-1"></i>Principal
+                        </span>
+                    </div>
+
+                    <div class="admin-card__subtitle">Administrador del sistema</div>
+                </div>
+
+                <div class="admin-card__role">
+                    <i class="bi bi-star-fill me-1 icon-star"></i>
+                    {{ admin_usuario[2]|title }}
+                </div>
+            </div>
+
+            <div class="admin-card__body">
+                <div class="admin-card__description">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Usuario con privilegios completos del sistema
+                </div>
+
+                <div class="admin-card__tags">
+                    <span class="admin-tag"><i class="bi bi-gear me-1"></i>Configuración</span>
+                    <span class="admin-tag"><i class="bi bi-people me-1"></i>Gestión usuarios</span>
+                    <span class="admin-tag"><i class="bi bi-shield-lock me-1"></i>Control total</span>
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+
+
+        <!-- Tabla de usuarios -->
+        <div class="gestion-roles-tabla-contenedor mt-4">
+
+          <!-- Barra de búsqueda y filtros -->
+          <div class="gestion-roles-barra">
+            <div class="gestion-roles-barra__search">
+              <input 
+                type="text" 
+                id="search-users" 
+                class="gestion-roles-barra__input"
+                placeholder="Buscar por DNI o nombre del usuario" 
+              >
+            </div>
+
+            <div class="gestion-roles-barra__filter">
+              <select id="filter-role" class="gestion-roles-barra__select">
+                <option value="">Todos los roles</option>
+                <option value="analista">Analistas</option>
+                <option value="usuario_basico">Usuarios Básicos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filtro-card-custom mt-4">
+            <!-- Tabla de usuarios con roles -->
+            <div style="overflow-y: auto; max-height: 420px;">
+              <table class="filtros-table-custom align-middle text-center w-100">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-start">DNI</th>
+                    <th class="text-start">Nombre del usuario</th>
+                    <th class="text-start">Correo del usuario</th>
+                    <th class="text-center">Rol Actual</th>
+                    <th class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+
+                <tbody id="users-table-body" class="gestion-roles-tabla__body">
+                  {% for usuario in usuarios %}                 
+                  <tr class="user-row" data-role="{{ usuario[2] }}">
+                    
+                    <!-- DNI -->
+                    <td class="gestion-roles-tabla__dni text-start">{{ usuario[0] }}</td>
+                    
+                    <!-- Nombre completo -->
+                    <td class="gestion-roles-tabla__nombre text-start">
+                      {{ usuario[4] }}, {{ usuario[3] }}
+                    </td>
+                    
+                    <!-- Correo del usuario -->
+                    <td >
+                      <div class="user-info">
+                        <div class="user-initial">{{ usuario[1][0]|upper }}</div>
+                        <span>{{ usuario[1] }}</span>
+                      </div>
+                    </td>
+
+                    <!-- Rol Actual -->
+                    <td class="text-center">
+                      {% set desc = 'Acceso completo al sistema, gestión de usuarios y configuración.' if usuario[2]=='administrador' else 'Acceso a dashboard, predicciones, reportes y análisis.' if usuario[2]=='analista' else 'Acceso limitado a consultas básicas e historial personal.' %}
+                      <span class="role-badge" 
+                            data-role="{{ usuario[2] }}" 
+                            data-user="{{ usuario[1] }}"
+                            data-desc="{{ desc }}">
+                        <i class="bi {% if usuario[2]=='administrador' %}bi-shield-check{% elif usuario[2]=='analista' %}bi-graph-up{% else %}bi-person{% endif %} me-1"></i>
+                        {{ usuario[2]|title }}
+                      </span>
+                    </td>
+
+                    <!-- Acciones -->
+                    <td class="gestion-roles-tabla__acciones text-center">
+                      <form method="POST" action="{{ url_for('roles.cambiar_rol', id=usuario[0]) }}" class="d-inline form-rol">
+                        <select name="rol" class="form-select d-inline w-auto me-2 form-rol__select" required style="min-width: 140px;">
+                          <option value="analista" {% if usuario[2] == 'analista' %}selected{% endif %}>Analista</option>
+                          <option value="usuario_basico" {% if usuario[2] == 'usuario_basico' %}selected{% endif %}>Usuario Básico</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-success form-rol__btn">Actualizar</button>
+                      </form>
+                      <form method="POST" action="{{ url_for('roles.eliminar_usuario', id=usuario[0]) }}" class="d-inline form-eliminar">
+                        <button type="submit" class="btn btn-sm btn-danger form-eliminar__btn">Eliminar</button>
+                      </form>
+                    </td>
+
+                  </tr>
+                  {% endfor %}
+                </tbody>
+
+              </table>
+
+              <!-- Mensaje cuando no hay resultados -->
+              <div id="no-results-msg" style="display: none; text-align: center; margin-top: 10px; color: #dc3545; font-weight: 600;">
+                No se encontraron usuarios que coincidan con la búsqueda.
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Modal de confirmación actualizar rol-->
+          <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="confirmModalLabel">Confirmar Cambio de Rol</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <p id="modal-text">¿Está seguro de realizar este cambio?</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-success" id="modal-confirm-btn">Confirmar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal de confirmación de eliminación -->
+          <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                
+                <div class="modal-header bg-danger text-white">
+                  <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                
+                <div class="modal-body">
+                  <p id="delete-modal-text">¿Está seguro de eliminar este usuario? Esta acción no se puede deshacer.</p>
+                </div>
+                
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="button" class="btn btn-danger" id="delete-modal-confirm-btn">Eliminar</button>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-------------------------- Moodal de descripción de roles -------------------------->     
+          <div class="modal fade" id="roleDescModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+                <!-- Header dinámico con color del rol -->
+                <div class="modal-header border-0 text-white" id="roleModalHeader" style="padding: 20px;">
+                  <h5 class="modal-title mb-0">
+                    <i id="roleIcon" class="bi me-2"></i>
+                    <span id="roleTitle" style="font-weight: 600;"></span>
+                  </h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                
+                <!-- Body -->
+                <div class="modal-body p-4">
+                  <p id="roleDescText" class="mb-3" style="font-size: 0.95rem; color: #495057;"></p>
+                  
+                  <div class="mt-3">
+                    <h6 class="mb-2" style="font-size: 0.9rem; color: #2c3e50;">
+                      <i class="bi bi-list-check me-1"></i>Permisos
+                    </h6>
+                    <div id="rolePermissions" class="d-flex flex-wrap gap-2"></div>
+                  </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="modal-footer border-0 pt-0">
+                  <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      </div>
+
+    </div>
+
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<!-- Filtrado, busqueda de usuarios -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  const searchInput = document.querySelector('.gestion-roles-barra__input');
+  const filterSelect = document.querySelector('.gestion-roles-barra__select');
+  const rows = document.querySelectorAll('.user-row');
+  const noResultsMsg = document.getElementById('no-results-msg');
+  let debounceTimeout;
+
+  function filterRows() {
+    const searchValue = searchInput.value.trim().toLowerCase();
+    const filterValue = filterSelect.value;
+
+    let anyVisible = false;
+
+    rows.forEach(row => {
+      const userDNI = row.querySelector('td.gestion-roles-tabla__dni')?.textContent.trim().toLowerCase() || '';
+      const userName = row.querySelector('td.gestion-roles-tabla__nombre')?.textContent.trim().toLowerCase() || '';
+      const userRole = row.getAttribute('data-role');
+
+      const matchesSearch = userDNI.includes(searchValue) || userName.includes(searchValue);
+      const matchesRole = filterValue === '' || userRole === filterValue;
+
+      if (matchesSearch && matchesRole) {
+        row.style.display = '';
+        anyVisible = true;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Mostrar u ocultar mensaje
+    noResultsMsg.style.display = anyVisible ? 'none' : 'block';
+  }
+
+  // Escuchar cambios en búsqueda
+  searchInput.addEventListener('input', function() {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(filterRows, 200);
+  });
+
+  // Escuchar cambios en filtro de rol
+  filterSelect.addEventListener('change', filterRows);
+
+});
+</script>
+
+<!-- Cambio y eliminación de rol del usuario -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // --- Confirmación de cambio de rol ---
+  const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  let formToSubmit = null;
+
+  document.querySelectorAll('form[action*="cambiar_rol"]').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const userName = this.closest('tr').querySelector('td.gestion-roles-tabla__nombre')?.textContent.trim() || '';
+      const newRole = this.querySelector('select[name="rol"]').value;
+      document.getElementById('modal-text').textContent = 
+        `¿Está seguro de cambiar el rol de "${userName}" a "${newRole}"?`;
+      formToSubmit = this;
+      confirmModal.show();
+    });
+  });
+
+  document.getElementById('modal-confirm-btn').addEventListener('click', function() {
+    if (formToSubmit) {
+      formToSubmit.submit();
+      formToSubmit = null;
+    }
+  });
+
+  // --- Confirmación de eliminación de usuario ---
+  const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+  let formToDelete = null;
+
+  document.querySelectorAll('form[action*="eliminar_usuario"]').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const userName = this.closest('tr').querySelector('td.gestion-roles-tabla__nombre')?.textContent.trim() || '';
+      document.getElementById('delete-modal-text').textContent =
+        `¿Está seguro de eliminar al usuario "${userName}"? Esta acción no se puede deshacer.`;
+      formToDelete = this;
+      deleteModal.show();
+    });
+  });
+
+  document.getElementById('delete-modal-confirm-btn').addEventListener('click', function() {
+    if (formToDelete) formToDelete.submit();
+  });
+
+});
+</script>
+
+
+<!-- Modales para ver descripción de roles -->
+<script>
+function showRoleModal(role, userName) {
+  const roles = {
+    'administrador': {
+      title: 'Administrador',
+      icon: 'bi-shield-check',
+      headerColor: 'linear-gradient(135deg, #dc3545, #c82333)',
+      desc: 'Control total del sistema y gestión de usuarios.',
+      perms: ['Gestión usuarios', 'Configuración', 'Control total', 'Todos los módulos']
+    },
+    'analista': {
+      title: 'Analista', 
+      icon: 'bi-graph-up',
+      headerColor: 'linear-gradient(135deg, #fd7e14, #e55a00)',
+      desc: 'Acceso a dashboard, predicciones y reportes.',
+      perms: ['Dashboard', 'Predicciones', 'Reportes', 'Análisis']
+    },
+    'usuario_basico': {
+      title: 'Usuario Básico',
+      icon: 'bi-person',
+      headerColor: 'linear-gradient(135deg, #198754, #13653f)',
+      desc: 'Acceso limitado a consultas básicas.',
+      perms: ['Consulta básica', 'Historial personal']
+    }
+  };
+
+  const r = roles[role];
+  
+  // Actualizar header con color del rol
+  const header = document.getElementById('roleModalHeader');
+  header.style.background = r.headerColor;
+  
+  document.getElementById('roleIcon').className = `bi ${r.icon}`;
+  document.getElementById('roleTitle').textContent = r.title;
+  document.getElementById('roleDescText').textContent = r.desc;
+  
+  document.getElementById('rolePermissions').innerHTML = r.perms.map(p => 
+    `<span class="badge bg-light text-dark px-2 py-1" style="border-radius: 8px; font-size: 0.75rem; border: 1px solid #dee2e6;">
+       ${p}
+     </span>`
+  ).join('');
+  
+  new bootstrap.Modal(document.getElementById('roleDescModal')).show();
+}
+
+document.querySelectorAll('.role-badge').forEach(badge => {
+  badge.addEventListener('click', function() {
+    showRoleModal(this.getAttribute('data-role'), this.getAttribute('data-user'));
+  });
+});
+</script>
+
+
+{% endblock %}

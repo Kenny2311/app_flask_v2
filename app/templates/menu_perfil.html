@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block container_class %}container-fluid p-0{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+<!-- =========================================================
+     🟦 SIDEBAR CONFIGURACIÓN DE PERFIL
+     ========================================================= -->
+<aside class="menu-kfintech-sidebar">
+    <h2>CONFIGURACIÓN DE PERFIL</h2>
+
+    <!-- Opción 1: Datos personales -->
+    <a href="{{ url_for('usuarios.datos_personales') }}"
+       class="menu-kfintech-card {% if active_page == 'datos_personales' %}active{% endif %}">
+        <h3>➡️ Datos personales</h3>
+    </a>
+
+    <!-- Opción 2: Cambiar contraseña -->
+    <a href="{{ url_for('usuarios.cambiar_contrasena') }}"
+       class="menu-kfintech-card {% if active_page == 'cambiar_contrasena' %}active{% endif %}">
+        <h3>➡️ Cambiar contraseña</h3>
+    </a>
+
+    <!-- Opción 3: Cambiar correo -->
+    <a href="{{ url_for('usuarios.cambiar_correo') }}"
+       class="menu-kfintech-card {% if active_page == 'cambiar_correo' %}active{% endif %}">
+        <h3>➡️ Cambiar correo</h3>
+    </a>
+
+    <!-- Opción 4: Eliminar perfil -->
+    <a href="{{ url_for('usuarios.eliminar_perfil') }}"
+       class="menu-kfintech-card {% if active_page == 'eliminar_perfil' %}active{% endif %}">
+        <h3>➡️ Eliminar perfil</h3>
+    </a>
+
+</aside>
+
+<!-- =========================================================
+     📌 CONTENIDO PRINCIPAL
+     ========================================================= -->
+<main class="menu-kfintech-main">
+    {% block private_content %}
+    <h1 class="menu-kfintech-welcome-title text-center">
+        Configura tu perfil y ajusta tus preferencias
+    </h1>
+
+    <p class="menu-kfintech-welcome-subtitle text-center">
+        Selecciona una opción en el panel lateral para actualizar tu información
+    </p>
+
+    {% endblock %}
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const submenuContainers = document.querySelectorAll(".submenu-container");
+
+    submenuContainers.forEach(container => {
+        const toggle = container.querySelector(".submenu-toggle");
+        const submenu = container.querySelector(".submenu-items");
+        const activeLink = submenu.querySelector(".active-sub");
+
+        // Si alguna subopción ya es activa, abrir el submenú
+        if (activeLink) {
+            container.classList.add("open");
+        }
+
+        // Toggle manual al hacer clic en el título del submenú
+        toggle.addEventListener("click", (e) => {
+            // Evita que el clic en los enlaces cierre el menú
+            if (e.target.tagName.toLowerCase() === "a") return;
+            container.classList.toggle("open");
+        });
+    });
+});
+</script>
+
+{% endblock %}

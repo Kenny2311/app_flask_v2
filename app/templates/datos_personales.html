@@ -1,0 +1,143 @@
+{% extends "menu_perfil.html" %}
+
+{% block private_content %}
+
+<!--  Estilos personalizados -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base_perfil.css') }}">
+
+
+<div class="datos-personales-container">
+
+  <!-- Sidebar opciones historial -->
+    <h2 class="historial-basico-title bi-person"> Datos personales</h2>
+
+
+    <div id="datos-personales">
+
+            <!-- Bloque de información básica -->
+            <div class="datos-personales-principal">
+
+                <!-- Avatar o logo -->
+                <div class="datos-personales-logo">
+                    <i class="bi bi-person-fill fs-1 icon-morado"></i>
+                </div>
+
+                <!-- Información del usuario -->
+                <div class="datos-personales-info">
+
+                    <div class="fw-bold nombre-usuario">{{ session.get('nombres', '') }} {{ session.get('apellidos', '') }}</div>
+
+                    <div class="info-detalle">
+                        <i class="bi bi-credit-card me-2"></i> DNI: ****{{ usuario.dni[-4:] }}
+                    </div>
+
+                    <div class="info-detalle">
+                        <i class="bi bi-envelope me-2"></i> CORREO: {{ usuario.correo }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Formulario de edición -->
+            <form class="datos-personales-form" method="POST" action="{{ url_for('usuarios.datos_personales') }}">
+
+                <h5 class="datos-personales-titulo">Información Básica</h5>
+                <div class="datos-personales-grid">
+                    <div class="datos-personales-group">
+                        <label for="celular" class="datos-personales-label">Teléfono</label>
+                        <input type="text" id="celular" name="celular" value="{{ usuario.celular }}" class="datos-personales-control">
+                    </div>
+
+                    <div class="datos-personales-group">
+                        <label for="fecha_nacimiento" class="datos-personales-label">Fecha de nacimiento</label>
+                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ usuario.fecha_nacimiento }}" class="datos-personales-control">
+                    </div>
+
+                    <div class="datos-personales-group">
+                        <label for="direccion" class="datos-personales-label">Dirección</label>
+                        <input type="text" id="direccion" name="direccion" value="{{ usuario.direccion }}" class="datos-personales-control" placeholder="Opcional">
+                    </div>
+                </div>
+
+                {% if session.get('rol') in ['administrador', 'analista'] %}
+                    <h5 class="datos-personales-titulo mt-4">Información Financiera</h5>
+                    <div class="datos-personales-grid">
+                        <div class="datos-personales-group">
+                            <label for="num_cuenta" class="datos-personales-label">Número de cuenta bancaria</label>
+                            <input type="text" id="num_cuenta" name="num_cuenta" class="datos-personales-control" placeholder="Opcional">
+                        </div>
+
+                        <div class="datos-personales-group">
+                            <label for="tipo_cuenta" class="datos-personales-label">Tipo de cuenta</label>
+                            <select id="tipo_cuenta" name="tipo_cuenta" class="datos-personales-control">
+                                <option value="">Seleccione</option>
+                                <option value="ahorros">Ahorros</option>
+                                <option value="corriente">Corriente</option>
+                            </select>
+                        </div>
+
+                        <div class="datos-personales-group">
+                            <label for="moneda_preferida" class="datos-personales-label">Moneda preferida</label>
+                            <select id="moneda_preferida" name="moneda_preferida" class="datos-personales-control">
+                                <option value="">Seleccione</option>
+                                <option value="PEN">Soles (PEN)</option>
+                                <option value="USD">Dólares (USD)</option>
+                            </select>
+                        </div>
+
+                        <div class="datos-personales-group">
+                            <label for="ingreso_mensual" class="datos-personales-label">Ingreso mensual aproximado</label>
+                            <input type="number" id="ingreso_mensual" name="ingreso_mensual" class="datos-personales-control" placeholder="Opcional">
+                        </div>
+
+                        <div class="datos-personales-group">
+                            <label for="perfil_inversion" class="datos-personales-label">Perfil de inversión</label>
+                            <select id="perfil_inversion" name="perfil_inversion" class="datos-personales-control">
+                                <option value="">Seleccione</option>
+                                <option value="conservador">Conservador</option>
+                                <option value="moderado">Moderado</option>
+                                <option value="arriesgado">Arriesgado</option>
+                            </select>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="datos-personales-text-center">
+                    <button type="submit" class="btn btn-success">Guardar cambios</button>
+                </div>
+
+            </form>
+
+    </div>
+
+    <!-- Toast de aviso -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="avisoToast" class="toast align-items-center text-white bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+        <div class="toast-body">
+            ⚠️ Esta funcionalidad aún no está completa.
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    </div>    
+    
+</div>
+
+
+<!-- Script para el boton de guardar cambios -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const btnGuardar = document.querySelector('.datos-personales-text-center button');
+
+    btnGuardar.addEventListener('click', function(e) {
+        e.preventDefault(); // Evita que se envíe el formulario
+
+        // Inicializa el toast
+        const avisoToast = new bootstrap.Toast(document.getElementById('avisoToast'));
+        avisoToast.show();
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,2253 @@
+:root {
+    --morado-base: #6a1b9a;
+    --morado-oscuro: #4a0072;
+    --morado-claro: #9c4dcc;
+
+    --gris-texto: #555;
+    --gris-fondo: #f2f2f2;
+
+    --blanco: #ffffff;
+    --transparente: rgba(255, 255, 255, 0.15);
+}
+
+/* Navbar - barra de navegacion */
+.barra-navegacion-navbar-custom {
+  padding: 0.5rem 2rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nombre-pagina-text {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.registro-btn {
+  width: 120px;
+  background-color: var(--morado-base);
+  color: var(--blanco);
+  border: 1px solid var(--morado-oscuro);
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.registro-btn:hover {
+  background-color: var(--morado-base);
+  color: var(--blanco);
+  border-color: var(--morado-base);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.login-btn-outline {
+  color: var(--morado-base);
+  border-color: var(--morado-base);
+  transition: all 0.3s ease;
+}
+
+.login-btn-outline:hover,
+.login-btn-outline:focus {
+  background-color: var(--morado-base);
+  color: var(--blanco);
+  border-color: var(--morado-base);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.navbar-nav .nav-item {
+  margin: 0 0.2rem;
+}
+
+
+/* Espacio top para el body (Fondo despues de la barra de navegación) */
+body {
+  padding-top: 70px;
+  background-color: #ffffff; /* fondo general */
+}
+
+/* ====================== */
+/*  ESTILOS MEJORADOS NAV */
+/* ====================== */
+
+.user-autenticado-logo {
+  font-size: 4rem;
+  color: #495057;
+  margin-top: -2px;
+  display: block;
+}
+
+/* Hover del dropdown */
+#userDropdown:hover {
+  color: var(--morado-base);
+}
+
+/* Dropdown mejorado */
+.dropdown-menu {
+  border-radius: 12px;
+  padding: 0.5rem 0;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.dropdown-header {
+  padding-bottom: 0.8rem !important;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dropdown-item {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f5ff;
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS MENU PRINCIPAL KFINTECH
+   =========================================================================================================================================================================== */
+:root {
+    --morado-base: #6a1b9a;
+    --morado-oscuro: #4a0072;
+    --morado-claro: #9c4dcc;
+
+    --gris-texto: #555;
+    --gris-fondo: #f2f2f2;
+
+    --blanco: #ffffff;
+    --transparente: rgba(255, 255, 255, 0.15);
+}
+
+/* =========================================================
+   🟦 SIDEBAR LATERAL
+   ========================================================= */
+.menu-kfintech-sidebar {
+    position: fixed;
+    top: 65px; /* Debajo de tu navbar existente */
+    left: 0;
+    width: 350px;
+    height: calc(100vh - 65px);
+    background: linear-gradient(180deg, var(--morado-base), var(--morado-oscuro));
+    padding: 30px 20px;
+    color: var(--blanco);
+    overflow-y: auto;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+    z-index: 900;
+}
+
+.menu-kfintech-sidebar h2 {
+    font-size: 1rem;
+
+    margin-top: 15px;     /* más espacio arriba */
+    margin-bottom: 35px;  /* más espacio abajo */
+
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center; /* <-- AQUÍ */
+
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+}
+
+/* =========================================================
+   🔳 TARJETAS DEL MENÚ (menu-card)
+   ========================================================= */
+.menu-kfintech-card {
+    display: block;
+    background: var(--transparente);
+    border-radius: 5px;
+    padding: 12px 14px;
+    margin-bottom: 13px;
+    text-decoration: none;
+    color: var(--blanco);
+    backdrop-filter: blur(4px);
+    font-weight: bold;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.menu-kfintech-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(6px);
+}
+
+.menu-kfintech-card h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 400;
+}
+
+.menu-kfintech-card p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.menu-kfintech-card.active {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateX(6px);
+    border-left: 4px solid var(--blanco);
+}
+
+.menu-kfintech-card.active h3 {
+    color: var(--blanco);
+    font-weight: 500;
+}
+
+/* =========================================================
+   📌 CONTENIDO PRINCIPAL (menu-main)
+   ========================================================= */
+.menu-kfintech-main {
+    margin-left: 350px; /* igual al ancho del sidebar */
+    padding: 40px 40px;
+    min-height: calc(100vh - 70px); /* altura restante después de navbar */
+    background: var(--gris-fondo);
+    color: var(--gris-texto);
+    overflow: visible; /* no generar scroll adicional aquí */
+}
+
+/* =========================================================
+   🎉 PÁGINA DE BIENVENIDA / TEXTOS
+   ========================================================= */
+.menu-kfintech-welcome-container {
+    background: var(--blanco);
+    padding-top: calc(40px + 65px);
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    max-width: 900px;
+    margin: 0 auto; /* centra horizontalmente */
+    text-align: center; /* centra todos los textos dentro */
+}
+
+.menu-kfintech-welcome-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--morado-base);
+    margin-bottom: 20px; /* Ajusta el valor a tu gusto */
+}
+
+.menu-kfintech-welcome-subtitle {
+    font-size: 18px;
+    margin-top: -10px;
+    margin-bottom: 25px;
+    color: var(--gris-texto);
+}
+
+.menu-kfintech-welcome-banner {
+    background: var(--morado-claro);
+    color: var(--blanco);
+    padding: 25px;
+    border-radius: 14px;
+}
+
+.menu-kfintech-welcome-text {
+    margin: 0;
+    font-size: 16px;
+}
+
+
+
+/* =========================================================
+   SUBMENÚ AJUSTADO (más pequeño y claramente diferente)
+   ========================================================= */
+.submenu-toggle {
+    cursor: pointer;
+}
+
+.submenu-container .submenu-items {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+}
+
+/* Submenú ABIERTO */
+.submenu-container.open .submenu-items {
+    max-height: 200px;
+    opacity: 1;
+    margin-bottom: 15px;
+}
+
+/* OPCIONES DEL SUBMENÚ */
+.submenu-container .submenu-items a {
+    font-size: 13px; 
+    padding: 7px 12px; 
+    border-radius: 5px;
+
+    /* 🔥 Fondo diferente al menú principal */
+    background: rgba(0, 0, 0, 0.28); /* más oscuro y distinguible */
+    
+    /* 🟣 Tonalidad morada en hover / activo */
+    color: rgba(255, 255, 255, 0.85);
+
+    border-left: 3px solid transparent;
+
+    margin-left: 14px; /* INDENTACIÓN REAL */
+    text-decoration: none;
+
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover */
+.submenu-container .submenu-items a:hover {
+    background: (0, 0, 0, 0.28);
+    color: rgb(229, 22, 248);
+    border-left-color: var(--morado-claro);
+    text-decoration: underline; /* SUBRAYADO al pasar el mouse */
+}
+
+/* Activo */
+.submenu-container .submenu-items .active-sub {
+    
+    border-left-color: var(--morado-base) !important;
+    color: rgb(229, 22, 248);
+    font-weight: 500;
+    text-decoration: underline !important; /* SUBRAYADO para la opción activa */
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS PREDICCION COMPLETO Y BASICO
+   =========================================================================================================================================================================== */
+:root {
+    --primary: var(--morado-base);
+    --primary-dark: var(--morado-oscuro);
+    --primary-light: var(--morado-claro);
+
+    --bg-light: var(--gris-fondo);
+    --text-dark: var(--gris-texto);
+    --white: var(--blanco);
+
+    --radius: 14px;
+    --shadow: 0 4px 14px rgba(0,0,0,0.12);
+    --shadow-focus: 0 0 0 4px rgba(156, 39, 176, 0.25);
+}
+
+/* =========================================================
+   📌 CONTENEDOR DEL FORMULARIO
+   ========================================================= */
+.prediccion-container {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* =========================================================
+   🏷️ TÍTULO PRINCIPAL
+   ========================================================= */
+.prediccion-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+/* =========================================================
+   📋 TARJETA DEL FORMULARIO
+   ========================================================= */
+.prediccion-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 22px;
+    padding: 35px;
+
+    background: var(--white);
+    border-radius: 5px;
+    /*border-left: 6px solid var(--primary-light);*/
+    box-shadow: var(--shadow);
+
+    animation: slideIn 0.4s ease;
+}
+
+/* =========================================================
+   ✏️ GRUPO INPUT (estilo moderno con labels flotantes)
+   ========================================================= */
+/* Contenedor general */
+.prediccion-form-group.floating {
+    position: relative;
+    margin-bottom: 22px;
+}
+
+/* Ícono dentro del campo */
+.prediccion-input-icon {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #6b6b6b;
+    pointer-events: none;
+}
+
+/* Input adaptado a tu clase real */
+.prediccion-form-control.form-input {
+    width: 100%;
+    padding: 14px 14px 14px 40px; /* espacio para el ícono */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    background: white;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+/* Borde activo */
+.prediccion-form-control.form-input:focus {
+    border-color: var(--morado-base);
+}
+
+/* Label flotante */
+.prediccion-form-label {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 5px;
+    transition: 0.25s ease;
+    color: #7a7a7a;
+    pointer-events: none;
+}
+
+/* Al escribir o enfocar → flota arriba */
+.prediccion-form-control.form-input:focus + .prediccion-form-label,
+.prediccion-form-control.form-input:not(:placeholder-shown) + .prediccion-form-label {
+    top: -6px;
+    font-size: 13px;
+    color: var(--morado-base);
+}
+
+/* Feedback */
+.prediccion-invalid-feedback {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #ff4d4d;
+}
+
+/* =========================================================
+   🎯 BOTONES DE LA OPCION REALIZAR PREDICCION
+   ========================================================= */
+/* Contenedor de botones centrado dentro del formulario */
+.prediccion-botones-container {
+    grid-column: span 2;      /* ocupa las 2 columnas del grid */
+    display: flex;
+    justify-content: center;   /* centra horizontalmente */
+    gap: 15px;                 /* espacio entre botones */
+    margin-top: 25px;          /* separación con el resto del formulario */
+}
+
+/* Botón Evaluarme */
+.prediccion-btn-evaluar {
+    min-width: 250px;
+    padding: 10px 20px;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius:5px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prediccion-btn-evaluar:hover {
+    background-color: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.prediccion-btn-evaluar:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow);
+}
+
+/* Botón Limpiar */
+.prediccion-btn-limpiar {
+    min-width: 250px;
+    padding: 10px 20px;
+    background-color: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prediccion-btn-limpiar:hover {
+    background-color: #495057;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.prediccion-btn-limpiar:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow);
+}
+
+
+/* =========================================================
+   EVITA QUE EL FORMULARIO SALTE AL VALIDAR
+   ========================================================= */
+/* evita que el campo se deforme al aparecer un error */
+.prediccion-invalid-feedback-custom {
+    font-size: 13px;
+    color: #d9534f;
+    margin-top: 4px;
+    display: none;
+    min-height: 18px; /* deja un espacio fijo para no mover nada */
+}
+
+/* Input inválido */
+.prediccion-form-control.form-input.is-invalid {
+    border-color: #d9534f !important;
+}
+
+
+/* input válido */
+.prediccion-form-control.form-input.is-valid {
+    border-color: #28a745 !important;
+}
+
+.prediccion-form-group {
+    position: relative;
+}
+
+.form-group .invalid-feedback {
+    position: absolute;
+    left: 0;
+    bottom: -18px;  /* Ajusta según lo alto que quieras el mensaje */
+    font-size: 12px;
+    color: #ff4d4d;
+    display: none;   /* Oculto por defecto */
+}
+
+.prediccion-form-control.is-invalid ~ .prediccion-invalid-feedback {
+    display: block; /* Se muestra cuando hay error */
+}
+
+/* ======== CENTRAR VERTICALMENTE EL TEXTO EN TODOS LOS INPUTS ======== */
+/* ===============================
+   🔥 FIX DEFINITIVO PARA INPUTS
+   =============================== */
+/* Altura fija y centrado vertical */
+.prediccion-form-control.form-input {
+    height: 48px;
+    padding: 12px 14px 12px 40px; /* Respeta tu icono */
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Para SELECT también centrado */
+select.prediccion-form-control.form-input {
+    padding-left: 40px; /* icono */
+    padding-right: 14px;
+    line-height: 48px; 
+}
+
+/* Evita que el mensaje rojo mueva el input */
+.prediccion-form-group {
+    position: relative;
+    margin-bottom: 35px; /* espacio fijo */
+}
+
+/* Mensajes de error siempre ocupan el mismo espacio */
+.prediccion-invalid-feedback,
+.prediccion-invalid-feedback-custom {
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    font-size: 12px;
+    display: none;
+    color: #ff4d4d;
+    min-height: 15px;
+}
+
+/* Cuando hay error */
+.prediccion-form-input.is-invalid ~ .prediccion-invalid-feedback,
+.prediccion-form-input.is-invalid ~ .prediccion-invalid-feedback-custom {
+    display: block;
+}
+
+
+/* ===============================
+   🔹 FIX PARA SELECTS CON LABEL FLOTANTE
+   =============================== */
+select.prediccion-form-control.form-input {
+    height: 48px;
+    padding-left: 40px; /* espacio para icono */
+    padding-right: 14px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    -webkit-appearance: none; /* quitar estilo por defecto en Safari/Chrome */
+    -moz-appearance: none;    /* Firefox */
+    appearance: none;
+    background: white url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='70,105 140,35 0,35' fill='%237a7a7a'/%3E%3C/svg%3E") no-repeat right 12px center;
+    background-size: 12px;
+}
+
+/* Mantener label flotante */
+.prediccion-form-control.form-input:focus + .prediccion-form-label,
+.prediccion-form-control.form-input:not(:placeholder-shown) + .prediccion-form-label {
+    top: -6px;
+    font-size: 13px;
+    color: var(--morado-base);
+}
+
+/* Mensaje de error siempre ocupa el mismo espacio */
+.prediccion-form-group .invalid-feedback {
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    font-size: 12px;
+    color: #ff4d4d;
+    display: none;
+    min-height: 15px;
+}
+
+/* Mostrar mensaje de error */
+.prediccion-form-control.is-invalid ~ .prediccion-invalid-feedback {
+    display: block;
+}
+
+select.prediccion-form-control option[value=""] {
+    color: #aaa; /* gris tenue */
+}
+select.prediccion-form-control:focus option[value=""] {
+    color: #000; /* al enfocar desaparece efecto */
+}
+
+
+/* ==========================
+   CARGA DE ARCHIVO CSV
+========================== */
+/* Contenedor */
+.csv-upload-container {
+    background: #f0f4ff;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #d1ddff;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Label bonito */
+.csv-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+/* Input mejorado */
+.csv-input {
+    background: white;
+    border: 1px solid #b5c3ff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    width: 260px;
+    cursor: pointer;
+}
+
+.csv-input:hover {
+    border-color: #9c00c4;
+}
+
+/* Botón elegante */
+.btn-csv {
+    background: #9303a0;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-csv:hover {
+    background: #d401e7;
+}
+
+/* Campo de infocor*/
+.form-control-checkbox {
+  transform: scale(1.2);
+  margin-right: 20px;
+}
+
+
+/* ============================
+   MODAL PERSONALIZADO
+=============================*/
+.modal-evaluacion {
+    border-radius: var(--radius);
+    background: var(--white);
+    box-shadow: var(--shadow);
+    border: none;
+}
+
+/* HEADER */
+.modal-evaluacion-header {
+    background: var(--primary);
+    color: var(--white) !important;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+    padding: 15px 20px;
+}
+
+/* BODY */
+.modal-evaluacion-body {
+    padding: 25px;
+    color: var(--text-dark);
+}
+
+/* Ítems */
+.modal-item {
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+.modal-item .label {
+    font-weight: 600;
+    color: var(--primary-dark);
+    display: block;
+}
+
+.modal-item .value {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+/* Probabilidad destacada */
+.modal-probabilidad {
+    background: var(--primary);
+    padding: 12px 15px;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    color: var(--white);
+    margin: 15px 0;
+}
+
+/* Línea suave */
+.modal-evaluacion-body hr {
+    border: none;
+    height: 1px;
+    background: rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+/* Botón cerrar personalizado */
+.btn-close {
+    color: orange; /* color de la X */
+    filter: none;  /* quitar invert/brightness */
+}
+
+
+/* VALIDACION DE EXISTENCIA DE SOLICITANTE*/
+.input-readonly {
+    background-color: #f2f2f2 !important;
+    cursor: not-allowed;
+}
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS HISTORIAL DE EVALUACIONES
+   =========================================================================================================================================================================== */
+:root {
+    --primary: var(--morado-base);
+    --primary-dark: var(--morado-oscuro);
+    --primary-light: var(--morado-claro);
+
+    --bg-light: var(--gris-fondo);
+    --text-dark: var(--gris-texto);
+    --white: var(--blanco);
+
+    --radius: 14px;
+    --shadow: 0 4px 14px rgba(0,0,0,0.12);
+    --shadow-focus: 0 0 0 4px rgba(156, 39, 176, 0.25);
+}
+
+/* =========================================================
+   🎯 CONTENEDOR PRINCIPAL
+   ========================================================= */
+.historial-basico-container {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* Título principal */
+.historial-basico-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+/* Descripción debajo del título */
+.historial-basico-container p {
+  color: var(--text-dark);
+  margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   ESTILOS DE FILTROS PARA BUSQUEDAS DE EVALUACIONES
+   ========================================================= */
+/* Bloques */
+.filtro-card-custom, .table-responsive, .info-box {
+  background: #ffffff;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+  padding: 10px 25px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+}
+
+.filtro-card-custom:hover, .table-responsive:hover, .info-box:hover {
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  border: 1px solid #bac8d6;
+}
+
+
+/* Tablas modernas */
+.filtros-table-custom {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.filtros-table-custom th,
+.filtros-table-custom td {
+  vertical-align: middle !important;
+  padding: 12px 16px;
+}
+
+.filtros-table-custom th {
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.filtros-table-custom td {
+  border-bottom: 1px solid #e9ecef;
+  color: #333;
+}
+
+.filtros-table-custom tr:last-child td {
+  border-bottom: none;
+}
+
+.filtros-table-custom th.text-center,
+.filtros-table-custom td.text-center {
+  text-align: center;
+}
+
+.filtros-table-custom th.text-start,
+.filtros-table-custom td.text-start {
+  text-align: left;
+}
+
+
+/* Evita que el body cambie de ancho al abrir modal */
+body.modal-open {
+    padding-right: 0 !important;  /* Evita que se agregue padding al abrir modal */
+    overflow: hidden;             /* Evita scroll en el body, solo el modal scrollea */
+    font-size: 1rem !important;  /* Forzar que el font-size no cambie */
+}
+
+/* Modal más alto */
+#modalReporte .modal-dialog {
+    max-height: 90vh; /* altura máxima 90% de la ventana */
+    margin: 1.5rem auto; /* margen superior e inferior */
+}
+#modalReporte .modal-content {
+    height: 100%; /* ocupa toda la altura del modal-dialog */
+}
+
+/* El body se hace scrollable si el contenido es grande */
+#modalReporte .modal-body {
+    overflow-y: auto;
+    max-height: calc(90vh - 120px); /* altura disponible menos header/footer */
+}
+
+
+/* =========================================================
+   🔄 BOTÓN CSV
+   ========================================================= */
+/* Contenedor del botón CSV */
+.historial-csv-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+    margin-top: -70px; /* súbelo más según necesites */
+    gap: 12px; /* espacio entre botones si agregas más */
+}
+
+/* Botón CSV estilo moderno */
+.historial-btn-csv {
+    display: inline-block;
+    background-color: #4CAF50; /* verde moderno */
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.historial-btn-csv:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+.historial-btn-csv:active {
+    transform: scale(1);
+}
+
+.historial-btn-csv:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================================================
+   📋 FILTROS DE HISTORIAL COMPLETO
+   ========================================================= */
+/* Contenedor del formulario de filtros */
+#formBuscarPrediccionesCompleto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Inputs de texto y fecha */
+#formBuscarPrediccionesCompleto input[type="text"],
+#formBuscarPrediccionesCompleto input[type="date"],
+#formBuscarPrediccionesCompleto select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+
+}
+
+#formBuscarPrediccionesCompleto input[type="text"]:focus,
+#formBuscarPrediccionesCompleto input[type="date"]:focus,
+#formBuscarPrediccionesCompleto select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+}
+
+/* Botones */
+#formBuscarPrediccionesCompleto button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#formBuscarPrediccionesCompleto button[type="submit"] {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+#formBuscarPrediccionesCompleto button[type="submit"]:hover {
+    background-color: var(--primary-light);
+}
+
+#formBuscarPrediccionesCompleto button#btnLimpiarFiltros {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+#formBuscarPrediccionesCompleto button#btnLimpiarFiltros:hover {
+    background-color: #495057;
+}
+
+/* Responsive: que se adapte en móviles */
+@media (max-width: 768px) {
+    #formBuscarPrediccionesCompleto {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #formBuscarPrediccionesCompleto input,
+    #formBuscarPrediccionesCompleto select,
+    #formBuscarPrediccionesCompleto button {
+        width: 100%;
+    }
+}
+
+
+
+/* =========================================================
+   📋 TABLA PRINCIPAL
+   ========================================================= */
+/* Contenedor exclusivo de la tabla */
+.historial-tabla-contenedor {
+    max-height: 660px;        /* ajusta la altura que quieras para el scroll */
+    height: 710px;    
+    overflow: hidden;         /* evita que se desborde */
+    border-radius: 5px;
+    box-shadow: var(--shadow);     
+}
+
+/* Wrapper con scroll vertical y horizontal solo para la tabla */
+.historial-tabla-wrapper {
+    width: 100%;
+    height: 100%;            /* rellena el contenedor */
+    overflow-x: auto;        /* scroll horizontal */
+    overflow-y: auto;        /* scroll vertical */
+
+    scrollbar-width: auto;   /* Firefox */
+    scrollbar-color: #888 #f1f1f1;
+}
+
+
+/* Scrollbar en Chrome, Edge, Safari */
+.historial-tabla-wrapper::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.historial-tabla-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.historial-tabla-wrapper::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 3px solid #f1f1f1;
+}
+
+.historial-tabla-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* Tabla */
+.historial-table {
+    width: max-content;
+    border-collapse: collapse;
+}
+
+/* Sticky header */
+.historial-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--primary);
+    color: #fff;
+    z-index: 2;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Celdas */
+.historial-table th,
+.historial-table td {
+    padding: 12px 14px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+/* Hover en filas */
+.historial-table tbody tr:hover {
+    background: #e6d4f5;
+}
+
+
+/* =========================================================
+   NIVELES DE RIESGO
+   ========================================================= */
+/* Etiquetas de nivel de riesgo */
+.historial-riesgo-label {
+    display: flex;       /* permite centrar vertical y horizontalmente */
+    justify-content: center;    /* centra horizontal */
+    align-items: center;        /* centra vertical */
+    width: 100%;  /* ocupa todo el td */
+    height: 100%; /* ocupa toda la altura de la fila */
+    padding: 5px 0;        /* agrega altura vertical interna */
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.historial-riesgo-label-other {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;  /* ocupa todo el td */
+    height: 100%; /* ocupa toda la altura de la fila */
+    border-radius: 0; /* opcional */
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.historial-riesgo-alta {
+    background-color: #ff4d4f;
+}
+
+.historial-riesgo-medio {
+    background-color: #faad14;
+}
+
+.historial-riesgo-bajo {
+    background-color: #52c41a;
+}
+
+
+/*ESTILO PARA RESUMEN DE EVALUACIONES EN FILTRO*/
+/* Contenedor general del resumen */
+#resumen-estadisticas.sidebar-summary {
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Título del resumen */
+#resumen-estadisticas .summary-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+/* Cada bloque de resumen */
+#resumen-estadisticas .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #f8f9fa;
+    margin-bottom: 12px;
+    transition: box-shadow 0.2s ease;
+}
+
+#resumen-estadisticas .summary-item:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Texto del bloque */
+#resumen-estadisticas .summary-item .text-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Etiquetas */
+#resumen-estadisticas .label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+/* Métricas */
+#resumen-estadisticas .metric-block {
+    display: flex;
+    gap: 6px;
+    font-size: 0.95rem;
+}
+
+#resumen-estadisticas .metric-title {
+    font-weight: 500;
+}
+
+#resumen-estadisticas .metric-value,
+#resumen-estadisticas .metric-prob {
+    font-weight: 600;
+}
+
+/* Iconos */
+#resumen-estadisticas i.fs-3 {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+/* Colores según riesgo */
+.summary-item.low {
+    border-left: 4px solid #28a745;
+}
+.summary-item.medium {
+    border-left: 4px solid #ffc107;
+}
+.summary-item.high {
+    border-left: 4px solid #dc3545;
+}
+
+/* Opcional: reducir altura de modal vertical */
+.modal-dialog.modal-lg {
+    max-width: 650px;
+}
+.modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS DASHBOARD
+   =========================================================================================================================================================================== */
+:root {
+    --primary: var(--morado-base);
+    --primary-dark: var(--morado-oscuro);
+    --primary-light: var(--morado-claro);
+
+    --bg-light: var(--gris-fondo);
+    --text-dark: var(--gris-texto);
+    --white: var(--blanco);
+
+    --radius: 14px;
+    --shadow: 0 4px 14px rgba(0,0,0,0.12);
+    --shadow-focus: 0 0 0 4px rgba(156, 39, 176, 0.25);
+}
+
+/* =========================================================
+   📌 CONTENEDOR DEL DASHBOARD
+   ========================================================= */
+.dashboard-container {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* Título principal */
+.dashboard-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+/* Descripción debajo del título */
+.dashboard-container p {
+  color: var(--text-dark);
+  margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   📌 ESTILOS DE LAS TARJETAS DE DASHBOARD
+   ========================================================= */
+/* Contenedor principal para la cuadrícula de tarjetas */
+.dashboard-grid {
+  display: grid;
+  /* Crea 4 columnas de igual ancho, ajustándose automáticamente al tamaño */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px; /* Espacio entre las tarjetas */
+  margin-bottom: 30px; /* Separación del contenido inferior */
+}
+
+/* Estilo para cada tarjeta de métrica */
+.dashboard-card {
+  display: flex; /* Para alinear el ícono y el contenido */
+  align-items: center;
+  padding: 20px;
+  border-radius: var(--radius); /* Usa la variable de radio */
+  box-shadow: var(--shadow); /* Usa la variable de sombra */
+  background-color: var(--white); /* Fondo de la tarjeta en blanco */
+  border: 1px solid var(--bg-light); /* Borde sutil */
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px); /* Pequeño efecto de elevación al pasar el ratón */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Sombra un poco más profunda en hover */
+}
+
+/* Contenedor del ícono */
+.dashboard-icon {
+  margin-right: 20px;
+  padding: 12px;
+  border-radius: 50%;
+  
+  /* Color de fondo y texto base del ícono usando el color primario */
+  background-color: var(--primary-light); 
+  color: var(--primary-dark); 
+  
+  font-size: 1.8rem; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Colores específicos para los íconos (Ejemplos usando variantes de color) */
+/* 1. Predicciones Totales: Éxito (Verde/Base) */
+.dashboard-card:nth-child(1) .dashboard-icon { 
+  background-color: #e6f7ff; /* Azul Claro para Total */
+  color: #1890ff; 
+}
+
+/* 2. Predicciones del Mes: Advertencia (Naranja) */
+.dashboard-card:nth-child(2) .dashboard-icon { 
+  background-color: #fffbe6;
+  color: #faad14;
+}
+
+/* 3. Promedio de Riesgo: Peligro (Rojo) */
+.dashboard-card:nth-child(3) .dashboard-icon { 
+  background-color: #fff1f0;
+  color: #ff4d4f;
+}
+
+/* 4. Última Predicción: Información (Primario/Morado) */
+.dashboard-card:nth-child(4) .dashboard-icon { 
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+
+/* Contenedor de la información (texto y valores) */
+.dashboard-info {
+  line-height: 1.2;
+}
+
+.dashboard-info h6 {
+  margin-bottom: 3px;
+  color: var(--text-dark); /* Subtítulo con el color de texto oscuro */
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.dashboard-info h3 {
+  margin: 0;
+  color: var(--text-dark); /* Valor principal con el color de texto oscuro */
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* Estilo para el texto "Sin predicciones registradas" */
+.dashboard-small-text {
+  font-size: 1rem !important; 
+  color: var(--text-dark) !important;
+  opacity: 0.6;
+}
+
+/* =========================================================
+   📌 DASHBOARD CHARTS GRID & CARDS
+   ========================================================= */
+
+/* Contenedor principal para la cuadrícula de gráficos */
+.dashboard-charts-grid {
+  display: grid;
+  /* Define una cuadrícula con dos columnas de igual ancho (1fr) */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px; /* Espacio entre los gráficos */
+  margin-bottom: 30px;
+}
+
+/* Estilo para el contenedor de cada gráfico */
+.dashboard-chart-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--bg-light); /* Borde sutil */
+}
+
+/* Cabecera del gráfico */
+.dashboard-chart-header {
+  margin-bottom: 15px;
+}
+
+.dashboard-chart-header h6 {
+  font-weight: 600;
+  color: var(--text-dark); /* Título del gráfico */
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.dashboard-chart-header p {
+  color: var(--text-dark);
+  opacity: 0.7;
+  font-size: 0.85rem;
+  margin: 5px 0 0 0;
+}
+
+/* Cuerpo del gráfico */
+.dashboard-chart-body {
+  /* Estilo base, ajustado por clases auxiliares */
+}
+
+/* 1. Estilo para centrar el gráfico (típicamente de torta o dona) */
+.dashboard-chart-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 2. Estilo para el gráfico de tendencia (primera fila) */
+.dashboard-chart-trend {
+  /* Altura fija para gráficos de línea o barra en la parte superior */
+  height: 300px; 
+}
+
+/* 3. Estilo para los gráficos de la fila inferior */
+.dashboard-chart-tall {
+  /* Altura mayor para gráficos con más datos o más descripción */
+  height: 380px;
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS GESTION DE ROLES ADMINISTRADOR
+   =========================================================================================================================================================================== */
+:root {
+    --primary: var(--morado-base);
+    --primary-dark: var(--morado-oscuro);
+    --primary-light: var(--morado-claro);
+
+    --bg-light: var(--gris-fondo);
+    --text-dark: var(--gris-texto);
+    --white: var(--blanco);
+
+    --radius: 14px;
+    --shadow: 0 4px 14px rgba(0,0,0,0.12);
+    --shadow-focus: 0 0 0 4px rgba(156, 39, 176, 0.25);
+}
+
+/* =========================================================
+   📌 CONTENEDOR DE GESTION DE ROLES
+   ========================================================= */
+.gestion-roles-container {
+    padding: 10px 10px;
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px); /* altura restante después de navbar */
+}
+
+/* Título principal */
+.gestion-roles-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 30px;
+    padding-left: 14px;
+    border-left: 6px solid var(--primary-light);
+    letter-spacing: 0.3px;
+}
+
+/* Descripción debajo del título */
+.dashboard-container p {
+  color: var(--text-dark);
+  margin-bottom: 20px;
+}
+
+/* =========================================================
+    ESTILO DEL ROL PRINCIPAL
+   ========================================================= */
+/* Tarjeta del admin */
+.admin-card {
+    background-color: color-mix(in srgb, var(--morado-base) 85%, var(--morado-claro));
+    color: var(--blanco);
+    padding: 22px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Círculo decorativo */
+.admin-card::before {
+    content: "";
+    position: absolute;
+    top: -25px;
+    right: -25px;
+    width: 110px;
+    height: 110px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+}
+
+/* Header */
+.admin-card__header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Avatar */
+.admin-card__avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: var(--white);
+    border: 2px solid rgba(255,255,255,0.25);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+/* Nombre + badge */
+.admin-card__name-role {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-card__name {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* Badge principal */
+.admin-card__badge-principal {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    font-weight: 600;
+}
+
+/* Admin subtitle */
+.admin-card__subtitle {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+/* Badge del rol */
+.admin-card__role {
+    margin-left: auto;
+    background: rgba(255,255,255,0.9);
+    color: var(--primary-dark);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+}
+
+.icon-star {
+    color: #ffc107;
+}
+
+/* Body */
+.admin-card__body {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    position: relative;
+    z-index: 2;
+}
+
+/* Texto descriptivo */
+.admin-card__description {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+/* Tags */
+.admin-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-tag {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.73rem;
+    border: 1px solid rgba(255,255,255,0.2);
+    font-weight: 500;
+}
+
+
+/* =========================================================
+   📋 TABLA PRINCIPAL ROLES
+   ========================================================= */
+/*Barra de busqueda de rol de usuario*/   
+.gestion-roles-barra {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.gestion-roles-barra__search {
+  flex: 1; /* Hace que el input ocupe más espacio */
+}
+
+.gestion-roles-barra__input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.gestion-roles-barra__input:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+  outline: none;
+}
+
+.gestion-roles-barra__filter {
+  min-width: 180px;
+}
+
+.gestion-roles-barra__select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.gestion-roles-barra__select:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 5px rgba(13, 110, 253, 0.5);
+  outline: none;
+}
+
+/*TABLA DE RESULTADOS DE ROLES*/
+/* Contenedor general de la tabla */
+
+/* Filas */
+.gestion-roles-tabla__body tr {
+  border-bottom: 1px solid #dee2e6;
+  transition: background 0.3s;
+}
+
+.gestion-roles-tabla__body tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* User info */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-initial {
+  width: 32px;
+  height: 32px;
+  background-color: var(--morado-claro);;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+  .role-badge {
+      display: inline-flex;            /* Flex para centrar icono + texto */
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;               /* mismo ancho para todos */
+      height: 36px;                    /* mismo alto */
+      padding: 0 12px;                 /* padding horizontal */
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .role-badge[data-role="administrador"] {
+      background: #dc3545;
+  }
+
+  .role-badge[data-role="analista"] {
+      background: #fd7e14;
+  }
+
+  .role-badge[data-role="usuario_basico"] {
+      background: #198754;
+  }
+
+
+/* Formularios y botones */
+.form-rol__select {
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.form-rol__btn, .form-eliminar__btn {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+
+
+
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS ESTADO DE MODELO
+   =========================================================================================================================================================================== */
+/* =========================================================
+   🎯 CONTENEDOR PRINCIPAL - RENDIMIENTO DEL MODELO
+   ========================================================= */
+.estado-container {
+    padding: 10px 10px; /* más padding lateral */
+    background: var(--bg-light);
+    min-height: calc(100vh - 150px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Contenido principal */
+.contenido-modelo {
+    width: 100%;
+    margin: 0 auto;    /* centrar en la página */
+}
+
+/* Encabezado de sección más ancho */
+.seccion-header {
+    background-color: var(--morado-base);
+    color: var(--blanco);
+    padding: 20px 20px; /* aumentar padding */
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 25px;
+
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Título */
+.seccion-header h4 {
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.4rem; /* más grande */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Alertas */
+.alertas-container {
+    margin-bottom: 20px;
+}
+
+.alerta-ok {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 10px;
+    color: #155724;
+    background-color: #d4edda;
+    border-radius: 5px;
+    border: 1px solid #c3e6cb;
+    text-align: center;
+}
+
+.alerta-rendimiento {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 10px;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+}
+
+.alerta-error {
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 10px;
+    color: #721c24;
+    background-color: #f8d7da;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+}
+
+/* Métricas */
+.metricas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    background-color: var(--blanco);
+    border-radius: 5px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.metric-card h5 {
+    margin-bottom: 10px;
+    color: var(--morado-base);
+    font-weight: bold;
+}
+
+.metric-card p {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Botón de descarga */
+.descarga-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-descargar {
+    display: inline-flex;
+    align-items: center;
+    background-color: #dc3545;
+    color: var(--blanco);
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-weight: 400;
+    transition: background-color 0.2s;
+}
+
+.btn-descargar i {
+    margin-right: 5px;
+}
+
+.btn-descargar:hover {
+    background-color: #c82333;
+}
+
+
+/* =========================================================
+   🎯 CONTENEDOR - TARJETA DE DATOS DEL MODELO ACTUAL
+   ========================================================= */
+
+/* TARJETA - mismo ancho y padding que .seccion-header */
+.modelo-datos-card {
+    width: 100%;
+    max-width: 100%;          /* ocupa todo el ancho del contenedor padre */
+    background-color: var(--blanco);
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 25px 30px;       /* igual que .seccion-header */
+    box-sizing: border-box;
+    margin-bottom: 25px;      /* mismo margen inferior */
+}
+
+
+/* Contenido interno */
+.modelo-datos-card p {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--gris-texto);
+}
+
+.modelo-datos-card h6 {
+    font-weight: 700;
+    font-size: 1rem; /* tamaño más sobresaliente */
+    margin-top: 20px;   /* más espacio arriba */
+    margin-bottom: 20px; /* más espacio abajo */
+    color: var(--morado-base);
+    letter-spacing: 0.5px; /* opcional, para resaltar */
+}
+
+
+
+
+
+
+
+
+/* ===========================================================================================================================================================================
+   🌈 VARIABLES K-FINTECH (hereda del menú) - ESTILOS REPORTE DE PREDICCION - VER DETALLE OPCION
+   =========================================================================================================================================================================== */
+/* --------------------------
+   VARIABLES DE COLOR
+--------------------------- */
+:root {
+    --primary-reporte: #0057D9;
+    --primary-light-reporte: #E5F0FF;
+
+    --success-reporte: #1EAC45;
+    --success-bg-reporte: #E6F8EC;
+
+    --warning-reporte: #E5A300;
+    --warning-bg-reporte: #FFF4D4;
+
+    --danger-reporte: #D9363E;
+    --danger-bg-reporte: #FFE5E6;
+
+    --text-dark-reporte: #222;
+    --text-light-reporte: #666;
+
+    --card-bg-reporte: #fff;
+    --border-color-reporte: #ddd;
+
+    --font-main-reporte: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f5f7fa;
+    font-family: var(--font-main-reporte);
+    color: var(--text-dark-reporte);
+}
+
+/* --------------------------
+   ESTILO BASE
+--------------------------- */
+
+.container-reporte {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+/* --------------------------
+   HEADER
+--------------------------- */
+.header-reporte {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.header-reporte h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-reporte);
+    margin-bottom: 10px;
+}
+
+.header-reporte h2 {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-light-reporte);
+}
+
+/* --------------------------
+   BOTONES / ACTIONS
+--------------------------- */
+.actions-reporte {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.btn-reporte {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-reporte);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.btn-reporte:hover {
+    background: #003f9d;
+}
+
+.btn-danger-reporte {
+    background: var(--danger-reporte);
+}
+
+.btn-danger-reporte:hover {
+    background: #a8282e;
+}
+
+.btn-success-reporte {
+    background: var(--success-reporte);
+}
+
+.btn-success-reporte:hover {
+    background: #178d37;
+}
+
+/* --------------------------
+   SECTIONS
+--------------------------- */
+.section-reporte {
+    margin-bottom: 35px;
+}
+
+.section-title-reporte {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary-reporte);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --------------------------
+   CARDS
+--------------------------- */
+.card-reporte {
+    background: var(--card-bg-reporte);
+    border: 1px solid var(--border-color-reporte);
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 22px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-header-reporte {
+    background: var(--primary-light-reporte);
+    color: var(--primary-reporte);
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-body-reporte {
+    padding: 18px;
+}
+
+/* --------------------------
+   GRID INFO
+--------------------------- */
+.info-grid-reporte {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 25px;
+}
+
+.info-label-reporte {
+    font-weight: 600;
+    color: var(--text-dark-reporte);
+}
+
+.info-value-reporte {
+    color: var(--text-light-reporte);
+}
+
+.info-item-reporte {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --------------------------
+   STATUS BADGES
+--------------------------- */
+.status-indicator-reporte {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-active-reporte {
+    background: var(--danger-bg-reporte);
+    color: var(--danger-reporte);
+}
+
+.status-inactive-reporte {
+    background: var(--success-bg-reporte);
+    color: var(--success-reporte);
+}
+
+/* --------------------------
+   RESULTADO DESTACADO
+--------------------------- */
+.highlight-reporte {
+    background: #f6f9ff;
+    border-left: 4px solid var(--primary-reporte);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+/* Tarjeta de resumen del resultado */
+.result-card-wrapper-reporte {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* COLORES DINÁMICOS DEL CARD */
+.risk-high-reporte-bg { background: var(--danger-reporte); }
+.risk-medium-reporte-bg { background: var(--warning-reporte); }
+.risk-low-reporte-bg { background: var(--success-reporte); }
+
+/* COLOR DEL TEXTO DE PROBABILIDAD */
+.risk-high-reporte-color { color: #fff !important; }
+.risk-medium-reporte-color { color: #fff !important; }
+.risk-low-reporte-color { color: #fff !important; }
+
+/* --------------------------
+   PROBABILIDAD
+--------------------------- */
+.probability-value-reporte {
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.probability-label-reporte {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+/* --------------------------
+   BADGE DE RIESGO
+--------------------------- */
+.risk-badge-reporte {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+}
+
+.risk-high-reporte {
+    background: #b81925;
+}
+
+.risk-medium-reporte {
+    background: #d79000;
+}
+
+.risk-low-reporte {
+    background: #148c34;
+}
+
+/* --------------------------
+   FOOTER
+--------------------------- */
+.footer-reporte {
+    text-align: center;
+    margin-top: 45px;
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+/* --------------------------
+   IMPRESIÓN (PDF & PRINT)
+--------------------------- */
+@media print {
+    /* Ocultar todo lo que no sea el modal o reporte */
+    body * {
+        visibility: hidden; /* Oculta todo */
+    }
+
+    #modalReporte, #modalReporte * {
+        visibility: visible; /* Solo muestra el modal */
+    }
+
+    #modalReporte {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+}

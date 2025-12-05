@@ -1,0 +1,287 @@
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+    <div class="container-reporte">
+
+        <!-- HEADER -->
+        <div class="header-reporte">
+            <h1><i class="fas fa-chart-line"></i> Reporte de Predicción Financiera</h1>
+            <h2>Análisis de Riesgo Crediticio para {{ prediccion.nombre_solicitante }}</h2>
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="actions-reporte">
+            <a href="{{ url_for('historial.reporte_prediccion_pdf', id=prediccion.id) }}" class="btn-reporte btn-danger-reporte">
+                <i class="bi bi-file-earmark-pdf"></i>Descargar PDF
+            </a>
+
+            <button class="btn-reporte btn-success-reporte" onclick="window.print()">
+                <i class="bi bi-printer"></i> Imprimir Reporte
+            </button>
+        </div>
+
+        <div class="content-reporte">
+
+            <!-- INFORMACIÓN DEL SOLICITANTE -->
+            <div class="section-reporte">
+                <div class="section-title-reporte">
+                    <i class="fas fa-user-circle"></i> Información del Solicitante
+                </div>
+
+                <div class="card-reporte">
+                    <div class="card-header-reporte">
+                        <i class="fas fa-id-card"></i> Datos Personales y Económicos
+                    </div>
+
+                    <div class="card-body-reporte">
+                        <div class="info-grid-reporte">
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">DNI:</span>
+                                <span class="info-value-reporte">{{ prediccion.dni_solicitante }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Fecha de Predicción:</span>
+                                <span class="info-value-reporte">{{ prediccion.fecha_prediccion.strftime('%d/%m/%Y') }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Edad:</span>
+                                <span class="info-value-reporte">{{ prediccion.Edad }} años</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Ocupación:</span>
+                                <span class="info-value-reporte">{{ prediccion.Ocupacion }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Región:</span>
+                                <span class="info-value-reporte">{{ prediccion.Region }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Sector Económico:</span>
+                                <span class="info-value-reporte">{{ prediccion.Sector_Economico }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Estado Infocorp:</span>
+                                <span class="info-value-reporte">
+                                    <span class="status-indicator-reporte {{ 'status-active-reporte' if prediccion.Infocorp_Flag else 'status-inactive-reporte' }}">
+                                        {{ 'Activo' if prediccion.Infocorp_Flag else 'Inactivo' }}
+                                    </span>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DATOS FINANCIEROS BÁSICOS -->
+                <div class="card-reporte">
+                    <div class="card-header-reporte">
+                        <i class="fas fa-money-bill-wave"></i> Datos Financieros Clave
+                    </div>
+
+                    <div class="card-body-reporte">
+                        <div class="info-grid-reporte">
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Ingreso Anual:</span>
+                                <span class="info-value-reporte">${{ "{:,.2f}".format(prediccion.Ingreso_Anual) }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Salario Mensual:</span>
+                                <span class="info-value-reporte">${{ "{:,.2f}".format(prediccion.Salario_Mensual_Mano) }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Ahorro Mensual:</span>
+                                <span class="info-value-reporte">${{ "{:,.2f}".format(prediccion.Ahorro_Mensual) }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Tasa de Interés:</span>
+                                <span class="info-value-reporte">{{ prediccion.Tasa_Interes }}%</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Cuentas Bancarias:</span>
+                                <span class="info-value-reporte">{{ prediccion.Nro_Cuentas_Bancarias }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Tarjetas de Crédito:</span>
+                                <span class="info-value-reporte">{{ prediccion.Nro_Tarjetas_Credito }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Préstamos Activos:</span>
+                                <span class="info-value-reporte">{{ prediccion.Nro_Prestamos }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Tipo de Préstamo:</span>
+                                <span class="info-value-reporte">{{ prediccion.Tipo_Prestamo }}</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NUEVA SECCIÓN: DATOS AVANZADOS -->
+                <div class="card-reporte">
+                    <div class="card-header-reporte">
+                        <i class="fas fa-coins-reporte"></i> Información Financiera Avanzada
+                    </div>
+
+                    <div class="card-body-reporte">
+                        <div class="info-grid-reporte">
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Consultas de Crédito:</span>
+                                <span class="info-value-reporte">{{ prediccion.Nro_Consultas_Credito }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Deuda Pendiente:</span>
+                                <span class="info-value-reporte">${{ "{:,.2f}".format(prediccion.Deuda_Pendiente) }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Utilización de Crédito:</span>
+                                <span class="info-value-reporte">{{ (prediccion.Ratio_Utilizacion_Credito * 100) | round(2) }}%</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Antigüedad Historial:</span>
+                                <span class="info-value-reporte">{{ prediccion.Antiguedad_Historial_Credito }} años</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">EMI Total:</span>
+                                <span class="info-value-reporte">${{ "{:,.2f}".format(prediccion.EMI_Total_Mensual) }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Inversión Mensual:</span>
+                                <span class="info-value-reporte">${{ "{:,.2f}".format(prediccion.Monto_Invertido_Mensualmente) }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Puntaje Crediticio:</span>
+                                <span class="info-value-reporte">{{ prediccion.Puntaje_Credito }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Ratio Deuda / Ingreso:</span>
+                                <span class="info-value-reporte">{{ (prediccion.Ratio_Deuda_Ingreso * 100) | round(2) }}%</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Ratio EMI / Ingreso:</span>
+                                <span class="info-value-reporte">{{ (prediccion.Ratio_EMI_Ingreso * 100) | round(2) }}%</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NUEVA SECCIÓN: METADATOS DEL MODELO -->
+                <div class="card-reporte">
+                    <div class="card-header-reporte">
+                        <i class="fas fa-microchip-reporte"></i> Metadatos del Modelo
+                    </div>
+
+                    <div class="card-body-reporte">
+                        <div class="info-grid-reporte">
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Versión del Modelo:</span>
+                                <span class="info-value-reporte">{{ prediccion.modelo_version }}</span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Estado del Modelo:</span>
+                                <span class="info-value-reporte">
+                                    {% if prediccion.estado_prediccion == 'EXITO' %}
+                                        <span class="status-indicator-reporte status-success-reporte">Éxito</span>
+                                    {% else %}
+                                        <span class="status-indicator-reporte status-danger-reporte">Error</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            <div class="info-item-reporte">
+                                <span class="info-label-reporte">Tiempo de Inferencia:</span>
+                                <span class="info-value-reporte">{{ prediccion.tiempo_inferencia_ms }} ms</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RESULTADO CLAVE -->
+            <div class="section-reporte">
+                <div class="section-title-reporte">
+                    <i class="fas fa-tachometer-alt"></i> Resultado Clave de la Predicción
+                </div>
+
+                {% set risk_upper = prediccion.nivel_riesgo.upper() %}
+                {% set risk_class = 'risk-high-reporte' if risk_upper == 'ALTO' else ('risk-medium-reporte' if risk_upper == 'MEDIO' else 'risk-low') %}
+                {% set bg_class = risk_class + '-bg' %}
+                {% set color_class = risk_class + '-color' %}
+
+                <div class="highlight-reporte">
+                    <p><strong>Conclusión del Modelo:</strong> El sistema ha determinado el nivel de riesgo crediticio:</p>
+                </div>
+
+                <div class="result-card-wrapper-reporte {{ bg_class }}">
+                    <div class="probability-reporte">
+                        <div class="probability-value-reporte {{ color_class }}">{{ (prediccion.probabilidad_default * 100) | round(2) }}%</div>
+                        <div class="probability-label-reporte">Probabilidad de INCUMPLIMIENTO</div>
+                    </div>
+
+                    <div class="risk-indicator-reporte">
+                        <div class="risk-badge-reporte {{ risk_class }}">{{ prediccion.nivel_riesgo.upper() }} RIESGO</div>
+
+                        <div class="risk-icon-reporte">
+                            {% if risk_upper == 'ALTO' %}
+                            <i class="fas fa-exclamation-circle" style="color: var(--danger-reporte);"></i>
+                            {% elif risk_upper == 'MEDIO' %}
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning-reporte);"></i>
+                            {% else %}
+                            <i class="fas fa-check-circle" style="color: var(--success-reporte);"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-reporte" style="margin-top: 30px;">
+                    <p><i class="fas fa-info-circle"></i> Este resultado es generado automáticamente por un modelo predictivo. Se recomienda revisión de un analista.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer-reporte">
+            <p>Generado automáticamente por el sistema FinTech - {{ datetime.utcnow().strftime('%d/%m/%Y %H:%M') }}</p>
+            <p>Documento confidencial. Distribución restringida.</p>
+        </div>
+
+    </div>
+
+
+
+
+{% endblock %}

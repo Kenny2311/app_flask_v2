@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de Usuario{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base_login.css') }}">
+
+<div class="row justify-content-center login-container">
+  <div class="col-md-6 col-lg-3">
+    <div class="card shadow login-card-box">
+      <div class="card-body p-4 login-card-body">
+
+        <h2 class="login-title text-center mb-4">Registro de Usuario</h2>
+
+        <form method="POST" class="needs-validation login-form" novalidate>
+
+            <div class="row g-3">
+
+              <!-- Nombres del usuario -->  
+              <div class="mb-6 login-input-group">
+                
+                <input 
+                  type="text"
+                  class="form-control login-input"
+                  name="nombres"
+                  placeholder="Ingrese sus nombres"
+                  required
+                  autocomplete="off"
+                >
+                <div class="invalid-feedback login-invalid">
+                  Por favor ingrese sus nombres
+                </div>
+
+              </div>
+
+              <!-- Apellidos del usuario -->  
+              <div class="mb-6 login-input-group">
+                
+                <input 
+                  type="text"
+                  class="form-control login-input"
+                  name="apellidos"
+                  placeholder="Ingrese sus apellidos completos"
+                  required
+                  autocomplete="off"
+                >
+                <div class="invalid-feedback login-invalid">
+                  Por favor ingrese sus apellidos
+                </div>
+                
+              </div>
+
+              <!-- DNI -->
+              <div class="mb-6 login-input-group">
+                
+                <input 
+                  type="text"
+                  class="form-control login-input"
+                  id="dni"
+                  name="dni"
+                  placeholder="Ingrese su numero de DNI"
+                  maxlength="8"
+                  pattern="\d{8}"
+                  required
+                  autocomplete="off"
+                >
+                <div id="feedback-dni" class="invalid-feedback login-invalid d-none">
+                  Este DNI ya está registrado.
+                </div>
+                
+              </div> 
+              
+              <!-- Género -->
+              <div class="md-6 login-input-group">
+
+                  <select 
+                      name="genero"
+                      class="form-control login-input"
+                      required
+                  >
+                      <option value="" disabled selected>Seleccione su género o identidad</option>
+                      <option value="Masculino">Masculino</option>
+                      <option value="Femenino">Femenino</option>
+                  </select>
+
+                  <div class="invalid-feedback login-invalid">
+                      Seleccione una opción.
+                  </div>
+
+              </div>
+
+              <!-- Correo electronico -->
+              <div class="md-6 login-input-group">
+
+                  <input 
+                      type="email" 
+                      class="form-control login-input" 
+                      name="correo" 
+                      placeholder="Correo electrónico (ej. juan@correo.com)"                     
+                      required
+                  >
+
+                  <div class="invalid-feedback login-invalid">
+                      Ingrese un correo válido
+                  </div>
+
+              </div> 
+            
+              <!-- Teléfono -->
+              <div class="md-6 login-input-group">
+
+                  <input 
+                      type="text" 
+                      class="form-control login-input" 
+                      name="celular" 
+                      placeholder="Ingrese su número de celular (+51)"
+                      maxlength="9"
+                      pattern="\d{9}"
+                      required
+                  >
+
+                  <div class="invalid-feedback login-invalid">
+                      Debe tener 9 dígitos
+                  </div>
+
+              </div>  
+
+              <!-- contrasena -->
+              <div class="mb-6 login-input-group">
+                
+                <input 
+                  type="password"
+                  class="form-control login-input"
+                  id="contrasena"
+                  name="contrasena"
+                  placeholder="Ingrese una contraseña"
+                  required
+                  autocomplete="off"
+                >
+                <div id="feedback-nueva-contrasena" class="invalid-feedback login-invalid d-none">
+                  Debe tener mínimo 8 caracteres, incluir letras y números.
+                </div>
+                
+              </div> 
+    
+              <!-- confirmar contrasena -->
+              <div class="mb-6 login-input-group">
+                
+                <input 
+                  type="password"
+                  class="form-control login-input"
+                  name="confirmar_contrasena"
+                  id="confirmar_contrasena"
+                  placeholder="Confirme su contraseña"
+                  required
+                  autocomplete="off"
+                >
+                <div id="feedback-confirmar-contrasena" class="invalid-feedback login-invalid d-none">
+                  Las contraseñas deben coincidir
+                </div>
+                
+              </div> 
+
+            </div>
+
+          <!-- Botón final -->
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn login-btn">Registrarse</button>
+          </div>
+
+        </form>
+
+        <div class="text-center mt-3">
+          <a href="{{ url_for('auth.login') }}" class="login-register-link">
+            ¿Ya tienes cuenta? <strong>Inicia sesión aquí</strong>
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Ocultar alertas -->
+<script>
+setTimeout(() => {
+  document.querySelectorAll('.alert').forEach(a => {
+    a.classList.add('fade');
+    setTimeout(() => a.style.display = 'none', 500);
+  });
+}, 5000);
+</script>
+
+<!-- Validación -->
+<script>
+(function() {
+  'use strict';
+
+  const pass = document.getElementById('contrasena');
+  const confirm = document.getElementById('confirmar_contrasena');
+
+  function validar() {
+    confirm.setCustomValidity(pass.value !== confirm.value ? "No coincide" : "");
+  }
+  pass.addEventListener('input', validar);
+  confirm.addEventListener('input', validar);
+
+  const forms = document.querySelectorAll('.needs-validation');
+  forms.forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    });
+  });
+})();
+</script>
+
+{% endblock %}

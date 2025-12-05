@@ -1,0 +1,289 @@
+/* --------------------------
+   VARIABLES DE COLOR
+--------------------------- */
+:root {
+    --primary: #0057D9;
+    --primary-light: #E5F0FF;
+
+    --success: #1EAC45;
+    --success-bg: #E6F8EC;
+
+    --warning: #E5A300;
+    --warning-bg: #FFF4D4;
+
+    --danger: #D9363E;
+    --danger-bg: #FFE5E6;
+
+    --text-dark: #222;
+    --text-light: #666;
+
+    --card-bg: #fff;
+    --border-color: #ddd;
+
+    --font-main: 'Poppins', sans-serif;
+}
+
+/* --------------------------
+   ESTILO BASE
+--------------------------- */
+body {
+    margin: 0;
+    padding: 0;
+    background: #f5f7fa;
+    font-family: var(--font-main);
+    color: var(--text-dark);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+/* --------------------------
+   HEADER
+--------------------------- */
+.header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.header h2 {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text-light);
+}
+
+/* --------------------------
+   BOTONES / ACTIONS
+--------------------------- */
+.actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.btn:hover {
+    background: #003f9d;
+}
+
+.btn-danger {
+    background: var(--danger);
+}
+
+.btn-danger:hover {
+    background: #a8282e;
+}
+
+.btn-success {
+    background: var(--success);
+}
+
+.btn-success:hover {
+    background: #178d37;
+}
+
+/* --------------------------
+   SECTIONS
+--------------------------- */
+.section {
+    margin-bottom: 35px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --------------------------
+   CARDS
+--------------------------- */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 22px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-header {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-body {
+    padding: 18px;
+}
+
+/* --------------------------
+   GRID INFO
+--------------------------- */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 25px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.info-value {
+    color: var(--text-light);
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+/* --------------------------
+   STATUS BADGES
+--------------------------- */
+.status-indicator {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-active {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.status-inactive {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+/* --------------------------
+   RESULTADO DESTACADO
+--------------------------- */
+.highlight {
+    background: #f6f9ff;
+    border-left: 4px solid var(--primary);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
+
+/* Tarjeta de resumen del resultado */
+.result-card-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* COLORES DINÁMICOS DEL CARD */
+.risk-high-bg { background: var(--danger); }
+.risk-medium-bg { background: var(--warning); }
+.risk-low-bg { background: var(--success); }
+
+/* COLOR DEL TEXTO DE PROBABILIDAD */
+.risk-high-color { color: #fff !important; }
+.risk-medium-color { color: #fff !important; }
+.risk-low-color { color: #fff !important; }
+
+/* --------------------------
+   PROBABILIDAD
+--------------------------- */
+.probability-value {
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.probability-label {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+/* --------------------------
+   BADGE DE RIESGO
+--------------------------- */
+.risk-badge {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+}
+
+.risk-high {
+    background: #b81925;
+}
+
+.risk-medium {
+    background: #d79000;
+}
+
+.risk-low {
+    background: #148c34;
+}
+
+/* --------------------------
+   FOOTER
+--------------------------- */
+.footer {
+    text-align: center;
+    margin-top: 45px;
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+/* --------------------------
+   IMPRESIÓN (PDF & PRINT)
+--------------------------- */
+@media print {
+    .actions {
+        display: none !important;
+    }
+    body {
+        background: white;
+    }
+    .container {
+        margin: 0;
+        padding: 0;
+    }
+}

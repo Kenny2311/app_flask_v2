@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="text-primary">Resultado de la Predicción</h2>
+  <div class="alert alert-info mt-4">
+    <strong>Probabilidad de Riesgo:</strong> <span id="probabilidad"></span>%<br>
+    <strong>Clasificación:</strong> {{ riesgo }}
+  </div>
+  <a href="{{ url_for('prediccion.prediccion') }}" class="btn btn-secondary">🔄 Realizar otra predicción</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var probabilidad = parseFloat("{{ probabilidad|default(0) }}");
+    var probabilidadMultiplicada = probabilidad * 100;
+    document.getElementById("probabilidad").innerText = probabilidadMultiplicada.toFixed(2);
+  });
+</script>
+
+
+{% endblock %}
+

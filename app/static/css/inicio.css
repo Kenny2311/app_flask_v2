@@ -1,0 +1,185 @@
+/* ============================================
+   🎨 ESTILOS PARA INICIO (menu_kfintech.html)
+   ============================================ */
+:root {
+    --morado-base-inicio: #6a1b9a;
+    --morado-oscuro: #4a0072;
+    --morado-claro: #9c4dcc;
+
+    --gris-texto: #555;
+    --gris-fondo: #f2f2f2;
+
+    --blanco: #ffffff;
+    --transparente: rgba(255, 255, 255, 0.15);
+}
+
+
+/* ----- Hero Title ----- */
+.inicio-title {
+    color: #6a1b9a;
+    font-weight: 700;
+}
+
+/* ----- Hero Lead Text ----- */
+.inicio-lead {
+    font-size: 1.25rem;
+    color: #4a4a4a;
+}
+
+/* ----- Buttons principales ----- */
+.inicio-btn-primary {
+    background-color: #6a1b9a;
+    color: #fff;
+    padding: 12px 28px;
+    font-size: 1.15rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none !important;
+}
+
+.inicio-btn-outline {
+    background-color: #fff;
+    padding: 10px 24px;
+    font-size: 1.15rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: 1px solid #4a4a4a;
+}
+
+/* ----- Rating Stars Section ----- */
+.inicio-rating-stars span {
+    font-size: 1.3rem;
+    margin-right: 2px;
+    color: #f7c325;
+}
+
+.inicio-rating-text {
+    font-size: 0.95rem;
+    margin-left: 8px;
+}
+
+/* ----- Card de ventajas ----- */
+.inicio-card {
+    border-radius: 18px;
+    border: 1px solid #4a4a4a;
+}
+
+.inicio-card-body {
+    background-color: #fff;
+    padding: 2rem !important;
+}
+
+.inicio-card-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+/* ----- Items de características ----- */
+.inicio-feature-item {
+    display: flex;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+}
+
+.inicio-feature-icon {
+    color: var(--primary-color, #6a1b9a);
+    margin-right: 15px;
+    font-size: 1.8rem;
+}
+
+.inicio-feature-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.inicio-feature-text {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* ----- Redes Sociales Section ----- */
+.inicio-social-text {
+    text-align: center;
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.inicio-social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.inicio-social-icons img {
+    height: 55px;
+    transition: transform .2s ease;
+}
+
+.inicio-social-icons img:hover {
+    transform: scale(1.1);
+}
+
+/* ----- Servicios Section ----- */
+.inicio-servicios-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.inicio-servicios-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 768px) {
+
+    .inicio-btn-primary,
+    .inicio-btn-outline {
+        width: 100%;
+        text-align: center;
+    }
+
+    .inicio-card-body {
+        padding: 1.5rem !important;
+    }
+
+    .inicio-feature-icon {
+        font-size: 1.4rem;
+    }
+
+    .inicio-social-icons img {
+        height: 45px;
+    }
+}
+
+/* ============================================
+   🎨 ESTILOS ADICIONALES PARA INICIO
+   ============================================ */
+.feature-list h5 {
+    color: #2c3e50;
+    font-weight: 600;
+}
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+  
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: hidden;
+}

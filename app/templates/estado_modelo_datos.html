@@ -1,0 +1,34 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="estado-container">
+
+    <header class="seccion-header">
+        <h4>Datos del Modelo Actual</h4>
+    </header>
+
+        <div class="modelo-datos-card">
+            <!-- SUBTÍTULO SOBRESALIENTE -->
+            <h6>Información del Modelo</h6>
+
+            <p><strong>Algoritmo:</strong> {{ datos.algoritmo }}</p>
+            <p><strong>Versión:</strong> {{ datos.version }}</p>
+            <p><strong>Fecha de entrenamiento:</strong> {{ datos.fecha_entrenamiento }}</p>
+
+            <h6>Características usadas:</h6>
+            <ul>
+            {% for f in datos.features_usadas %}
+                <li>{{ f }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+</div>
+
+<!-- Iconos Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+{% endblock %}

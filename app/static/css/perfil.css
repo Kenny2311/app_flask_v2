@@ -1,0 +1,422 @@
+/* ----------------------------------------
+   ESTILO CONTENEDOR PRINCIPAL DEL PERFIL
+------------------------------------------*/
+.perfil-contenedor {
+    display: flex;       /* <--- NECESARIO */
+    min-height: calc(100vh - 70px);
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* ----------------------------------------
+   ESTILO DE OPCIONES DEL SIDEBAR
+------------------------------------------*/
+.sidebar-option {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: #000;
+    transition: all 0.2s ease;
+    cursor: pointer; 
+}
+
+.sidebar-option.active {
+    background-color: #cfe2ff;
+    color: #0d6efd;
+    font-weight: bold;
+}
+
+
+
+/* ---------------------------------------
+   ESTILO SIDEBAR DEL PERFIL DE USUARIO
+----------------------------------------*/
+/* sidebar */
+.perfil-sidebar {
+    width: 300px;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #dee2e6;
+    border-radius: 0 10px 10px 0;
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 70px);
+    flex-shrink: 0;
+}
+
+/* Título del sidebar */
+.perfil-sidebar-titulo {
+    font-size: 1rem;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #212529;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Lista del sidebar */
+.perfil-sidebar-opciones li {
+    margin-bottom: 12px;
+}
+
+
+
+
+/* ----------------------------------------
+   ESTILOS PRINCIPAL DERECHO DEL PERFIL
+------------------------------------------*/
+
+.perfil-contenido-derecho {
+    flex: 1;
+    background-color: #f8f9fa;
+    padding: 0; 
+    min-height: calc(100vh - 70px);
+}
+
+
+
+
+/* ----------------------------------------
+   ESTILOS DATOS PERSONALES
+------------------------------------------*/
+/* Contenedor principal */
+.datos-personales-contenedor {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: calc(100vh - 70px);
+}
+
+/* Título de sección */
+.datos-personales-titulo {
+    background-color: #0d6efd;
+    color: #ffffff;
+    padding: 20px 20px;
+    border-radius: 0px;
+    margin-bottom: 20px;
+}
+
+/* Bloque de información principal */
+.datos-personales-principal {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+/* Logo del usuario */
+.datos-personales-logo {
+    width: 100px;
+    height: 100px;
+    background-color: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Información del usuario */
+.datos-personales-info .nombre-usuario {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.datos-personales-info .info-detalle {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Formulario de edición */
+.perfil-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.perfil-form-titulo {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin-bottom: 15px;
+}
+
+.perfil-form-group {
+    margin-bottom: 15px;
+}
+
+.perfil-form-label {
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.perfil-form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+}
+
+.btn-guardar {
+    width: 350px;
+}
+
+
+/* ----------------------------------------
+   ESTILOS CAMBIAR CONTRASEÑA
+------------------------------------------*/
+.cambiar-contrasena-titulo {
+    background-color: #0d6efd; 
+    color: #ffffff; 
+    padding: 20px 20px; 
+    margin-bottom: 20px; 
+    border-radius: 0px;
+}
+
+.cambiar-contrasena-titulo h4 {
+    margin: 0;
+    font-weight: bold;
+}
+
+.cambiar-contrasena-contenedor {
+    background-color: #f8f9fa;
+    padding: 0 1.5rem; /* equivale a px-4 */
+}
+
+.cambiar-contrasena-texto1 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #0d6efd;
+    margin-top: 20px;   /* espacio arriba */
+    margin-bottom: 20px; /* espacio abajo */
+    text-align: left;    /* alineación a la izquierda */
+}
+
+.cambiar-contrasena-codigo-verificacion {
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+}
+
+/* Grupo de cada campo */
+.cambiar-contrasena-grupo {
+    position: relative;
+    width: 250px;
+}
+
+/* Estilo del label */
+.cambiar-contrasena-label {
+    color: #0d6efd;
+}
+
+/* Estilo del input */
+.cambiar-contrasena-input {
+    width: 250px;
+}
+
+/* Contenedor del botón */
+.cambiar-contrasena-boton-container {
+    margin-top: 30px;
+}
+
+/* Icono del ojito */
+.cambiar-contrasena-icon {
+    position: absolute;
+    right: 10px;
+    top: 42px;
+    cursor: pointer;
+    color: gray;
+}
+
+
+
+
+
+
+
+/* ----------------------------------------
+   ESTILOS CAMBIAR CORREO
+------------------------------------------*/
+/* Título */
+.cambiar-correo-titulo {
+    background-color: #0d6efd;
+    color: #ffffff;
+    padding: 20px 20px;
+    margin-bottom: 20px;
+    border-radius: 0;
+}
+
+/* Contenedor principal */
+.cambiar-correo-contenedor {
+    background-color: #f8f9fa;
+    padding: 0 20px;
+}
+
+/* Texto principal azul */
+.cambiar-correo-info {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #0d6efd;
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Correo actual */
+.cambiar-correo-actual {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #084298;
+    background-color: #cfe2ff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #b6d4fe;
+    margin-bottom: 15px;
+}
+
+/* Grupo código de verificación */
+.cambiar-correo-codigo-grupo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botón obtener código */
+.cambiar-correo-boton-codigo {
+    margin-top: 30px;
+}
+
+/* Reutilización de estilos */
+.cambiar-correo-label {
+    color: #0d6efd;
+}
+
+.cambiar-correo-input {
+    width: 250px;
+}
+
+/* Grupo inputs */
+.cambiar-correo-grupo {
+    position: relative;
+    width: 250px;
+}
+
+/* Icono ojito */
+.cambiar-correo-icon {
+    position: absolute;
+    right: 10px;
+    top: 42px;
+    cursor: pointer;
+    color: gray;
+}
+
+/* Botón Guardar Cambios */
+.cambiar-correo-boton-guardar {
+    margin-top: 20px;
+}
+
+.cambiar-correo-boton-guardar button {
+    width: 250px;
+    margin-bottom: 25px;
+}
+
+
+
+
+
+/* ----------------------------------------
+   ESTILOS ELIMINAR PERFIL
+------------------------------------------*/
+
+/* Título */
+.eliminar-perfil-titulo {
+    background-color: #0d6efd;
+    color: #ffffff;
+    padding: 20px 20px;
+    margin-bottom: 20px;
+    border-radius: 0;
+}
+
+/* Contenedor */
+.eliminar-perfil-contenedor {
+    background-color: #f8f9fa;
+    padding: 0 20px;
+}
+
+/* Texto principal */
+.eliminar-perfil-info {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #0d6efd;
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Advertencia */
+.eliminar-perfil-advertencia {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: #000000;
+    margin: 20px 0;
+    text-align: left;
+}
+
+/* Código de verificación */
+.eliminar-perfil-codigo-grupo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eliminar-perfil-boton-codigo {
+    margin-top: 30px;
+}
+
+/* Etiquetas */
+.eliminar-perfil-label {
+    color: #0d6efd;
+}
+
+/* Inputs */
+.eliminar-perfil-input {
+    width: 250px;
+}
+
+/* Motivo */
+.eliminar-perfil-motivo {
+    margin-bottom: 20px;
+}
+
+.eliminar-perfil-textarea {
+    width: 400px;
+    height: 100px;
+}
+
+/* Grupo password */
+.eliminar-perfil-grupo {
+    position: relative;
+    width: 250px;
+}
+
+/* Icono ojito */
+.eliminar-perfil-icon {
+    position: absolute;
+    right: 10px;
+    top: 42px;
+    cursor: pointer;
+    color: gray;
+}
+
+/* Botón eliminar */
+.eliminar-perfil-boton {
+    width: 250px;
+    margin-bottom: 25px;
+}

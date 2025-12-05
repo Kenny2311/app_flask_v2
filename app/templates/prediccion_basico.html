@@ -1,0 +1,1320 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="prediccion-container">
+
+  <h2 class="prediccion-title bi bi-file-earmark-text-fill"> Formulario de evaluación crediticia</h2>
+
+  <!----------------------------- Contenido Evaluacion Crediticia -------------------------------> 
+  <form class="prediccion-form" id="form-prediccion" method="POST" action="{{ url_for('prediccion.prediccion_basico') }}">
+
+        <!-- Fecha de Predicción -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-calendar prediccion-input-icon"></i>
+
+            <input 
+                type="date" 
+                id="fecha_prediccion" 
+                name="fecha_prediccion" 
+                class="prediccion-form-control form-input" 
+                required 
+            >
+
+            <label for="fecha_prediccion" class="prediccion-form-label">Fecha de predicción</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                La fecha debe ser la del día actual.
+            </div>
+        </div>
+
+        <!-- Nombre del solicitante -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-person prediccion-input-icon"></i>
+
+            <input 
+                type="text" 
+                id="nombre_solicitante" 
+                name="nombre_solicitante"
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                required
+            >
+            <label for="nombre_solicitante" class="prediccion-form-label">Nombre del solicitante</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Ingrese nombre y apellido (solo letras y espacios).
+            </div>
+        </div>
+
+        <!-- Edad -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-person-badge prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                id="Edad" 
+                name="Edad" 
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                min="18"
+                max="70"
+                required
+            >
+
+            <label for="Edad" class="prediccion-form-label">¿Cuál es su edad?</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                La edad debe estar entre 18 y 70 años.
+            </div>
+        </div>
+
+        <!-- Género -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-gender-ambiguous prediccion-input-icon"></i>
+
+            <select 
+                id="genero" 
+                name="genero" 
+                class="prediccion-form-control form-input"
+                required
+            >
+                <option value="" disabled selected>Seleccione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+            </select>
+
+            <label for="genero" class="prediccion-form-label">Género</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Seleccione una opción.
+            </div>
+        </div>
+
+        <!-- Estado Civil -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-person-hearts prediccion-input-icon"></i>
+
+            <select 
+                id="casado" 
+                name="casado" 
+                class="prediccion-form-control form-input"
+                required
+            >
+                <option value="" disabled selected>Seleccione</option>
+                <option value="Si">Sí</option>
+                <option value="No">No</option>
+            </select>
+
+            <label for="casado" class="prediccion-form-label">¿Está casado?</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Seleccione una opción.
+            </div>
+        </div>
+
+        <!-- Dependientes -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-people prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                id="dependientes" 
+                name="dependientes" 
+                class="prediccion-form-control form-input"
+                min="0" 
+                max="10" 
+                required
+                placeholder=" "
+            >
+            <label for="dependientes" class="prediccion-form-label">¿Cuántas personas tiene a su cargo?</label>
+            
+            <div class="prediccion-invalid-feedback-custom">
+                EL número de dependientes debe estar entre 0 y 10.
+            </div>
+
+        </div>
+
+        <!-- Educación -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-mortarboard prediccion-input-icon"></i>
+
+            <select 
+                id="educacion" 
+                name="educacion" 
+                class="prediccion-form-control form-input"
+                required
+            >
+                <option value="" disabled selected>Seleccione</option>
+                <option value="Primaria">Primaria</option>
+                <option value="Secundaria">Secundaria</option>
+                <option value="Pregrado">Pregrado</option>
+                <option value="Graduado">Graduado</option>
+                <option value="Postgrado">Postgrado / Maestría</option>
+                <option value="Doctorado">Doctorado</option>
+                <option value="No Graduado">No Graduado</option>
+            </select>
+
+            <label for="educacion" class="prediccion-form-label">¿Cuál es su nivel de estudios?</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Seleccione una opción.
+            </div>
+
+        </div>
+
+        <!-- Zona de Propiedad -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-geo-alt prediccion-input-icon"></i>
+
+            <select 
+                id="zona_propiedad" 
+                name="zona_propiedad" 
+                class="prediccion-form-control form-input"
+                required
+            >
+                <option value="" disabled selected>Seleccione</option>
+                <option value="Urbana">Urbana</option>
+                <option value="Semiurbana">Semiurbana</option>
+                <option value="Rural">Rural</option>
+            </select>
+
+            <label for="zona_propiedad" class="prediccion-form-label">¿Cuál es su zona de propiedad?</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Seleccione una opción.
+            </div>
+        </div>
+
+        <!-- Ingreso mensual del solicitante -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-cash-coin prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                step="0.01" 
+                id="Salario_Mensual_Mano" 
+                name="Salario_Mensual_Mano" 
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                required
+            >
+            <label for="Salario_Mensual_Mano" class="prediccion-form-label">¿Cuál es su ingreso mensual fijo? (S/.)</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Ingreso mensual no válido (Ingrese un ingreso mensual mayor a S/.500.00).
+            </div>
+
+        </div>
+
+        <!-- Ingreso anual del solicitante -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-wallet2 prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                step="0.01" 
+                id="Ingreso_Anual" 
+                name="Ingreso_Anual" 
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                required
+            >
+            <label for="Ingreso_Anual" class="prediccion-form-label">¿Cuál es su ingreso anual estimado? (S/.)</label>
+
+            <div class="prediccion-invalid-feedback-custom">
+                Ingreso anual no válido (Ingrese un ingreso anual mayor a S/.6000.00).
+            </div>
+
+        </div>
+              
+        <!--Numero de cuentas bancarias-->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-bank prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                id="Nro_Cuentas_Bancarias" 
+                name="Nro_Cuentas_Bancarias" 
+                class="prediccion-form-control form-input"
+                placeholder=" " 
+                required
+            >
+            <label for="Nro_Cuentas_Bancarias" class="prediccion-form-label">¿Cuántas cuentas bancarias tiene?</label>
+            
+            <div class="prediccion-invalid-feedback-custom">
+                El número de cuentas bancarias debe estar entre 0 y 20.
+            </div>
+
+        </div>
+
+        <!--Numero de tarjetas de credito-->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-credit-card prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                id="Nro_Tarjetas_Credito" 
+                name="Nro_Tarjetas_Credito" 
+                class="prediccion-form-control form-input"
+                placeholder=" " 
+                required
+            >
+            <label for="Nro_Tarjetas_Credito" class="prediccion-form-label">¿Cuántas tarjetas de crédito tiene?</label>
+            <div class="prediccion-invalid-feedback-custom">
+                El número de tarjetas de crédito debe estar entre 0 y 20.
+            </div>            
+        </div>
+
+        <!-- Monto de deuda pendiente-->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-exclamation-octagon prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                step="0.01" 
+                id="Deuda_Pendiente" 
+                name="Deuda_Pendiente" 
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                required
+            >
+            <label for="Deuda_Pendiente" class="prediccion-form-label">¿Cuál es el monto de su deuda actual? (S/.)</label>
+            
+            <div class="prediccion-invalid-feedback-custom">
+                Monto de deuda no válido (Ingrese un monto mayor o igual a S/.0.00).
+            </div>   
+
+        </div>
+
+        <!-- Tipo de Préstamo -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-journal-text prediccion-input-icon"></i>
+
+            <select 
+                id="Tipo_Prestamo" 
+                name="Tipo_Prestamo" 
+                class="prediccion-form-control form-input"
+                required
+            >
+                <option value="" disabled selected>Seleccione</option>
+                <option value="0">Educativo</option>
+                <option value="1">Microcrédito</option>
+                <option value="2">Personal</option>
+            </select>
+
+            <label for="Tipo_Prestamo" class="prediccion-form-label">Tipo de préstamo más reciente</label>
+            
+            <div class="prediccion-invalid-feedback-custom">
+                Seleccione una opción.
+            </div>   
+
+        </div>
+
+        <!-- Monto promedio invertido mensualmente -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-graph-up prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                id="Monto_Invertido_Mensualmente" 
+                name="Monto_Invertido_Mensualmente" 
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                required
+            >
+            <label for="Monto_Invertido_Mensualmente" class="prediccion-form-label">¿Cuánto invierte mensualmente? (S/.)</label>
+            
+            <div class="prediccion-invalid-feedback-custom">
+                Monto invertido no válido (Ingrese un monto mayor o igual a S/.0.00).
+            </div> 
+
+        </div>
+
+        <!-- Tasa de interés promedio de créditos -->
+        <div class="prediccion-form-group floating">
+            <i class="bi bi-percent prediccion-input-icon"></i>
+
+            <input 
+                type="number" 
+                step="0.01"
+                id="Tasa_Interes" 
+                name="Tasa_Interes" 
+                class="prediccion-form-control form-input"
+                placeholder=" "
+                required
+            >
+            <label for="Tasa_Interes" class="prediccion-form-label">Tasa de interés promedio (%)</label>
+            
+            <div class="prediccion-invalid-feedback-custom">
+                Tasa de interés no válida (Ingrese una tasa entre 0% y 100%).
+            </div>
+
+        </div>
+
+        <!-- botones -->
+        <div class="prediccion-botones-container">
+          <button type="submit" class="prediccion-btn-evaluar">Evaluarme</button>
+          <button type="button" onclick="limpiarFormulario()" class="prediccion-btn-limpiar">Limpiar</button>
+        </div>
+                                        
+      </form>
+
+
+      <!-- Modal Resultado -->
+      <div class="modal fade" id="resultadoModal" tabindex="-1" aria-labelledby="resultadoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius);">
+            
+            <!-- Header -->
+            <div class="modal-header" style="background: var(--primary); color: var(--white); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);">
+              <h5 class="modal-title" id="resultadoModalLabel">
+                <i class="fas fa-chart-line me-2"></i> Resultado de la Predicción
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Body -->
+            <div class="modal-body text-center py-4">
+              <h4 id="resultadoPorcentaje" class="mb-3" style="font-size: 2rem; color: var(--primary-dark);"></h4>
+              <p id="resultadoRiesgo" class="fw-bold mb-0" style="font-size: 1.2rem;"></p>
+              <div id="recomendaciones" class="mt-3 text-start"></div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="modal-footer justify-content-center">
+              <button type="button" class="btn prediccion-btn-evaluar" data-bs-dismiss="modal">Aceptar</button>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Container -->
+      <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header bg-primary text-white">
+            <strong class="me-auto">Notificación</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+          </div>
+          <div class="toast-body" id="toastBody">Mensaje</div>
+        </div>
+      </div>
+
+        <!-- Icono de Recomendaciones (siempre visible) -->
+        <div id="iconoRecomendaciones" style="position: fixed; bottom: 35px; right: 100px; cursor: pointer; z-index: 1050;">
+          <button class="btn btn-warning btn-lg rounded-circle position-relative" title="Ver Recomendaciones">
+            <i class="bi bi-lightbulb-fill"></i> <!-- Bootstrap Icon -->
+            <span id="badgeRecomendaciones" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none;">
+              1
+            </span>
+          </button>
+        </div>
+
+        <!-- Modal de Recomendaciones -->
+        <div class="modal fade" id="modalRecomendaciones" tabindex="-1" aria-labelledby="modalRecomendacionesLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="modalRecomendacionesLabel">Recomendaciones de mi ultima evaluación crediticia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body" id="contenidoRecomendaciones">
+                <p>No hay predicciones recientes.</p>
+              </div>
+            </div>
+          </div>
+        </div>      
+
+</div>          
+
+<!----------------------------- Opciones de plataforma de prediccion ------------------------------->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const sidebarOptions = document.querySelectorAll(".sidebar-option");
+  const sections = [
+    "nueva-prediccion",
+    "historial-evaluaciones",
+    "dashboard-analitico",
+    "gestion-usuarios",
+    "configuracion-modelo",
+  ];
+
+  let ultimaProbabilidad = null;
+  let ultimoRiesgo = null;
+  let nuevasRecomendaciones = 0;
+
+  // =====================
+  // Mostrar sección
+  // =====================
+  function mostrarSeccion(id) {
+    sections.forEach(sec => {
+      const div = document.getElementById(sec);
+      if (div) div.style.display = sec === id ? "block" : "none";
+
+      if (sec === "historial-evaluaciones" && id === "historial-evaluaciones") {
+        if (window.cargarHistorial) cargarHistorial();
+      }
+    });
+  }
+
+  function activarOpcion(element) {
+    sidebarOptions.forEach(opt => opt.classList.remove("active"));
+    element.classList.add("active");
+  }
+
+  const opcionInicial = document.querySelector('.sidebar-option[data-section="nueva-prediccion"]');
+  if (opcionInicial) {
+    opcionInicial.classList.add("active");
+    mostrarSeccion("nueva-prediccion");
+  }
+
+  sidebarOptions.forEach(option => {
+    option.addEventListener("click", function () {
+      const targetId = this.getAttribute("data-section");
+      mostrarSeccion(targetId);
+      activarOpcion(this);
+    });
+  });
+
+  // =====================
+  // Inicializar modales
+  // =====================
+  const resultadoModalEl = document.getElementById("resultadoModal");
+  const resultadoModal = new bootstrap.Modal(resultadoModalEl);
+
+  const modalRecomendacionesEl = document.getElementById("modalRecomendaciones");
+  const modalRecomendaciones = new bootstrap.Modal(modalRecomendacionesEl, { backdrop: true, keyboard: true });
+
+  // =====================
+  // Toast
+  // =====================
+  function mostrarToast(mensaje, tipo = "info") {
+    const toastEl = document.getElementById("liveToast");
+    const toastBody = document.getElementById("toastBody");
+    const header = toastEl.querySelector(".toast-header");
+
+    // Limpiar clases previas
+    header.classList.remove("bg-primary","bg-success","bg-danger","bg-warning","text-white","text-dark");
+
+    switch(tipo) {
+      case "success": header.classList.add("bg-success","text-white"); break;
+      case "error": header.classList.add("bg-danger","text-white"); break;
+      case "warning": header.classList.add("bg-warning","text-dark"); break;
+      default: header.classList.add("bg-primary","text-white");
+    }
+
+    toastBody.textContent = mensaje;
+
+    const toastBootstrap = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toastBootstrap.show();
+  }
+
+  // =====================
+  // Mostrar modal resultado
+  // =====================
+  function mostrarResultado(probabilidad, riesgo) {
+    ultimaProbabilidad = probabilidad;
+    ultimoRiesgo = riesgo;
+
+    document.getElementById("resultadoPorcentaje").textContent =
+      `Probabilidad: ${(probabilidad * 100).toFixed(2)}%`;
+    document.getElementById("resultadoRiesgo").textContent = `Riesgo: ${riesgo}`;
+
+    resultadoModal.show();
+
+    nuevasRecomendaciones++;
+    actualizarBadge();
+  }
+
+  // =====================
+  // Generar recomendaciones
+  // =====================
+  function generarRecomendaciones(probabilidad) {
+    const porcentaje = probabilidad * 100;
+    let mensaje = '';
+
+    if (porcentaje < 10) {
+      mensaje += `
+        <li>Perfil financiero excelente, casi sin riesgo de impago.</li>
+        <li>Sigue manteniendo tus hábitos de ahorro y pagos puntuales.</li>`;
+    } else if (porcentaje < 20) {
+      mensaje += `
+        <li>Perfil muy bueno, riesgo mínimo.</li>
+        <li>Considera invertir pequeños montos adicionales para mejorar tu liquidez.</li>`;
+    } else if (porcentaje < 30) {
+      mensaje += `
+        <li>Buen perfil financiero, riesgo bajo.</li>
+        <li>Mantén tus pagos y ahorros al día y evita endeudarte innecesariamente.</li>`;
+    } else if (porcentaje < 40) {
+      mensaje += `
+        <li>Riesgo moderado, revisa tus gastos mensuales.</li>
+        <li>Evita nuevas deudas mientras estabilizas tu flujo de ingresos.</li>`;
+    } else if (porcentaje < 50) {
+      mensaje += `
+        <li>Riesgo medio, prioriza reducir deudas pequeñas.</li>
+        <li>Incrementa tu ahorro mensual para reforzar tu perfil financiero.</li>`;
+    } else if (porcentaje < 60) {
+      mensaje += `
+        <li>Riesgo medio-alto, controla gastos y evita préstamos adicionales.</li>
+        <li>Considera planificar un presupuesto mensual más estricto.</li>`;
+    } else if (porcentaje < 70) {
+      mensaje += `
+        <li>Riesgo alto, revisa tus deudas actuales y pagos atrasados.</li>
+        <li>Evita solicitar nuevos créditos y busca asesoría financiera.</li>`;
+    } else if (porcentaje < 80) {
+      mensaje += `
+        <li>Riesgo muy alto, prioriza estabilizar tus ingresos antes de cualquier nuevo préstamo.</li>
+        <li>Considera refinanciar deudas si es posible y reducir gastos.</li>`;
+    } else if (porcentaje < 90) {
+      mensaje += `
+        <li>Riesgo crítico, tu perfil financiero requiere atención inmediata.</li>
+        <li>Evita comprometerte con nuevos créditos y busca ayuda profesional.</li>`;
+    } else {
+      mensaje += `
+        <li>Riesgo extremo, muy probable incumplimiento.</li>
+        <li>Suspende nuevas deudas y busca asesoría financiera urgente.</li>`;
+    }
+
+    return mensaje;
+  }
+
+
+  // =====================
+  // Badge
+  // =====================
+  function actualizarBadge() {
+    const badge = document.getElementById("badgeRecomendaciones");
+    if (nuevasRecomendaciones > 0) {
+      badge.style.display = "inline-block";
+      badge.textContent = nuevasRecomendaciones;
+    } else badge.style.display = "none";
+  }
+
+  // =====================
+  // Click icono recomendaciones
+  // =====================
+  const iconoRecomendaciones = document.getElementById("iconoRecomendaciones");
+  if (iconoRecomendaciones) {
+    iconoRecomendaciones.addEventListener("click", function() {
+      const contenido = document.getElementById("contenidoRecomendaciones");
+      if (ultimaProbabilidad !== null) contenido.innerHTML = generarRecomendaciones(ultimaProbabilidad);
+      else contenido.innerHTML = "<p>No hay predicciones recientes.</p>";
+
+      modalRecomendaciones.show();
+      nuevasRecomendaciones = 0;
+      actualizarBadge();
+    });
+  }
+
+  // =====================
+  // Envío del formulario
+  // =====================
+  const form = document.getElementById("form-prediccion"); // ✅ Seleccion correcto
+  if (form) {
+    form.addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      try {
+        const formData = new FormData(form);
+
+        // Normalizar selects
+        ["genero", "casado", "educacion", "zona_propiedad", "Tipo_Prestamo"].forEach(id => {
+          const input = form.querySelector(`#${id}`);
+          if (input) formData.set(id, input.value.trim());
+        });
+
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.probabilidad !== undefined && data.riesgo !== undefined) {
+          mostrarResultado(data.probabilidad, data.riesgo);
+          mostrarToast("Predicción realizada correctamente.", "success");
+
+          form.reset();
+
+          // Restaurar fecha del día
+          const fechaInput = document.getElementById("fecha_prediccion");
+          if (fechaInput) {
+            const hoy = new Date();
+            fechaInput.value = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+          }
+
+          ["genero", "casado", "educacion", "zona_propiedad", "Tipo_Prestamo"].forEach(id => {
+            const input = form.querySelector(`#${id}`);
+            if (input) input.value = "";
+          });
+
+        } else {
+          mostrarToast("Error al obtener la predicción.", "error");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        mostrarToast("Ocurrió un error al procesar la predicción.", "error");
+      }
+    });
+  }
+});
+</script>
+
+
+<!-- Función para limpiar el formulario -->
+<script>
+function limpiarFormulario() {
+    const form = document.getElementById("form-prediccion");
+    form.reset();
+
+    // Restaurar fecha de hoy
+    const fechaInput = document.getElementById("fecha_prediccion");
+    if (fechaInput) {
+        const hoy = new Date();
+        const year = hoy.getFullYear();
+        const month = String(hoy.getMonth() + 1).padStart(2, "0");
+        const day = String(hoy.getDate()).padStart(2, "0");
+        fechaInput.value = `${year}-${month}-${day}`;
+    }
+
+    // 🔥 NUEVO: limpiar mensajes de error
+    const errors = document.querySelectorAll(".prediccion-invalid-feedback-custom");
+    errors.forEach(err => {
+        err.style.display = "none"; // NO BORRAR EL TEXTO
+    });
+
+    // 🔥 Opcional: quitar clases invalid de los inputs
+    const invalidInputs = document.querySelectorAll(".is-invalid, .is-valid");
+    invalidInputs.forEach(input => input.classList.remove("is-invalid", "is-valid"));
+    }
+</script>
+
+
+<!-- Validación avanzada para el campo Nombre del Solicitante -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const nombreInput = document.getElementById('nombre_solicitante');
+  const feedback = nombreInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarNombre() {
+    const value = nombreInput.value.trim();
+
+    // Campo vacío
+    if (!value) {
+      feedback.textContent = "El nombre es obligatorio.";
+      nombreInput.classList.add('is-invalid');
+      nombreInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const palabras = value.split(/\s+/);
+
+    if (palabras.length < 3) {
+      feedback.textContent = "Debe ingresar nombre y dos apellidos.";
+      nombreInput.classList.add('is-invalid');
+      nombreInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    for (let palabra of palabras) {
+      if (!/^[A-ZÁÉÍÓÚÑ]/.test(palabra)) {
+        feedback.textContent = "Cada palabra debe empezar con mayúscula.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+
+      if (!/^[A-ZÁÉÍÓÚÑa-záéíóúñ]+$/.test(palabra)) {
+        feedback.textContent = "Solo se permiten letras y espacios.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+
+      if (/([a-zA-ZáéíóúñÁÉÍÓÚÑ])\1{3,}/.test(palabra)) {
+        feedback.textContent = "Palabra con caracteres repetidos excesivamente.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+
+      if (palabra.length < 2 || palabra.length > 30) {
+        feedback.textContent = "Cada palabra debe tener entre 2 y 30 letras.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+    }
+
+    nombreInput.classList.remove('is-invalid');
+    nombreInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  nombreInput.addEventListener('input', validarNombre);
+  nombreInput.addEventListener('blur', validarNombre);
+});
+</script>
+
+<!-- Validación avanzada para el campo Fecha de Predicción -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const fechaInput = document.getElementById("fecha_prediccion");
+  const feedback = fechaInput.nextElementSibling; // la burbuja
+
+  // Función para obtener la fecha actual en formato YYYY-MM-DD
+  function fechaHoy() {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoy.getDate()).padStart(2, "0");
+    return `${año}-${mes}-${dia}`;
+  }
+
+  // Establecer la fecha automáticamente y readonly
+  fechaInput.value = fechaHoy();
+  fechaInput.setAttribute("readonly", true);
+
+  // Validación por si alguien intenta modificar el campo
+  function validarFecha() {
+    if (fechaInput.value !== fechaHoy()) {
+      feedback.textContent = "La fecha debe ser la del día actual.";
+      fechaInput.classList.add("is-invalid");
+      fechaInput.classList.remove("is-valid");
+      feedback.style.display = "block";
+      return false;
+    } else {
+      fechaInput.classList.remove("is-invalid");
+      fechaInput.classList.add("is-valid");
+      feedback.style.display = "none";
+      return true;
+    }
+  }
+
+  fechaInput.addEventListener("input", validarFecha);
+  fechaInput.addEventListener("blur", validarFecha);
+});
+</script>
+
+<!-- Validación avanzada para el campo Edad del Solicitante -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const edadInput = document.getElementById('Edad');
+  const feedback = edadInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarEdad() {
+    const value = edadInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "La edad es obligatoria.";
+      edadInput.classList.add('is-invalid');
+      edadInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const edad = parseInt(value, 10);
+
+    if (isNaN(edad) || !Number.isInteger(edad)) {
+      feedback.textContent = "Ingrese un número válido.";
+      edadInput.classList.add('is-invalid');
+      edadInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (edad < 18 || edad > 70) {
+      feedback.textContent = "La edad debe estar entre 18 y 70 años.";
+      edadInput.classList.add('is-invalid');
+      edadInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Si todo está bien
+    edadInput.classList.remove('is-invalid');
+    edadInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  edadInput.addEventListener('input', validarEdad);
+  edadInput.addEventListener('blur', validarEdad);
+});
+</script>
+
+<!-- Validacion avanzada para el campo Género -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const generoSelect = document.getElementById('genero');
+    const feedback = document.querySelector('#genero ~ .prediccion-invalid-feedback-custom');
+
+    function validarGenero() {
+        if (!generoSelect.value) {
+            generoSelect.classList.add('is-invalid');
+            generoSelect.classList.remove('is-valid');
+
+            feedback.textContent = "Debe seleccionar un género.";
+            feedback.style.display = 'block';
+            return false;
+        }
+
+        generoSelect.classList.remove('is-invalid');
+        generoSelect.classList.add('is-valid');
+
+        feedback.style.display = 'none';
+        return true;
+    }
+
+    generoSelect.addEventListener('change', validarGenero);
+    generoSelect.addEventListener('blur', validarGenero);
+});
+</script>
+
+<!-- Validación avanzada para el campo Estado Civil -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const casadoSelect = document.getElementById('casado');
+  const feedback = casadoSelect.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarEstadoCivil() {
+    const value = casadoSelect.value;
+
+    if (!value) {
+      feedback.textContent = "Debe seleccionar su estado civil.";
+      casadoSelect.classList.add('is-invalid');
+      casadoSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Si pasó la validación
+    casadoSelect.classList.remove('is-invalid');
+    casadoSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  casadoSelect.addEventListener('change', validarEstadoCivil);
+  casadoSelect.addEventListener('blur', validarEstadoCivil);
+});
+</script>
+
+<!-- Validación avanzada para el campo Dependientes -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const dependientesInput = document.getElementById('dependientes');
+  const feedback = dependientesInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarDependientes() {
+    const value = dependientesInput.value;
+
+    if (value === "") {
+      feedback.textContent = "Debe ingresar el número de dependientes.";
+      dependientesInput.classList.add('is-invalid');
+      dependientesInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const num = parseInt(value, 10);
+    if (isNaN(num) || num < 0 || num > 10) {
+      feedback.textContent = "El número de dependientes debe estar entre 0 y 10.";
+      dependientesInput.classList.add('is-invalid');
+      dependientesInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    dependientesInput.classList.remove('is-invalid');
+    dependientesInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  dependientesInput.addEventListener('input', validarDependientes);
+  dependientesInput.addEventListener('blur', validarDependientes);
+});
+</script>
+
+<!-- Validación avanzada para el campo Educación -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const educacionSelect = document.getElementById('educacion');
+  const feedback = educacionSelect.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarEducacion() {
+    const value = educacionSelect.value;
+
+    if (!value) {
+      feedback.textContent = "Debe seleccionar un nivel de educación.";
+      educacionSelect.classList.add('is-invalid');
+      educacionSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    educacionSelect.classList.remove('is-invalid');
+    educacionSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  educacionSelect.addEventListener('change', validarEducacion);
+  educacionSelect.addEventListener('blur', validarEducacion);
+});
+</script>
+
+<!-- Validación avanzada para el campo Zona de Propiedad -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const zonaSelect = document.getElementById('zona_propiedad');
+  const feedback = zonaSelect.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarZona() {
+    const value = zonaSelect.value;
+
+    if (!value) {
+      feedback.textContent = "Debe seleccionar una zona de propiedad.";
+      zonaSelect.classList.add('is-invalid');
+      zonaSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    zonaSelect.classList.remove('is-invalid');
+    zonaSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  zonaSelect.addEventListener('change', validarZona);
+  zonaSelect.addEventListener('blur', validarZona);
+});
+</script>
+
+<!-- Validación avanzada para el campo Salario Mensual Neto -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const salarioInput = document.getElementById('Salario_Mensual_Mano');
+
+  // Crear burbuja de error si no existe
+  let feedback = salarioInput.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback';
+    feedback.style.display = 'none';
+    salarioInput.parentNode.appendChild(feedback);
+  }
+
+  function validarSalario() {
+    const value = parseFloat(salarioInput.value);
+
+    if (!salarioInput.value) {
+      feedback.textContent = "El salario es obligatorio.";
+      salarioInput.classList.add('is-invalid');
+      salarioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 500) {
+      feedback.textContent = "Ingrese un salario realista (mín. 500 S/.)";
+      salarioInput.classList.add('is-invalid');
+      salarioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+    if (value > 50000) {
+      feedback.textContent = "Ingrese un salario realista (máx. 50,000 S/.)";
+      salarioInput.classList.add('is-invalid');
+      salarioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    salarioInput.classList.remove('is-invalid');
+    salarioInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  salarioInput.addEventListener('input', validarSalario);
+  salarioInput.addEventListener('blur', validarSalario);
+});
+</script>
+
+<!-- Validación avanzada para el campo Ingreso Anual Declarado -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ingresoAnualInput = document.getElementById('Ingreso_Anual');
+  const salarioMensualInput = document.getElementById('Salario_Mensual_Mano');
+  const feedback = ingresoAnualInput.nextElementSibling;
+
+  const ingresoMin = 5000;       // mínimo realista anual
+  const ingresoMax = 1000000;    // máximo razonable anual
+
+  function actualizarIngresoAnual() {
+    const salarioMensual = parseFloat(salarioMensualInput.value);
+
+    if (!salarioMensual || salarioMensual <= 0) {
+      ingresoAnualInput.value = '';
+      ingresoAnualInput.classList.remove('is-valid', 'is-invalid');
+      feedback.style.display = 'none';
+      return;
+    }
+
+    // calcular ingreso anual automáticamente
+    const ingresoAnual = salarioMensual * 12;
+    ingresoAnualInput.value = ingresoAnual.toFixed(0);
+
+    // validar rango
+    if (ingresoAnual < ingresoMin) {
+      feedback.textContent = `El ingreso anual mínimo para solicitar crédito es S/. ${ingresoMin.toLocaleString()}.`;
+      ingresoAnualInput.classList.add('is-invalid');
+      ingresoAnualInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+    } else if (ingresoAnual > ingresoMax) {
+      feedback.textContent = `Ingrese un valor menor o igual a S/. ${ingresoMax.toLocaleString()}.`;
+      ingresoAnualInput.classList.add('is-invalid');
+      ingresoAnualInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+    } else {
+      ingresoAnualInput.classList.remove('is-invalid');
+      ingresoAnualInput.classList.add('is-valid');
+      feedback.style.display = 'none';
+    }
+  }
+
+  // actualizar al escribir salario mensual
+  salarioMensualInput.addEventListener('input', actualizarIngresoAnual);
+  salarioMensualInput.addEventListener('blur', actualizarIngresoAnual);
+});
+</script>
+
+
+<!-- Validación avanzada para número de cuentas bancarias -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const cuentas = document.getElementById('Nro_Cuentas_Bancarias');
+  const feedback = cuentas.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarCuentas() {
+    const value = parseInt(cuentas.value);
+
+    if (!cuentas.value) {
+      feedback.textContent = "Este campo es obligatorio.";
+      cuentas.classList.add('is-invalid');
+      cuentas.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0 || value > 5) {
+      feedback.textContent = "El número de cuentas debe estar entre 0 y 5.";
+      cuentas.classList.add('is-invalid');
+      cuentas.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    cuentas.classList.remove('is-invalid');
+    cuentas.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  cuentas.addEventListener('input', validarCuentas);
+  cuentas.addEventListener('blur', validarCuentas);
+});
+</script>
+
+<!-- Validación avanzada para número de tarjetas de crédito -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const tarjetas = document.getElementById('Nro_Tarjetas_Credito');
+  const feedback = tarjetas.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarTarjetas() {
+    const value = parseInt(tarjetas.value);
+
+    if (!tarjetas.value) {
+      feedback.textContent = "Este campo es obligatorio.";
+      tarjetas.classList.add('is-invalid');
+      tarjetas.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0 || value > 5) {
+      feedback.textContent = "El número de tarjetas debe estar entre 0 y 5.";
+      tarjetas.classList.add('is-invalid');
+      tarjetas.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    tarjetas.classList.remove('is-invalid');
+    tarjetas.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  tarjetas.addEventListener('input', validarTarjetas);
+  tarjetas.addEventListener('blur', validarTarjetas);
+});
+</script>
+
+<!-- Validación avanzada para monto de deuda pendiente -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const deuda = document.getElementById('Deuda_Pendiente');
+  const feedback = deuda.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarDeuda() {
+    const value = parseFloat(deuda.value);
+
+    if (!deuda.value) {
+      feedback.textContent = "Debe ingresar su deuda actual.";
+      deuda.classList.add('is-invalid');
+      deuda.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0) {
+      feedback.textContent = "La deuda no puede ser negativa.";
+      deuda.classList.add('is-invalid');
+      deuda.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    deuda.classList.remove('is-invalid');
+    deuda.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  deuda.addEventListener('input', validarDeuda);
+  deuda.addEventListener('blur', validarDeuda);
+});
+</script>
+
+<!-- Validación avanzada para tipo de préstamo -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const prestamo = document.getElementById('Tipo_Prestamo');
+  const feedback = prestamo.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarPrestamo() {
+    if (!prestamo.value) {
+      feedback.textContent = "Debe seleccionar un tipo de préstamo.";
+      prestamo.classList.add('is-invalid');
+      prestamo.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    prestamo.classList.remove('is-invalid');
+    prestamo.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  prestamo.addEventListener('change', validarPrestamo);
+  prestamo.addEventListener('blur', validarPrestamo);
+});
+</script>
+
+<!-- Validación avanzada para monto invertido mensualmente -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const invertido = document.getElementById('Monto_Invertido_Mensualmente');
+  const feedback = invertido.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarInvertido() {
+    const value = parseFloat(invertido.value);
+
+    if (!invertido.value) {
+      feedback.textContent = "Debe ingresar el monto invertido.";
+      invertido.classList.add('is-invalid');
+      invertido.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0) {
+      feedback.textContent = "El monto no puede ser negativo.";
+      invertido.classList.add('is-invalid');
+      invertido.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    invertido.classList.remove('is-invalid');
+    invertido.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  invertido.addEventListener('input', validarInvertido);
+  invertido.addEventListener('blur', validarInvertido);
+});
+</script>
+
+<!-- Validación avanzada para tasa de interés promedio -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const tasa = document.getElementById('Tasa_Interes');
+  const feedback = tasa.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarTasa() {
+    const value = parseFloat(tasa.value);
+
+    if (!tasa.value) {
+      feedback.textContent = "Debe ingresar la tasa de interés.";
+      tasa.classList.add('is-invalid');
+      tasa.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0 || value > 100) {
+      feedback.textContent = "La tasa debe estar entre 0 y 100%.";
+      tasa.classList.add('is-invalid');
+      tasa.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    tasa.classList.remove('is-invalid');
+    tasa.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  tasa.addEventListener('input', validarTasa);
+  tasa.addEventListener('blur', validarTasa);
+});
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/factores.js') }}"></script>
+
+
+{% endblock %}

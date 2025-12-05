@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block container_class %}container-fluid p-0{% endblock %}
+
+{% block content %}
+
+<!--  Estilos personalizados menu_kfintech.css -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+<!-- =========================================================
+     🟦 SIDEBAR LATERAL K-FINTECH
+     ========================================================= -->
+<aside class="menu-kfintech-sidebar">
+    <h2>PLATAFORMA DE EVALUACIÓN CREDITICIA</h2>
+
+    {% if rol.lower() in ['administrador', 'analista'] %}
+        <!-- Formulario avanzado y su historial -->
+        <a href="{{ url_for('prediccion.prediccion') }}"
+           class="menu-kfintech-card {% if active_page == 'prediccion' %}active{% endif %}">
+            <h3>➡️ Generar Predicción</h3>
+        </a>
+
+        <!-- SUBMENÚ HISTORIAL DE PREDICCIONES-->
+        <div class="submenu-container">
+
+            <!-- TITULO PRINCIPAL (NO REDIRIGE) -->
+            <div class="menu-kfintech-card submenu-toggle 
+                {% if active_page in ['filtrar_evaluaciones_crediticias', 'historial_predicciones'] %}active{% endif %}">
+                <h3>➡️ Historial de Predicciones</h3>
+            </div>
+
+            <!-- SUBMENÚ -->
+            <div class="submenu-items">
+
+                <a href="{{ url_for('historial.filtrar_evaluaciones_crediticias') }}"
+                    class="{% if active_page == 'filtrar_evaluaciones_crediticias' %}active-sub{% endif %}">
+                    Filtrar Evaluaciones Predictivas
+                </a>
+
+                <a href="{{ url_for('historial.historial_predicciones') }}"
+                    class="{% if active_page == 'historial_predicciones' %}active-sub{% endif %}">
+                    Historial Avanzado de Predicciones
+                </a>
+
+            </div>
+
+        </div>
+
+        <a href="{{ url_for('dashboard.dashboard') }}" 
+            class="menu-kfintech-card {% if active_page == 'dashboard' %}active{% endif %}">
+            <h3>➡️ Visualización del Dashboard</h3>
+        </a>
+    {% endif %}
+
+    {% if rol.lower() in ['administrador'] %}
+        <!-- SUBMENÚ ESTADO ACTUAL DEL MODELO -->
+        <div class="submenu-container">
+
+            <!-- TITULO PRINCIPAL (NO REDIRIGE) -->
+            <div class="menu-kfintech-card submenu-toggle 
+                {% if active_page in ['estado_modelo_rendimiento', 'estado_modelo_datos'] %}active{% endif %}">
+                <h3>➡️ Estado del Modelo Predictivo</h3>
+            </div>
+
+            <!-- SUBMENÚ -->
+            <div class="submenu-items">
+
+                <a href="{{ url_for('modelo.estado_modelo_rendimiento') }}"
+                class="{% if active_page == 'estado_modelo_rendimiento' %}active-sub{% endif %}">
+                    Rendimiento del Modelo de Predicción
+                </a>
+
+                <a href="{{ url_for('modelo.estado_modelo_datos') }}"
+                class="{% if active_page == 'estado_modelo_datos' %}active-sub{% endif %}">
+                    Visualizar Información del Modelo
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    {% if rol.lower() == 'administrador' %}    
+        <a href="{{ url_for('roles.listar_usuarios') }}" 
+            class="menu-kfintech-card {% if active_page == 'listar_usuarios' %}active{% endif %}">
+            <h3>➡️ Administración de Roles</h3>
+        </a>
+    {% endif %}
+
+
+    {% if rol.lower() == 'usuario_basico' %}
+        <!-- Formulario básico y su historial -->
+        <a href="{{ url_for('prediccion.prediccion_basico') }}"
+           class="menu-kfintech-card {% if active_page == 'prediccion_basico' %}active{% endif %}">
+            <h3>📊 Realizar Predicción</h3>
+        </a>
+
+        <a href="{{ url_for('historial.historial_basico') }}"
+           class="menu-kfintech-card {% if active_page == 'historial_basico' %}active{% endif %}">
+            <h3>📁 Visualizar Historial</h3>
+        </a>
+    {% endif %}
+</aside>
+
+
+<!-- =========================================================
+     📌 CONTENIDO PRINCIPAL PRIVADO
+     ========================================================= -->
+<main class="menu-kfintech-main">
+    {% block private_content %}
+    <!-- Contenido por defecto si no se sobrescribe -->
+    
+    <h1 class="menu-kfintech-welcome-title text-center">
+            ¡Bienvenid@, {{ session.get('nombres', '').split()[0].upper() }} a K-FINTECH!
+    </h1>
+
+        <p class="menu-kfintech-welcome-subtitle text-center">
+            Gestiona tus procesos financieros de forma inteligente y segura
+        </p>
+
+        <div class="menu-kfintech-welcome-banner text-center">
+            <p class="menu-kfintech-welcome-text text-center">
+                Selecciona una opción en el panel lateral para:
+            </p>
+
+            <ul style="list-style: none; padding: 0; margin: 1rem 0; text-align: left; display: inline-block;">
+                <li>✅ Realizar evaluaciones de crédito con **Machine Learning**</li>
+                <li>✅ Predicciones inteligentes usando **XGBoost**</li>
+                <li>✅ Revisar el historial de evaluaciones</li>
+                <li>✅ Realiza un análisis de las métricas del modelo actual</li>
+            </ul>
+
+            <p style="margin-top: 1rem; font-style: italic;">
+                Aprovecha la tecnología para tomar decisiones financieras más precisas y rápidas.
+            </p>
+
+        </div>
+
+    {% endblock %}
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const submenuContainers = document.querySelectorAll(".submenu-container");
+
+    submenuContainers.forEach(container => {
+        const toggle = container.querySelector(".submenu-toggle");
+        const submenu = container.querySelector(".submenu-items");
+        const activeLink = submenu.querySelector(".active-sub");
+
+        // Si alguna subopción ya es activa, abrir el submenú
+        if (activeLink) {
+            container.classList.add("open");
+        }
+
+        // Toggle manual al hacer clic en el título del submenú
+        toggle.addEventListener("click", (e) => {
+            // Evita que el clic en los enlaces cierre el menú
+            if (e.target.tagName.toLowerCase() === "a") return;
+            container.classList.toggle("open");
+        });
+    });
+});
+</script>
+
+{% endblock %}
+

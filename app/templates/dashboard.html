@@ -1,0 +1,438 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="dashboard-container">
+
+  <h2 class="dashboard-title bi bi-graph-up"> Dashboard analítico: resúmenes gráficos interactivos para decisiones rápidas</h2>
+
+
+  <!----------------------------- Contenido principal al lado derecho ----------------------------->
+    <div id="dashboard-crediticio">
+
+        <!-- Tarjetas de métricas -->
+        <div class="dashboard-grid">
+          <div class="dashboard-card">
+            <div class="dashboard-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="dashboard-info">
+              <h6>Predicciones Totales</h6>
+              <h3>{{ total_predicciones }}</h3>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-icon">
+              <i class="bi bi-calendar-month"></i>
+            </div>
+            <div class="dashboard-info">
+              <h6>Predicciones del Mes Actual</h6>
+              <h3>{{ predicciones_mes }}</h3>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <div class="dashboard-icon"
+                {% if riesgo_mas_alto == 'ALTO' %}
+                    style="background-color:#fff1f0; color:#ff4d4f;"
+                {% elif riesgo_mas_alto == 'MEDIO' %}
+                    style="background-color:#fffbe6; color:#faad14;"
+                {% else %}
+                    style="background-color:#f6ffed; color:#52c41a;"
+                {% endif %}>
+              <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="dashboard-info">
+              <h6>Promedio de Riesgo</h6>
+              <h3>{{ promedio_riesgo }}%</h3>
+            </div>
+          </div>
+
+
+          <div class="dashboard-card">
+            <div class="dashboard-icon">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="dashboard-info">
+              <h6>Última Predicción</h6>
+              {% if ultima_prediccion %}
+              <h3>{{ ultima_prediccion.strftime('%d/%m/%Y') }}</h3>
+              {% else %}
+              <h3 class="text-muted dashboard-small-text">Sin predicciones registradas</h3>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráficos principales -->
+        <div class="dashboard-charts-grid">
+          <div class="dashboard-chart-card">
+            <div class="dashboard-chart-header">
+              <h6>Distribución de Riesgos</h6>
+            </div>
+            <div class="dashboard-chart-body dashboard-chart-center">
+              <canvas id="tortaRiesgo" width="300" height="300"></canvas>
+            </div>
+          </div>
+
+          <div class="dashboard-chart-card">
+            <div class="dashboard-chart-header">
+              <h6>Tendencia de Predicciones</h6>
+            </div>
+            <div class="dashboard-chart-body dashboard-chart-trend">
+              <canvas id="tendenciaPredicciones"></canvas>
+            </div>
+          </div>
+
+          <div class="dashboard-chart-card dashboard-chart-flex-item">
+            <div class="dashboard-chart-header">
+              <h6>Distribución de Clientes: Sector Formal vs. Informal</h6>
+              <p>
+                Muestra la proporción de clientes que pertenecen al sector formal e informal.
+              </p>
+            </div>
+            <div class="dashboard-chart-body dashboard-chart-tall">
+              <canvas id="graficoSector"></canvas>
+            </div>
+          </div>
+
+          <div class="dashboard-chart-card dashboard-chart-flex-item">
+            <div class="dashboard-chart-header">
+              <h6>Predicciones por Región</h6>
+              <p>
+                Muestra la cantidad de predicciones realizadas según la ubicación geográfica.
+              </p>
+            </div>
+            <div class="dashboard-chart-body dashboard-chart-tall">
+              <canvas id="graficoRegion"></canvas>
+            </div>
+          </div>
+        </div>
+  
+    </div>
+    
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<!-- Librería Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
+<script>
+  // Navegación del sidebar
+  document.querySelectorAll('.sidebar-option').forEach(option => {
+    option.addEventListener('click', () => {
+      // Desactivar todas las opciones
+      document.querySelectorAll('.sidebar-option').forEach(opt => opt.classList.remove('active'));
+      // Activar la opción clickeada
+      option.classList.add('active');
+
+      // Ocultar todas las secciones
+      document.querySelectorAll('.dashboard-section').forEach(sec => sec.style.display = 'none');
+
+      // Mostrar la sección correspondiente
+      const sectionId = option.getAttribute('data-section');
+      const section = document.getElementById(sectionId);
+      if(section) section.style.display = 'block';
+    });
+  });
+
+
+  // Gráfico de torta (con pequeño hueco tipo dona) --------------------------------------------------------
+  const ctxTorta = document.getElementById('tortaRiesgo').getContext('2d');
+
+  // Datos desde Flask
+  const totalBajo = {{ total_bajo }};
+  const totalMedio = {{ total_medio }};
+  const totalAlto = {{ total_alto }};
+  const total = totalBajo + totalMedio + totalAlto;
+
+  // Calcular porcentajes
+  const porcentajeBajo = total ? ((totalBajo / total) * 100).toFixed(1) : 0;
+  const porcentajeMedio = total ? ((totalMedio / total) * 100).toFixed(1) : 0;
+  const porcentajeAlto = total ? ((totalAlto / total) * 100).toFixed(1) : 0;
+
+  // Crear gráfico tipo doughnut (con hueco pequeño)
+  new Chart(ctxTorta, {
+    type: 'doughnut',
+    data: {
+      labels: [
+        `Bajo (${porcentajeBajo}%)`,
+        `Medio (${porcentajeMedio}%)`,
+        `Alto (${porcentajeAlto}%)`
+      ],
+      datasets: [{
+        data: [totalBajo, totalMedio, totalAlto],
+        backgroundColor: ['#27AE60', '#F1C40F', '#E74C3C'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '35%', // 👈 Hueco pequeño en el centro
+      plugins: {
+        legend: {
+          position: 'right', // Leyenda al costado
+          labels: {
+            usePointStyle: true,
+            boxWidth: 10,
+            font: {
+              size: 13,
+              family: 'Poppins, sans-serif'
+            },
+            color: '#2c3e50'
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.parsed;
+              const porcentaje = total ? ((value / total) * 100).toFixed(1) : 0;
+              return `${context.label}: ${porcentaje}% (${value} casos)`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Gráfico de tendencia de predicciones --------------------------------------------------------
+  const ctxTendencia = document.getElementById('tendenciaPredicciones').getContext('2d');
+
+  // Crear gradiente de línea (de azul a celeste)
+  const gradient = ctxTendencia.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, 'rgba(13, 110, 253, 0.4)');
+  gradient.addColorStop(1, 'rgba(13, 110, 253, 0)');
+
+  new Chart(ctxTendencia, {
+    type: 'line',
+    data: {
+      labels: {{ meses|tojson }},
+      datasets: [{
+        label: 'Predicciones por mes',
+        data: {{ predicciones_por_mes|tojson }},
+        fill: true, // 👈 Para el fondo degradado
+        backgroundColor: gradient,
+        borderColor: '#0d6efd',
+        borderWidth: 2,
+        pointBackgroundColor: '#0d6efd',
+        pointBorderColor: '#fff',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.3 // 👈 Curva más suave
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#2c3e50',
+            font: {
+              family: 'Poppins, sans-serif',
+              size: 13
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(13,110,253,0.9)',
+          titleFont: { size: 14, family: 'Poppins, sans-serif' },
+          bodyFont: { size: 13, family: 'Poppins, sans-serif' },
+          padding: 10,
+          cornerRadius: 8
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: '#2c3e50',
+            font: { family: 'Poppins, sans-serif', size: 12 }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: {
+            color: '#2c3e50',
+            stepSize: 1,
+            font: { family: 'Poppins, sans-serif', size: 12 }
+          }
+        }
+      },
+      animation: {
+        duration: 1500, // 👈 Animación de entrada más suave
+        easing: 'easeOutQuart'
+      }
+    }
+  });
+
+// Gráfico de distribución: Sector Formal vs. Informal --------------------------------------------------------
+const ctxSector = document.getElementById('graficoSector').getContext('2d');
+
+// Colores personalizados para cada categoría
+const coloresSector = [
+  'rgba(13, 110, 253, 0.85)', // Azul → Formal
+  'rgba(255, 159, 64, 0.85)'  // Naranja → Informal
+];
+
+new Chart(ctxSector, {
+  type: 'bar',
+  data: {
+    labels: ['Formal', 'Informal'],
+    datasets: [{
+      label: 'Cantidad de Clientes',
+      data: {{ clientes_formal_informal|tojson }}, // 👈 Ejemplo: [35, 20]
+      backgroundColor: coloresSector,
+      borderRadius: 8,
+      borderSkipped: false
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        titleFont: { family: 'Poppins, sans-serif', size: 14 },
+        bodyFont: { family: 'Poppins, sans-serif', size: 13 },
+        cornerRadius: 8,
+        padding: 10,
+        callbacks: {
+          label: function(context) {
+            const valor = context.parsed.y;
+            return ` ${context.label}: ${valor} clientes`;
+          }
+        }
+      },
+      title: {
+        display: false ,
+        text: 'Distribución de Clientes: Sector Formal vs. Informal',
+        color: '#2c3e50',
+        font: {
+          family: 'Poppins, sans-serif',
+          size: 15,
+          weight: '600'
+        },
+        padding: { bottom: 20 }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          color: '#2c3e50',
+          font: { family: 'Poppins, sans-serif', size: 13 }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: {
+          color: '#2c3e50',
+          font: { family: 'Poppins, sans-serif', size: 12 },
+          stepSize: 1
+        }
+      }
+    },
+    animation: {
+      duration: 1200,
+      easing: 'easeOutQuart'
+    }
+  }
+});
+
+    const ctxRegion = document.getElementById('graficoRegion').getContext('2d');
+
+    // Crear gradiente moderno
+    const gradientRegion = ctxRegion.createLinearGradient(0, 0, 0, 400);
+    gradientRegion.addColorStop(0, 'rgba(40, 167, 69, 0.9)');
+    gradientRegion.addColorStop(1, 'rgba(40, 167, 69, 0.4)');
+
+    new Chart(ctxRegion, {
+      type: 'bar',
+      data: {
+        labels: {{ regiones|tojson }},
+        datasets: [{
+          label: 'Número de predicciones',
+          data: {{ predicciones_por_region|tojson }},
+          backgroundColor: gradientRegion,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(40,167,69,0.9)',
+            titleFont: { family: 'Poppins, sans-serif', size: 14 },
+            bodyFont: { family: 'Poppins, sans-serif', size: 13 },
+            cornerRadius: 8,
+            padding: 10,
+            callbacks: {
+              label: function(context) {
+                const valor = context.parsed.y;
+                return ` ${context.label}: ${valor} predicciones`;
+              }
+            }
+          },
+          title: {
+            display: false,
+            text: 'Predicciones por Región',
+            color: '#2c3e50',
+            font: {
+              family: 'Poppins, sans-serif',
+              size: 15,
+              weight: '600'
+            },
+            padding: { bottom: 20 }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: '#2c3e50',
+              font: { family: 'Poppins, sans-serif', size: 12 },
+              maxRotation: 45,
+              minRotation: 0
+            }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: {
+              color: '#2c3e50',
+              font: { family: 'Poppins, sans-serif', size: 12 },
+              stepSize: 1
+            }
+          }
+        },
+        animation: {
+          duration: 1200,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+
+</script>
+
+<!--  Estilos personalizados -->
+
+{% endblock %}

@@ -1,0 +1,283 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="historial-basico-container">
+
+  <h2 class="historial-basico-title bi bi-graph-up"> Historial de Predicciones Avanzado</h2>
+
+
+    <!----------------------------- Historial prediccion completo ----------------------------->
+    <div id="historial-predicciones">       
+
+      <!-- Botón CSV general -->
+      <div class="historial-csv-container">
+          <a href="{{ url_for('historial.descargar_csv') }}" class="historial-btn-csv">
+              Descargar CSV
+          </a>
+      </div>
+
+      <form id="formBuscarPrediccionesCompleto">
+        
+        <input type="text" id="dniSolicitante" placeholder="DNI">
+        <input type="text" id="nombreSolicitante" placeholder="Nombre">
+        <input type="date" id="fechaDesde">
+        <input type="date" id="fechaHasta">
+
+        <select id="nivelRiesgo">
+          <option value="">Todos</option>
+          <option value="ALTO">Alto</option>
+          <option value="MEDIO">Medio</option>
+          <option value="BAJO">Bajo</option>
+        </select>
+
+          <button type="submit">Filtrar</button>
+          <button type="button" id="btnLimpiarFiltros">Limpiar</button>
+      </form>
+            
+      <!-- Tabla de resultados -->
+      <div class="historial-tabla-contenedor">
+          <div class="historial-tabla-wrapper">
+              <table id="tablaResultados" class="historial-table">
+                <thead>
+                  <tr class="text-center">
+                    <!--<th>ID</th>
+                    <th>USUARIO_ID</th>-->
+                    <th>DNI</th>
+                    <th>Nombre Solicitante</th> <!-- Nuevo -->
+                    <th>Fecha Predicción</th>  <!-- Nuevo -->
+                    <th>Modelo</th>
+                    <th>Estado</th>
+                    <th>T. Inf. (ms)</th>
+
+                    <th>Prob. obt. (%)</th>
+                    <th>Nivel Riesgo</th>
+
+                    <th>Edad</th>
+                    <th>Ocupación</th>
+                    <th>Ing. Anual</th>
+                    <th>Sal. Mensual</th>
+                    <th>N° Cuentas</th>
+                    <th>N° Tarjetas</th>
+                    <th>Tasa Interés</th>
+                    <th>N° Préstamos</th>
+                    <th>Tipo Préstamo</th>
+                    <th>Cambio Lím.</th>
+                    <th>Cons. Cred</th>
+                    <th>Deuda Pend.</th>
+                    <th>Ratio Util.</th>
+                    <th>Antig. Hist.</th>
+                    <th>EMI Total</th>
+                    <th>Inv. Mensual</th>
+                    <th>Puntaje Cred.</th>
+                    <th>Ratio D/I</th>
+                    <th>Ratio EMI/I</th>
+                    <th>Ahorro Mens.</th>
+                    <th>Sector Econ.</th>
+                    <th>Infocorp</th>
+                    <th>Región</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {% if historial %}
+                    {% for p in historial %}
+                      <tr>
+                        <!--<td>{{ p.id }}</td>
+                        <td>{{ p.usuario_id }}</td>-->
+                        <td>{{ p.dni_solicitante }}</td>
+                        <td>{{ p.nombre_solicitante }}</td> <!-- Nuevo -->
+                        <td>{{ p.fecha_prediccion.strftime('%d/%m/%Y') if p.fecha_prediccion else '' }}</td> <!-- Nuevo --> 
+                        <td>{{ p.modelo_version }}</td>       
+                        <td>{{ p.estado_prediccion }}</td>
+                        <td>{{ "%.2f"|format(p.tiempo_inferencia_ms) if p.tiempo_inferencia_ms else '' }}</td>
+                        
+                        <td>{{ "%.2f"|format(p.probabilidad_default*100) ~ "%" if p.probabilidad_default is not none else '' }}</td>
+                        
+                        <td>
+                          {% if p.nivel_riesgo %}
+                            <span class="historial-riesgo-label 
+                                        {% if p.nivel_riesgo.lower() == 'alto' %}historial-riesgo-alta
+                                        {% elif p.nivel_riesgo.lower() == 'medio' %}historial-riesgo-medio
+                                        {% else %}historial-riesgo-bajo{% endif %}">
+                              {{ p.nivel_riesgo }}
+                            </span>
+                          {% endif %}
+                        </td>
+
+                        <td>{{ p.Edad }}</td>
+                        <td>{{ p.Ocupacion }}</td>
+                        <td>{{ p.Ingreso_Anual }}</td>
+                        <td>{{ p.Salario_Mensual_Mano }}</td>
+                        <td>{{ p.Nro_Cuentas_Bancarias }}</td>
+                        <td>{{ p.Nro_Tarjetas_Credito }}</td>
+                        <td>{{ p.Tasa_Interes }}</td>
+                        <td>{{ p.Nro_Prestamos }}</td>
+                        <td>{{ p.Tipo_Prestamo }}</td>
+                        <td>{{ p.Cambio_Limite_Credito }}</td>
+                        <td>{{ p.Nro_Consultas_Credito }}</td>
+                        <td>{{ p.Deuda_Pendiente }}</td>
+                        <td>{{ p.Ratio_Utilizacion_Credito }}</td>
+                        <td>{{ p.Antiguedad_Historial_Credito }}</td>
+                        <td>{{ p.EMI_Total_Mensual }}</td>
+                        <td>{{ p.Monto_Invertido_Mensualmente }}</td>
+                        <td>{{ p.Puntaje_Credito }}</td>
+                        <td>{{ p.Ratio_Deuda_Ingreso }}</td>
+                        <td>{{ p.Ratio_EMI_Ingreso }}</td>
+                        <td>{{ p.Ahorro_Mensual }}</td>
+                        <td>{{ p.Sector_Economico }}</td>
+                        <td>{{ 'Sí' if p.Infocorp_Flag == 1 else 'No' }}</td>
+                        <td>{{ p.Region }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="27" class="text-center text-muted">No hay predicciones registradas.</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+
+            </div>
+
+      </div>
+
+    </div>
+
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const form = document.getElementById('formBuscarPrediccionesCompleto');
+    const btnLimpiar = document.getElementById('btnLimpiarFiltros');
+
+    // Enviar filtros al hacer submit
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Evita recargar la página
+
+        const filtros = {
+            dni_solicitante: document.getElementById('dniSolicitante').value.trim(),
+            nombre_solicitante: document.getElementById('nombreSolicitante').value.trim(),
+            fecha_desde: document.getElementById('fechaDesde').value,
+            fecha_hasta: document.getElementById('fechaHasta').value,
+            nivel_riesgo: document.getElementById('nivelRiesgo').value
+        };
+
+        await cargarResultadosCompletos(filtros);
+    });
+
+    // Limpiar filtros
+    btnLimpiar.addEventListener('click', () => {
+        form.reset();
+        cargarResultadosCompletos(); // Carga todos los resultados
+    });
+
+    // Carga inicial de todos los resultados
+    cargarResultadosCompletos();
+
+});
+</script>
+
+<!-- Fintro en opcion avanzada de historial -->
+<script>
+// Función para cargar resultados desde la API
+async function cargarResultados(filtros = {}) {
+    const tabla = document.getElementById('tablaResultados').querySelector('tbody');
+    tabla.innerHTML = `<tr><td colspan="33" class="text-center text-muted">Cargando...</td></tr>`;
+
+    try {
+        let url = '/buscar_predicciones_avanzado';
+        if (Object.keys(filtros).length > 0) {
+            url += `?${new URLSearchParams(filtros).toString()}`;
+        }
+
+        const response = await fetch(url);
+        const resultados = await response.json();
+
+        if (!resultados.length) {
+            tabla.innerHTML = `<tr><td colspan="33" class="text-center text-muted">No se encontraron resultados.</td></tr>`;
+            return;
+        }
+
+        let html = '';
+        resultados.forEach(p => {
+            let riesgoClass = 'historial-riesgo-label '; // ✅ siempre incluimos la clase base
+            if (p.nivel_riesgo?.toUpperCase() === 'ALTO') riesgoClass += 'historial-riesgo-alta';
+            else if (p.nivel_riesgo?.toUpperCase() === 'MEDIO') riesgoClass += 'historial-riesgo-medio';
+            else if (p.nivel_riesgo?.toUpperCase() === 'BAJO') riesgoClass += 'historial-riesgo-bajo';
+            html += `
+                <tr>
+                    <td>${p.dni_solicitante}</td>
+                    <td>${p.nombre_solicitante}</td>
+                    <td>${p.fecha_prediccion}</td>
+                    <td>${p.modelo_version}</td>
+                    <td>${p.estado_prediccion}</td>
+                    <td>${p.tiempo_inferencia_ms?.toFixed(2) || '-'}</td>
+                    <td>${(p.probabilidad_default*100).toFixed(2)}%</td>
+                    <td><span class="${riesgoClass}">${p.nivel_riesgo}</span></td>
+                    <td>${p.Edad}</td>
+                    <td>${p.Ocupacion}</td>
+                    <td>${p.Ingreso_Anual}</td>
+                    <td>${p.Salario_Mensual_Mano}</td>
+                    <td>${p.Nro_Cuentas_Bancarias}</td>
+                    <td>${p.Nro_Tarjetas_Credito}</td>
+                    <td>${p.Tasa_Interes}</td>
+                    <td>${p.Nro_Prestamos}</td>
+                    <td>${p.Tipo_Prestamo}</td>
+                    <td>${p.Cambio_Limite_Credito}</td>
+                    <td>${p.Nro_Consultas_Credito}</td>
+                    <td>${p.Deuda_Pendiente}</td>
+                    <td>${p.Ratio_Utilizacion_Credito}</td>
+                    <td>${p.Antiguedad_Historial_Credito}</td>
+                    <td>${p.EMI_Total_Mensual}</td>
+                    <td>${p.Monto_Invertido_Mensualmente}</td>
+                    <td>${p.Puntaje_Credito}</td>
+                    <td>${p.Ratio_Deuda_Ingreso}</td>
+                    <td>${p.Ratio_EMI_Ingreso}</td>
+                    <td>${p.Ahorro_Mensual}</td>
+                    <td>${p.Sector_Economico}</td>
+                    <td>${p.Infocorp_Flag == 1 ? 'Sí' : 'No'}</td>
+                    <td>${p.Region}</td>
+                </tr>
+            `;
+        });
+
+        tabla.innerHTML = html;
+    } catch (err) {
+        console.error("Error al cargar predicciones:", err);
+        tabla.innerHTML = `<tr><td colspan="33" class="text-center text-danger">Error al cargar resultados.</td></tr>`;
+    }
+}
+
+// Capturar submit del formulario
+document.getElementById('formBuscarPrediccionesCompleto').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const filtros = {
+        dni_solicitante: document.getElementById('dniSolicitante').value.trim(),
+        nombre_solicitante: document.getElementById('nombreSolicitante').value.trim(),
+        fecha_desde: document.getElementById('fechaDesde').value,
+        fecha_hasta: document.getElementById('fechaHasta').value,
+        nivel_riesgo: document.getElementById('nivelRiesgo').value
+    };
+    cargarResultados(filtros);
+});
+
+// Limpiar filtros y recargar tabla completa
+document.getElementById('btnLimpiarFiltros').addEventListener('click', function() {
+    document.getElementById('formBuscarPrediccionesCompleto').reset();
+    cargarResultados(); // Sin filtros
+});
+
+// Cargar tabla completa al iniciar
+window.addEventListener('DOMContentLoaded', () => cargarResultados());
+</script>
+
+
+{% endblock %}
+

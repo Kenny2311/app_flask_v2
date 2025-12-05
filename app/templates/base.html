@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>K-FINTECH</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+  <!-- Estilos personalizados base.css -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white barra-navegacion-navbar-custom fixed-top">
+    
+    <div class="container-fluid">
+
+      <!-- Logo + Texto como enlace al inicio -->
+      <a class="navbar-brand d-flex align-items-center" href="{{ url_for('auth.inicio') }}">
+        <img src="{{ url_for('static', filename='img/logo4.png') }}" alt="Logo" height="50">
+        <span class="nombre-pagina-text">K-FINTECH</span>
+      </a>
+      
+      <!-- Botón para móviles -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <!-- Contenido colapsable -->
+      {% if 'usuario' not in session %}
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <!-- Menú central -->
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="#">Financiamiento</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Inversiones</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Ver mas</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Centro de ayuda</a>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
+        
+      <!-- Menú de usuario -->
+      <ul class="navbar-nav">
+      {% if session.get('correo') %}
+
+        <li class="nav-item dropdown" id="userDropdownWrapper">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle fs-4 me-2"></i>
+
+            <!-- Mostrar nombre + rol -->
+            <span style="font-weight: 600">
+              {{ session.get('nombres', '').split()[0].upper() }}
+            </span>
+
+          </a>
+          
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" data-bs-backdrop="false">
+              <li class="dropdown-header text-center" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+                <i class="user-autenticado-logo bi bi-person-circle"></i>
+
+                  <strong class="fs-6" style="color: #343a40;">
+                    {{ session.get('nombres', '') }}                  
+                    {{ session.get('apellidos', '') }}
+                  </strong><br>
+
+                  <small class="fs-7" style="color: #495057;">
+                    {{ session.get('correo', '') }}<br>
+                  </small> 
+                  
+                  <span style="font-weight: 600; color: #4B0082;">
+                      👤 Rol: {{ session.get('rol', '').capitalize() }}
+                  </span><br>                
+
+              </li>
+              <!--<li><hr class="dropdown-divider"></li>-->
+              
+              <li>
+                  <a class="dropdown-item text-center  fs-7" 
+                    href="{{ url_for('usuarios.menu_perfil') }}" 
+                    style="color: blue; text-decoration: underline;">
+                    Ir a configurar perfil
+                  </a>
+              </li>          
+
+              <li>
+                  <a class="dropdown-item text-center fs-7" 
+                  href="{{ url_for('auth.menu_kfintech') }}"
+                  style="color: blue; text-decoration: underline;">
+                  Ir a plataforma K-FINTECH
+                </a>
+              </li>
+
+              <li>
+                  <a class="dropdown-item text-center  fs-7" 
+                    href="{{ url_for('auth.inicio') }}" 
+                    style="color: blue; text-decoration: underline;">
+                    Ir a inicio
+                  </a>
+              </li>              
+              
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger text-center fs-7" 
+                href="{{ url_for('auth.logout') }}">
+                Cerrar sesión
+              </a>
+            </li>
+          </ul>
+        </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="btn registro-btn me-2" href="{{ url_for('auth.registro') }}">Regístrate</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn login-btn-outline" href="{{ url_for('auth.login') }}" style="width: 120px;">Iniciar sesión</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="{% block container_class %}container-fluid p-0{% endblock %}">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+      <div id="toastHeader" class="toast-header bg-success text-white">
+        <strong class="me-auto">Notificación</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body" id="toastBody">Mensaje</div>
+    </div>
+  </div>
+
+  
+  <!-- Bootstrap Bundle (global) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  {% block body_scripts %}{% endblock %}
+  
+    <!----------------------------------------- ASISTENTE FINTECH --------------------------------------------------->
+    {% if rol is defined and rol.lower() == 'usuario_basico' %}
+    <!-- Botón flotante mejorado -->
+    <button id="chatbot-toggle" class="btn btn-primary rounded-circle p-0 shadow-lg"
+      style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; z-index: 1001; transition: all 0.3s ease;">
+      <i class="bi bi-robot fs-4"></i>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-badge" style="display: none;">
+        1
+      </span>
+    </button>
+
+    <!-- Contenedor del chatbot mejorado -->
+    <div id="chatbot-container" class="d-none" 
+      style="position: fixed; bottom: 100px; right: 30px; width: 350px; max-height: 500px; background: white; 
+            border: none; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1000; 
+            display: flex; flex-direction: column; overflow: hidden; transform: scale(0.9); opacity: 0; 
+            transition: all 0.3s ease; transform-origin: bottom right;">
+      
+      <!-- Cabecera del chat -->
+      <div class="d-flex justify-content-between align-items-center p-3 bg-primary text-white">
+        <h6 class="mb-0 fw-bold">Asistente K-FINTECH</h6>
+        <div>
+          <button id="minimize-chat" class="btn btn-sm btn-outline-light me-1">
+            <i class="bi bi-dash"></i>
+          </button>
+          <button id="close-chat" class="btn btn-sm btn-outline-light">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+      
+
+      <!-- Área de mensajes mejorada -->
+      {% set nombre_usuario = session.get('nombre_completo', session.get('usuario', 'Usuario')) %}
+
+
+      <!-- Área de mensajes mejorada -->
+      {% if pagina_actual == 'menu_kfintech' %}
+      <div id="chatbot-messages" 
+          style="flex: 1; padding: 15px; overflow-y: auto; font-size: 16px; background-color: #f8f9fa;">
+        
+        <!-- Mensaje de bienvenida y guía solo para menú -->
+        <div class="text-center text-muted small py-3">
+          👋 <strong>¡Hola {{ nombre_usuario }}! Soy tu Asistente K-FINTECH.</strong><br>
+          Estoy aquí para ayudarte a navegar tu menú y tus predicciones. 💡<br><br>
+          Puedes comenzar escribiendo o seleccionando una de estas opciones:<br>
+          • <strong>1</strong> o <strong>Realizar predicción</strong><br>
+          • <strong>2</strong> o <strong>Ver historial</strong><br>
+          • <strong>3</strong> o <strong>Gestionar perfil</strong><br><br>
+          También puedes escribir <strong>ayuda</strong> en cualquier momento para ver estas opciones nuevamente.
+        </div>
+
+      </div>
+
+      {% elif pagina_actual == 'prediccion_basico' %}
+      <div id="chatbot-messages" 
+          style="flex: 1; padding: 15px; overflow-y: auto; font-size: 16px; background-color: #f8f9fa;">
+
+        <!-- Mensaje inicial para predicción básica -->
+        <div class="text-center text-muted small py-3">
+          🔮 <strong>{{ nombre_usuario }}, estás en Predicción Básica.</strong><br>
+          Ingresa los datos en el formulario y presiona <strong>Evaluarme</strong> para generar tu predicción.<br>
+          Si necesitas orientación sobre algún campo, escribe <strong>ayuda</strong>.
+        </div>
+
+      </div>
+
+      {% elif pagina_actual == 'historial_basico' %}
+      <div id="chatbot-messages" 
+          style="flex: 1; padding: 15px; overflow-y: auto; font-size: 16px; background-color: #f8f9fa;">
+
+        <!-- Mensaje inicial para historial -->
+        <div class="text-center text-muted small py-3">
+          📂 <strong>{{ nombre_usuario }}, este es tu historial de predicciones.</strong><br>
+          Aquí puedes revisar tus predicciones anteriores y consultar detalles.<br>
+          Si necesitas guía sobre cómo interactuar con el historial, escribe <strong>ayuda</strong>.
+        </div>
+
+      </div>
+
+      {% else %}
+      <div id="chatbot-messages" style="flex: 1; padding: 15px; overflow-y: auto; font-size: 16px; background-color: #f8f9fa;">
+        <!-- Mensaje genérico para otras páginas -->
+      </div>
+      {% endif %}
+      
+      <!-- Área de entrada mejorada -->
+      <div class="border-top p-2 bg-white">
+        <div class="input-group">
+          <textarea id="chatbot-input" placeholder="Haz una pregunta..." rows="1"
+            class="form-control border-0 shadow-none" 
+            style="resize: none; font-size: 14px; max-height: 100px;"></textarea>
+          <button id="send-message" class="btn btn-primary rounded-end">
+            <i class="bi bi-send-fill"></i>
+          </button>
+        </div>
+        <div class="text-end small text-muted mt-1">
+          Presiona Enter para enviar
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Elementos del DOM
+      const toggleBtn = document.getElementById('chatbot-toggle');
+      const chatContainer = document.getElementById('chatbot-container');
+      const chatInput = document.getElementById('chatbot-input');
+      const chatMessages = document.getElementById('chatbot-messages');
+      const sendBtn = document.getElementById('send-message');
+      const closeBtn = document.getElementById('close-chat');
+      const minimizeBtn = document.getElementById('minimize-chat');
+      const notificationBadge = document.getElementById('notification-badge');
+
+      // Estado del chat
+      let isChatOpen = false;
+      let hasUnreadMessages = false;
+      let isMinimized = false;
+
+      // Mostrar/ocultar chat con animación
+      function toggleChat() {
+        if (isMinimized) { unminimizeChat(); return; }
+        isChatOpen = !isChatOpen;
+        if (isChatOpen) {
+          chatContainer.classList.remove('d-none');
+          setTimeout(() => {
+            chatContainer.style.opacity = '1';
+            chatContainer.style.transform = 'scale(1)';
+          }, 10);
+          hasUnreadMessages = false;
+          notificationBadge.style.display = 'none';
+        } else {
+          chatContainer.style.opacity = '0';
+          chatContainer.style.transform = 'scale(0.9)';
+          setTimeout(() => { chatContainer.classList.add('d-none'); }, 300);
+        }
+      }
+
+      // Minimizar / restaurar chat
+      function minimizeChat() {
+        chatContainer.style.maxHeight = '70px';
+        chatContainer.style.overflow = 'hidden';
+        document.querySelector('#chatbot-messages').style.display = 'none';
+        document.querySelector('.border-top').style.display = 'none';
+        isMinimized = true;
+      }
+
+      function unminimizeChat() {
+        chatContainer.style.maxHeight = '500px';
+        chatContainer.style.overflow = 'hidden';
+        document.querySelector('#chatbot-messages').style.display = 'block';
+        document.querySelector('.border-top').style.display = 'block';
+        isMinimized = false;
+      }
+
+      // Obtener el nombre del archivo de la URL
+      const path = window.location.pathname.toLowerCase();
+      const page = path.split("/").pop(); // obtiene "menu", "prediccion_basico", etc.
+
+      let ventanaActual = '';
+
+      if (page === 'menu' || page === 'menu.html') ventanaActual = 'menu';
+      else if (page === 'prediccion_basico' || page === 'prediccion_basico.html') ventanaActual = 'prediccion_basico';
+      else if (page === 'historial_basico' || page === 'historial_basico.html') ventanaActual = 'historial_basico';
+
+      console.log("Ruta completa:", path);
+      console.log("Página detectada:", page);
+      console.log("Ventana actual:", ventanaActual);
+
+      // Respuestas locales
+      const respuestasLocales = {
+        menu: {
+          "hola": "¡Hola! Bienvenido al menú.",
+          "adios": "¡Hasta luego!"
+        },
+        prediccion_basico: {
+          "hola": "Hola, estás en la sección de predicción básica.",
+          "prediccion": "Para generar una predicción, completa el formulario."
+        },
+        historial_basico: {
+          "hola": "Hola, aquí puedes ver tu historial de predicciones.",
+          "limpiar": "Se han limpiado los registros del historial."
+        }
+      };
+
+      // Enviar mensaje (local)
+      async function sendMessage() {
+        const userText = chatInput.value.trim();
+        if (!userText) return;
+        appendMessage('Tú', userText, 'user-message');
+        chatInput.value = '';
+        adjustTextareaHeight();
+
+        // Mostrar indicador de "escribiendo"
+        const typingIndicator = document.createElement('div');
+        typingIndicator.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+        typingIndicator.style.textAlign = 'left';
+        typingIndicator.style.margin = '8px 0';
+        chatMessages.appendChild(typingIndicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        try {
+          const res = await fetch('/asistente/asistente', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userText, ventana: ventanaActual })
+          });
+
+          const data = await res.json();
+          chatMessages.removeChild(typingIndicator);
+
+          appendMessage('Asistente', data.reply, 'assistant-message');
+
+          if (!isChatOpen) {
+            hasUnreadMessages = true;
+            notificationBadge.style.display = 'block';
+          }
+        } catch (err) {
+          chatMessages.removeChild(typingIndicator);
+          appendMessage('Sistema', 'No se pudo conectar con el asistente. Intenta nuevamente más tarde.', 'system-message');
+        }
+      }
+
+      // Ajustar altura del textarea dinámicamente
+      function adjustTextareaHeight() {
+        chatInput.style.height = 'auto';
+        chatInput.style.height = (chatInput.scrollHeight > 100 ? 100 : chatInput.scrollHeight) + 'px';
+      }
+
+      // Escapar HTML y agregar mensaje
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function appendMessage(sender, text, messageType) {
+        const msgDiv = document.createElement('div');
+        msgDiv.classList.add('message', messageType);
+        const escapedText = escapeHtml(text).replace(/\n/g, '<br>');
+        if (sender === 'Tú') {
+          msgDiv.innerHTML = `<div class="d-flex justify-content-end mb-2">
+                                <div class="bg-primary text-white p-2 rounded-3" style="max-width: 80%;">${escapedText}</div>
+                              </div>`;
+        } else {
+          msgDiv.innerHTML = `<div class="d-flex justify-content-start mb-2">
+                                <div class="bg-light p-2 rounded-3" style="max-width: 80%;">
+                                  <strong>${sender}:</strong><br>${escapedText}
+                                </div>
+                              </div>`;
+        }
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      // Event listeners
+      toggleBtn.addEventListener('click', toggleChat);
+      closeBtn.addEventListener('click', toggleChat);
+      minimizeBtn.addEventListener('click', minimizeChat);
+      sendBtn.addEventListener('click', sendMessage);
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      chatInput.addEventListener('input', adjustTextareaHeight);
+
+      // Cerrar chat al hacer clic fuera
+      document.addEventListener('click', (e) => {
+        const allowedElements = [chatContainer, toggleBtn, sendBtn, chatInput, minimizeBtn, closeBtn];
+        const isClickInside = allowedElements.some(el => el.contains(e.target) || el === e.target);
+        if (isChatOpen && !isClickInside) toggleChat();
+      });
+
+      
+    </script>
+
+
+    <!----------------------------------------- ASISTENTE FINTECH --------------------------------------------------->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const dropdown = document.getElementById("userDropdownWrapper");
+          const overlay = document.getElementById("contentOverlay");
+
+          // Detectar cuando se abre el dropdown
+          dropdown.addEventListener("show.bs.dropdown", function () {
+            overlay.style.display = "block";
+          });
+
+          // Detectar cuando se cierra
+          dropdown.addEventListener("hide.bs.dropdown", function () {
+            overlay.style.display = "none";
+          });
+        });
+    </script>
+
+  {% endif %}
+
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
+
+  <!-- Toast de login exitoso -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+      const toastEl = document.getElementById("liveToast");
+      const toastBody = document.getElementById("toastBody");
+      const toastHeader = document.getElementById("toastHeader");
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          {% for category, msg in messages %}
+              toastBody.textContent = {{ msg|tojson }};
+
+              const colors = {
+                  "success": "bg-success text-white",
+                  "danger": "bg-danger text-white",
+                  "warning": "bg-warning text-dark",
+                  "info": "bg-info text-dark"
+              };
+
+              toastHeader.className = "toast-header " + (colors[{{ category|tojson }}] || "bg-success text-white");
+
+              new bootstrap.Toast(toastEl).show();
+          {% endfor %}
+      {% endif %}
+      {% endwith %}
+  });
+  </script>
+
+  <!-- Toast de cerrar sesión -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+      const toastEl = document.getElementById("liveToast");
+      const toastBody = document.getElementById("toastBody");
+      const toastHeader = document.getElementById("toastHeader");
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          {% for category, msg in messages %}
+              toastBody.textContent = {{ msg|tojson }};
+
+              const colors = {
+                  "success": "bg-success text-white",
+                  "danger": "bg-danger text-white",
+                  "warning": "bg-warning text-dark",
+                  "info": "bg-info text-dark"
+              };
+
+              toastHeader.className = "toast-header " + (colors[{{ category|tojson }}] || "bg-success text-white");
+
+              new bootstrap.Toast(toastEl).show();
+          {% endfor %}
+      {% endif %}
+      {% endwith %}
+  });
+  </script>
+
+</body>
+
+</html>
+

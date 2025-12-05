@@ -1,0 +1,196 @@
+{% extends "menu_perfil.html" %}
+
+{% block private_content %}
+
+<!--  Estilos personalizados -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base_perfil.css') }}">
+
+<div class="cambiar-correo-container">
+
+  <!-- Titulo para cambiar correo -->
+    <h2 class="cambiar-correo-titulo bi bi-envelope-fill"> Cambiar correo</h2>
+
+    <div id="cambiar-correo">
+
+        <div class="cambiar-correo-info">
+                Necesitas el código de verificación para cambiar tu correo
+        </div>
+
+            <!-- Mostrar correo actual -->
+            <div class="cambiar-correo-actual">
+                Correo actual: <strong>{{ usuario.correo }}</strong>
+            </div>
+
+            <!-- Código de verificación -->
+            <div class="cambiar-correo-codigo-grupo mb-3">
+                <div>
+                    <label class="form-label cambiar-correo-label">Código de verificación</label>
+                    <input type="text" name="codigo_verificacion" class="form-control cambiar-correo-input">
+                </div>
+
+                <div class="cambiar-correo-boton-codigo">
+                    <button type="button" class="btn cambiar-correo-btn-primary" onclick="enviarCodigoCorreo()">Obtener código</button>
+                </div>
+
+                <!-- Modal de confirmación -->
+                <div class="modal fade" id="codigoCorreoModal" tabindex="-1" aria-hidden="true"> 
+                    <div class="modal-dialog"> 
+                        <div class="modal-content"> 
+                            <div class="modal-header bg-success text-white"> 
+                                <h5 class="modal-title">Código enviado</h5> 
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                            </div> 
+                            <div class="modal-body"> 
+                                ✅ El código de verificación se ha enviado correctamente a tu correo.
+                            </div> 
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div>
+            </div>
+
+            <!-- Formulario -->
+            <form method="POST" action="{{ url_for('usuarios.cambiar_correo') }}">
+
+                <!-- Nuevo correo -->
+                <div class="cambiar-correo-grupo mb-3">
+                    <label class="form-label cambiar-correo-label">Nuevo correo</label>
+                    <input type="email" id="nuevo_correo" name="nuevo_correo" class="form-control cambiar-correo-input" autocomplete="off">
+                </div>
+
+                <!-- Contraseña actual -->
+                <div class="cambiar-correo-grupo mb-3">
+                    <label class="form-label cambiar-correo-label">Contraseña actual</label>
+                    <input type="password" id="contrasena_actual_correo" name="contrasena_actual_correo" class="form-control cambiar-cortrasena-input" autocomplete="new-password">
+                    <i class="fa-solid fa-eye cambiar-correo-icon" id="togglePasswordCorreo"></i>
+                </div>
+
+                <!-- Botón Guardar cambios -->
+                <div class="cambiar-correo-boton-guardar">
+                    <button type="button" id="btnGuardarCorreo" class="btn btn-success">
+                        Guardar cambios
+                    </button>
+                </div>
+
+                <!-- Modal cambio exitoso -->
+                <div class="modal fade" id="correoModal" tabindex="-1" aria-hidden="true"> 
+                    <div class="modal-dialog"> 
+                        <div class="modal-content"> 
+                            <div class="modal-header bg-success text-white"> 
+                                <h5 class="modal-title">Cambio de correo</h5> 
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                            </div> 
+                            <div class="modal-body"> 
+                                ✅ Tu correo se ha cambiado correctamente. 
+                            </div> 
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div>
+
+            </form>
+
+    </div>
+
+</div>
+
+
+<!-- Toast de aviso (reutilizable) -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="avisoToast" class="toast align-items-center text-white bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                ⚠️ Esta funcionalidad aún no está completa.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!------------------------------------- Cambiar correo  --------------------------------------->
+
+<script>
+const btnGuardarCorreo = document.getElementById('btnGuardarCorreo');
+const nuevoCorreoInput = document.getElementById('nuevo_correo');
+const contrasenaInputCorreo = document.getElementById('contrasena_actual_correo');
+
+btnGuardarCorreo.addEventListener('click', function() {
+    let valid = true;
+
+    // Limpiar mensajes anteriores
+    [nuevoCorreoInput, contrasenaInputCorreo].forEach(input => {
+        input.classList.remove('is-invalid');
+        const prevMsg = input.parentNode.querySelector('.invalid-feedback');
+        if(prevMsg) prevMsg.remove();
+    });
+
+    // Validar nuevo correo
+    if(!nuevoCorreoInput.value){
+        valid = false;
+        nuevoCorreoInput.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar un nuevo correo';
+        nuevoCorreoInput.parentNode.appendChild(msg);
+    }
+
+    // Validar contraseña
+    if(!contrasenaInputCorreo.value){
+        valid = false;
+        contrasenaInputCorreo.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = 'Debes ingresar tu contraseña';
+        contrasenaInputCorreo.parentNode.appendChild(msg);
+    }
+
+    if(!valid) return;
+
+    // Si todo está bien, enviar datos al backend
+    const formData = new FormData();
+    formData.append('nuevo_correo', nuevoCorreoInput.value);
+    formData.append('contrasena_actual_correo', contrasenaInputCorreo.value);
+
+    fetch('{{ url_for("usuarios.cambiar_correo") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            const modal = new bootstrap.Modal(document.getElementById('correoModal'));
+            modal.show();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => console.error(err));
+});
+</script>
+
+<script>
+const togglePasswordCorreo = document.getElementById('togglePasswordCorreo');
+const passwordCorreo = document.getElementById('contrasena_actual_correo');
+
+togglePasswordCorreo.addEventListener('click', function() {
+    const type = passwordCorreo.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordCorreo.setAttribute('type', type);
+    // Cambiar icono
+    this.classList.toggle('fa-eye');
+    this.classList.toggle('fa-eye-slash');
+});
+</script>
+
+<script>
+    function enviarCodigoCorreo() {
+    const toastEl = document.getElementById('avisoToast');
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 }); // 4 segundos
+    toast.show();
+}
+</script>
+
+{% endblock %}

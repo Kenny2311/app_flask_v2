@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+
+<!-- CSS exclusivo del login -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base_login.css') }}">
+
+<div class="login-container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-3">
+      
+      <div class="card shadow login-card-box">
+        <div class="login-card-body">
+
+          <h2 class="text-center mb-4 login-title">Iniciar Sesión</h2>
+
+          <form method="POST" class="needs-validation login-form" novalidate>
+
+            <!-- Campo correo -->
+            <div class="mb-3 login-input-group">
+              <!-- <label for="correo" class="login-label">Correo electrónico</label> -->
+              
+              <input 
+                type="email"
+                class="form-control login-input"
+                id="correo"
+                name="correo"
+                placeholder="Ingrese su correo"
+                required
+                autocomplete="off"
+              >
+              <div class="invalid-feedback login-invalid">
+                Por favor ingrese su correo electrónico.
+              </div>
+            </div>
+
+            <!-- Campo contraseña -->
+            <div class="mb-3 login-input-group">
+              <!-- <label for="contrasena" class="login-label">Contraseña</label> -->
+
+              <input 
+                type="password"
+                class="form-control login-input"
+                id="contrasena"
+                name="contrasena"
+                placeholder="Ingrese su contraseña"
+                required
+                autocomplete="new-password"
+              >
+              <div class="invalid-feedback login-invalid">
+                Por favor ingrese su contraseña.
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 login-btn-wrapper">
+              <button type="submit" class="btn login-btn">Entrar</button>
+            </div>
+
+          </form>
+
+          <div class="text-center mt-3 login-register">
+            <a href="{{ url_for('auth.registro') }}" class="login-register-link">
+              ¿No tienes cuenta? <strong>Regístrate aquí</strong>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+    
+  </div>
+
+  <!-- Toast -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div id="toastHeader" class="toast-header bg-success text-white">
+        <strong class="me-auto">Notificación</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body" id="toastBody">Mensaje</div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block body_scripts %}
+
+<!-- Ocultar alertas automáticamente -->
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(alert => {
+      alert.classList.add('fade');
+      setTimeout(() => alert.style.display = 'none', 500);
+    });
+  }, 5000);
+</script>
+
+<!-- Validación del formulario -->
+<script>
+  (function() {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+
+    forms.forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      });
+    });
+  })();
+</script>
+
+
+<script>
+console.log("Bootstrap:", bootstrap);
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const toastEl = document.getElementById("liveToast");
+    const toastBody = document.getElementById("toastBody");
+    const toastHeader = document.getElementById("toastHeader");
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% set category, msg = messages[0] %}
+
+        toastBody.textContent = {{ msg|tojson }};
+
+        const colors = {
+            "success": "bg-success text-white",
+            "danger": "bg-danger text-white",
+            "warning": "bg-warning text-dark",
+            "info": "bg-info text-dark"
+        };
+
+        toastHeader.className = "toast-header " + (colors[{{ category|tojson }}] || "bg-success text-white");
+
+        new bootstrap.Toast(toastEl).show();
+    {% endif %}
+    {% endwith %}
+});
+</script>
+
+{% endblock %}
+

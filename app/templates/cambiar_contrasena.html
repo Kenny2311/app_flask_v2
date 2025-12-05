@@ -1,0 +1,212 @@
+{% extends "menu_perfil.html" %}
+
+{% block private_content %}
+
+<!--  Estilos personalizados -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base_perfil.css') }}">
+
+<div class="cambiar-contrasena-container">
+
+  <!-- Sidebar opciones historial -->
+    <h2 class="historial-basico-title bi bi-key"> Cambiar contraseña</h2>
+
+    <div id="cambiar-contrasena">
+
+        <div class="cambiar-contrasena-texto1">
+            Necesitas el código de verificación para cambiar tu contraseña
+        </div>
+      
+          <div class="cambiar-contrasena-codigo-verificacion mb-3">
+            <div>
+              <label class="cambiar-contrasena-label form-label">Código de verificación</label>
+              <input type="password" name="contrasena_actual" class="cambiar-contrasena-input form-control">
+            </div>
+
+            <!-- Botón --> 
+            <div class="cambiar-contrasena-boton-container"> 
+              <button type="button" class="btn cambiar-contrasena-btn-primary" onclick="enviarCodigo()">Obtener código</button> 
+            </div> 
+            
+            <!-- Modal de confirmación --> 
+            <div class="modal fade" id="codigoModal" tabindex="-1" aria-hidden="true"> 
+              <div class="modal-dialog"> 
+                <div class="modal-content"> 
+                  <div class="modal-header bg-success text-white"> 
+                    <h5 class="modal-title">Código enviado</h5> 
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+                  </div> 
+                  <div class="modal-body"> ✅ El código de verificación se ha enviado correctamente a tu correo. </div> 
+                  <div class="modal-footer"> 
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+                  </div> 
+                </div> 
+              </div> 
+            </div>
+          </div>
+
+      <form method="POST" action="{{ url_for('usuarios.cambiar_contrasena') }}">
+      
+          <!-- Font Awesome -->
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+          <div class="mb-3 cambiar-contrasena-grupo">
+            <label class="form-label cambiar-contrasena-label">Contraseña actual</label>
+            <input type="password" id="contrasena_actual" name="contrasena_actual" class="form-control" style="width: 250px;">
+          <!-- Icono del ojito -->
+            <i class="fa-solid fa-eye cambiar-contrasena-icon" id="togglePasswordActual"></i>
+          </div>
+
+          <div class="mb-3 cambiar-contrasena-grupo">
+            <label class="form-label cambiar-contrasena-label">Nueva contraseña</label>
+            <input type="password" id="nueva_contrasena" name="nueva_contrasena" class="form-control" style="width: 250px;">
+          <!-- Icono del ojito -->
+            <i class="fa-solid fa-eye cambiar-contrasena-icon" id="togglePasswordNueva"></i>
+          </div>
+
+          <div class="mb-3 cambiar-contrasena-grupo">
+            <label class="form-label cambiar-contrasena-label">Confirmar nueva contraseña</label>
+            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" class="form-control" style="width: 250px;">
+          <!-- Icono del ojito -->
+            <i class="fa-solid fa-eye cambiar-contrasena-icon" id="togglePasswordConfirmar"></i>
+          </div>
+
+          <!-- Botón Guardar cambios -->
+          <div class="text-align mt-4">
+            <button type="button" id="btnGuardarContrasena" class="btn btn-success" style="width: 250px; margin-bottom: 30px;">
+              Guardar cambios
+            </button>
+          </div>
+
+      </form>
+
+    </div> 
+
+    <!-- Modal de confirmación para cambio de contraseña -->
+    <div class="modal fade" id="contrasenaModal" tabindex="-1" aria-hidden="true"> 
+      <div class="modal-dialog"> 
+        <div class="modal-content"> 
+          <div class="modal-header bg-success text-white"> 
+            <h5 class="modal-title">Cambio de contraseña</h5> 
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+          </div> 
+          <div class="modal-body"> ✅ Tu contraseña se ha cambiado correctamente. </div> 
+          <div class="modal-footer"> 
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button> 
+          </div> 
+        </div> 
+      </div> 
+    </div>     
+
+</div>
+
+
+<!-- Toast de aviso (reutilizable) -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+    <div id="avisoToast" class="toast align-items-center text-white bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                ⚠️ Esta funcionalidad aún no está completa.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
+<!----------------------------------- Cambiar contraseña -------------------------------------->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const actualInput = document.getElementById('contrasena_actual');
+    const nuevaInput = document.getElementById('nueva_contrasena');
+    const confirmarInput = document.getElementById('confirmar_contrasena');
+    const btnGuardarContrasena = document.getElementById('btnGuardarContrasena');
+
+    function resetFormularioContrasena() {
+        [actualInput, nuevaInput, confirmarInput].forEach(input => {
+            input.value = '';
+            input.classList.remove('is-invalid');
+            const feedback = input.parentNode.querySelector('.invalid-feedback');
+            if(feedback) feedback.remove();
+        });
+    }
+
+    btnGuardarContrasena.addEventListener('click', function() {
+        let valid = true;
+
+        // Limpiar errores anteriores
+        [actualInput, nuevaInput, confirmarInput].forEach(input => {
+            input.classList.remove('is-invalid');
+            const feedback = input.parentNode.querySelector('.invalid-feedback');
+            if(feedback) feedback.remove();
+        });
+
+        // Validaciones
+        if (!actualInput.value) { valid=false; agregarError(actualInput,'Debes ingresar tu contraseña actual'); }
+        if (!nuevaInput.value) { valid=false; agregarError(nuevaInput,'Debes ingresar la nueva contraseña'); }
+        if (!confirmarInput.value) { valid=false; agregarError(confirmarInput,'Debes confirmar la nueva contraseña'); }
+        if (actualInput.value && nuevaInput.value && actualInput.value===nuevaInput.value) { valid=false; agregarError(nuevaInput,'La nueva contraseña no puede ser igual a la actual'); }
+        if (nuevaInput.value && confirmarInput.value && nuevaInput.value!==confirmarInput.value) { valid=false; agregarError(confirmarInput,'La confirmación no coincide con la nueva contraseña'); }
+
+        if (!valid) return;
+
+        // Preparar FormData
+        const formData = new FormData();
+        formData.append('actual', actualInput.value);
+        formData.append('nueva', nuevaInput.value);
+        formData.append('confirmar', confirmarInput.value);
+
+        // Enviar al backend
+        fetch('{{ url_for("usuarios.cambiar_contrasena") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar modal
+                const myModal = new bootstrap.Modal(document.getElementById('contrasenaModal'));
+                myModal.show();
+
+                resetFormularioContrasena();
+            } else {
+                agregarError(actualInput, data.message);
+            }
+        })
+        .catch(err => console.error(err));
+    });
+
+    function agregarError(input, mensaje) {
+        input.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.classList.add('invalid-feedback');
+        msg.innerText = mensaje;
+        input.parentNode.appendChild(msg);
+    }
+
+    // Toggle ojo para mostrar/ocultar
+    function togglePasswordVisibility(toggleId, inputId) {
+        const toggle = document.getElementById(toggleId);
+        const input = document.getElementById(inputId);
+        if(toggle && input) {
+            toggle.addEventListener('click', function(){
+                input.type = input.type==='password'?'text':'password';
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    }
+    togglePasswordVisibility('togglePasswordActual','contrasena_actual');
+    togglePasswordVisibility('togglePasswordNueva','nueva_contrasena');
+    togglePasswordVisibility('togglePasswordConfirmar','confirmar_contrasena');
+});
+</script>
+
+<script>
+  function enviarCodigo() {
+    const toastEl = document.getElementById('avisoToast');
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 }); // 4 segundos
+    toast.show();
+}
+</script>
+
+{% endblock %}

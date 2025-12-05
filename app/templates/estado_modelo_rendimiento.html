@@ -1,0 +1,79 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+<div class="estado-container">
+
+  <main class="contenido-modelo">
+
+    <!-- RENDIMIENTO DEL MODELO -->
+    <section id="rendimiento-modelo" class="seccion-modelo">
+
+      <header class="seccion-header">
+        <h4>Rendimiento del Modelo Predictivo</h4>
+      </header>
+
+      {% if error_metricas %}
+      <div class="alert alert-danger text-center fw-bold alerta-error">
+          {{ error_metricas }}
+      </div>
+      {% endif %}
+
+      <!-- Alerta rendimiento -->
+      <div class="alertas-container">
+        {% if alerta %}
+        <div class="alert alert-danger text-center fw-bold alerta-rendimiento">
+            ⚠ Rendimiento bajo detectado: {{ metricas.accuracy }}
+        </div>
+        {% else %}
+        <div class="alert alert-success text-center fw-bold alerta-ok">
+            ✅ El modelo opera con normalidad. Rendimiento: {{ metricas.accuracy }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Métricas -->
+      <div class="metricas-grid">
+
+        <div class="metric-card">
+          <h5>Accuracy</h5>
+          <p>{{ metricas.accuracy }}</p>
+        </div>
+
+        <div class="metric-card">
+          <h5>Precision</h5>
+          <p>{{ metricas.precision }}</p>
+        </div>
+
+        <div class="metric-card">
+          <h5>Recall</h5>
+          <p>{{ metricas.recall }}</p>
+        </div>
+
+        <div class="metric-card">
+          <h5>F1 Score</h5>
+          <p>{{ metricas.f1_score }}</p>
+        </div>
+
+      </div>
+
+      <!-- Botón descargar PDF -->
+      <div class="descarga-container">
+        <a href="{{ url_for('modelo.descargar_reporte') }}" class="btn-descargar">
+          <i class="bi bi-file-earmark-pdf me-2"></i> Descargar Reporte PDF
+        </a>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/estado_modelo.css') }}">
+
+{% endblock %}

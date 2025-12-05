@@ -1,0 +1,191 @@
+/* ==================================================================================================================
+   VARIABLES GLOBALES
+================================================================================================================== */
+:root {
+    --morado-base: #6a1b9a;
+    --morado-oscuro: #4a0072;
+    --morado-claro: #9c4dcc;
+
+    --gris-texto: #555;
+    --gris-fondo: #f2f2f2;
+
+    --blanco: #ffffff;
+    --transparente: rgba(255, 255, 255, 0.15);
+}
+
+/* ==================================================================================================================
+   LOGIN GENERAL
+================================================================================================================== */
+
+/* Contenedor principal */
+.login-container {
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 90px !important; /* Separación del navbar */
+}
+
+/* Evita que .row internas amplíen el ancho */
+.login-container .row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+/* Tarjeta del login */
+.login-card-box {
+    overflow: hidden;
+    background: var(--blanco);
+    border-radius: 10px;
+}
+
+/* Contenido del card */
+.login-card-body {
+    padding: 2rem;
+}
+
+/* Título */
+.login-title {
+    font-weight: 500;
+    color: var(--morado-base);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+.login-input-group label {
+    color: var(--gris-texto);
+}
+
+.login-input {
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border: 1px solid #ccc;
+    color: var(--gris-texto);
+}
+
+.login-input:focus {
+    border-color: var(--morado-base) !important;
+    box-shadow: none !important;
+}
+
+/* Feedback inválido */
+.login-invalid {
+    color: #d9534f !important;
+}
+
+/* =========================================================
+   BOTÓN
+========================================================= */
+.login-btn {
+    color: #ffffff;
+    border-radius: 8px;
+    background-color: var(--morado-base);
+    border-color: var(--morado-base);
+    box-shadow: none !important;
+}
+
+.login-btn:hover,
+.login-btn:focus,
+.login-btn:active {
+    background-color: var(--morado-oscuro) !important;
+    border-color: var(--morado-oscuro) !important;
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   REGISTRO (link)
+========================================================= */
+.login-register-link {
+    transition: 0.3s ease;
+    color: var(--morado-base);
+}
+
+.login-register-link:hover {
+    color: var(--morado-oscuro);
+}
+
+/* =========================================================
+   ALERTAS
+========================================================= */
+.alert {
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+
+
+
+
+
+
+
+
+
+/* ==================================================================================================================
+   REGISTRO GENERAL
+================================================================================================================== */
+.registrar-container {
+    margin-top: 90px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+.registrar-card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.registrar-card-body {
+    background: var(--blanco);
+}
+
+.registrar-title {
+    font-weight: 500;
+    color: var(--morado-base);
+}
+
+.registrar-input {
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.registrar-input:focus {
+    border-color: var(--morado-base);
+    box-shadow: none !important;
+}
+
+.registrar-label {
+    font-weight: 500;
+    color: var(--gris-texto);
+}
+
+.registrar-btn {
+    background: var(--morado-base);
+    color: white;
+    border-radius: 8px;
+}
+
+.registrar-btn:hover {
+    background: var(--morado-oscuro);
+}
+
+.registrar-invalid {
+    color: red;
+    font-size: .9rem;
+}
+
+.registrar-link {
+    transition: .3s;
+}
+
+.registrar-link:hover {
+    color: var(--morado-base);
+}
+
+
+.toast {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}

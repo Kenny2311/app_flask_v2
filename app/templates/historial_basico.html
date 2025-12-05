@@ -1,0 +1,274 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="historial-basico-container">
+
+  <!-- Sidebar opciones historial -->
+    <h2 class="historial-basico-title bi bi-clock-history"> Historial de Predicciones</h2>
+
+
+    <!----------------------------- Historial prediccion completo ----------------------------->
+    <div id="historial-predicciones">
+
+        <!-- Botón CSV general -->
+        <div class="historial-csv-container">
+              <a href="{{ url_for('historial.descargar_csv_basico') }}" class="historial-btn-csv">
+                Descargar CSV
+              </a>
+        </div>
+            
+        <!-- Tabla de resultados -->
+        <div class="historial-tabla-contenedor">
+            <div class="historial-tabla-wrapper">
+                  <table class="historial-table">
+                    <thead>
+                      <tr class="text-center">                 
+                        <th>Nombre Solicitante</th> <!-- Nuevo -->
+                        <th>Edad</th>
+
+                        <th>Fecha Predicción</th>  <!-- Nuevo -->
+                        <th>Estado Predicción</th>
+                        <th>Probabilidad Default</th>
+                        <th>Nivel Riesgo</th>
+
+                        <th>Género</th>
+                        <th>Estado Civil</th>
+                        <th>Nro Dependientes</th>
+                        <th>Educación</th>
+                        <th>Zona Propiedad</th>
+
+                        <th>Salario Mensual</th>
+                        <th>Ingreso Anual</th>                   
+                        <th>N° Cuentas Bancarias</th>
+                        <th>N° Tarjetas Credito</th>
+                        <th>Deuda Pendiente</th>
+                        <th>Tipo Préstamo</th>
+                        <th>Monto Mensual Invertido</th>
+                        <th>Tasa Interés</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {% if historial %}
+                        {% for p in historial %}
+                          <tr>
+                            <td>{{ p.nombre_solicitante }}</td> <!-- Nuevo -->
+                            <td>{{ p.Edad }}</td>
+
+                            <td>{{ p.fecha_prediccion.strftime('%d/%m/%Y') if p.fecha_prediccion else '' }}</td> <!-- Nuevo --> 
+                            <td>{{ p.estado_prediccion }}</td>
+                        
+                            <td>{{ "%.2f"|format(p.probabilidad_default*100) ~ "%" if p.probabilidad_default is not none else '' }}</td>
+                            <td>
+                              {% if p.nivel_riesgo %}
+                                <span class="historial-riesgo-label 
+                                            {% if p.nivel_riesgo.lower() == 'alto' %}historial-riesgo-alta
+                                            {% elif p.nivel_riesgo.lower() == 'medio' %}historial-riesgo-medio
+                                            {% else %}historial-riesgo-bajo{% endif %}">
+                                  {{ p.nivel_riesgo }}
+                                </span>
+                              {% endif %}
+                            </td>
+
+                            <td>{{ p.genero }}</td>
+                            <td>{{ p.casado }}</td>
+                            <td>{{ p.dependientes }}</td>
+                            <td>{{ p.educacion }}</td>
+                            <td>{{ p.zona_propiedad }}</td>
+                            <td>{{ p.Salario_Mensual_Mano }}</td>
+                            <td>{{ p.Ingreso_Anual }}</td>                  
+                            <td>{{ p.Nro_Cuentas_Bancarias }}</td>
+                            <td>{{ p.Nro_Tarjetas_Credito }}</td>
+                            <td>{{ p.Deuda_Pendiente }}</td>
+                            <td>{{ p.Tipo_Prestamo }}</td>
+                            <td>{{ p.Monto_Invertido_Mensualmente }}</td>
+                            <td>{{ p.Tasa_Interes }}</td>
+                          </tr>
+                        {% endfor %}
+                      {% else %}
+                        <tr>
+                          <td colspan="19" class="text-center text-muted">No hay predicciones registradas.</td>
+                        </tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Activar la opción Buscar Predicciones por defecto
+  const defaultOption = document.querySelector('.sidebar-option[data-section="buscar-predicciones"]');
+  if (defaultOption) activarSeccion(defaultOption);
+
+  document.querySelectorAll('.sidebar-option').forEach(option => {
+    option.addEventListener('click', () => activarSeccion(option));
+  });
+
+  function activarSeccion(option) {
+    document.querySelectorAll('.sidebar-option').forEach(opt => opt.classList.remove('active'));
+    option.classList.add('active');
+
+    document.querySelectorAll('#buscar-predicciones, #historial-probabilidad, #historial-predicciones')
+            .forEach(sec => sec.style.display = 'none');
+
+    const sectionId = option.getAttribute('data-section');
+    const section = document.getElementById(sectionId);
+    if(section) section.style.display = 'block';
+  }
+
+  // Cargar todos los registros al inicio
+  cargarResultados();
+});
+
+// Función para cargar resultados, opcionalmente con filtros
+async function cargarResultados(filtros = {}) {
+  const tabla = document.getElementById('tablaResultados');
+  const numRegistros = document.getElementById('numRegistros');
+  tabla.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Cargando...</td></tr>`;
+
+  try {
+    let url = '/buscar_predicciones';
+    if (Object.keys(filtros).length > 0) {
+      url += `?${new URLSearchParams(filtros).toString()}`;
+    }
+
+    const response = await fetch(url);
+    const resultados = await response.json();
+
+    tabla.innerHTML = '';
+    if (!resultados.length) {
+      tabla.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No se encontraron resultados.</td></tr>`;
+      numRegistros.textContent = '0';
+      return;
+    }
+
+    resultados.forEach(p => {
+      let riesgoClass = '';
+      if (p.riesgo?.toUpperCase() === 'ALTO') riesgoClass = 'historial-riesgo-alta';
+      else if (p.riesgo?.toUpperCase() === 'MEDIO') riesgoClass = 'historial-riesgo-medio';
+      else if (p.riesgo?.toUpperCase() === 'BAJO') riesgoClass = 'historial-riesgo-bajo';
+
+      tabla.innerHTML += `
+        <tr>
+          <td class="text-start">${p.dni_solicitante}</td>
+          <td class="text-center">${p.fecha_prediccion}</td>
+          <td class="text-center">${p.probabilidad !== null ? (p.probabilidad * 100).toFixed(2) + '%' : '-'}</td>
+          <td class="text-center"><span class="historial-riesgo-label ${riesgoClass}">${p.riesgo ?? '-'}</span></td>
+          <td class="text-center">
+            <a href="/ver_reporte/${p.id}" class="btn btn-sm btn-info">
+              <i class="bi bi-eye"></i> Ver reporte
+            </a>
+          </td>
+        </tr>
+      `;
+    });
+
+    numRegistros.textContent = resultados.length;
+  } catch (err) {
+    console.error("Error al buscar predicciones:", err);
+    tabla.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error al cargar resultados.</td></tr>`;
+    numRegistros.textContent = '0';
+  }
+}
+
+// Formulario de filtros
+const form = document.getElementById('formBuscarPredicciones');
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const dni = document.getElementById('dniSolicitante').value.trim();
+  const fechaDesde = document.getElementById('fechaDesde').value;
+  const fechaHasta = document.getElementById('fechaHasta').value;
+  const nivelRiesgo = document.getElementById('nivelRiesgo')?.value;
+
+  const filtros = {};
+  if (dni) filtros.dni_solicitante = dni;
+  if (fechaDesde) filtros.fecha_desde = fechaDesde;
+  if (fechaHasta) filtros.fecha_hasta = fechaHasta;
+  if (nivelRiesgo && nivelRiesgo !== '') filtros.nivel_riesgo = nivelRiesgo;
+
+  cargarResultados(filtros);
+});
+
+// Botón Limpiar filtros
+document.getElementById('btnLimpiarFiltros')?.addEventListener('click', () => {
+  document.getElementById('dniSolicitante').value = '';
+  document.getElementById('fechaDesde').value = '';
+  document.getElementById('fechaHasta').value = '';
+  document.getElementById('nivelRiesgo').value = '';
+  cargarResultados(); // recarga todos los registros
+});
+</script>
+
+<script>
+async function cargarResultados(filtros = {}) {
+  const tabla = document.getElementById('tablaResultados');
+  const numRegistros = document.getElementById('numRegistros');
+  tabla.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Cargando...</td></tr>`;
+
+  try {
+    let url = '/buscar_predicciones';
+    if (Object.keys(filtros).length > 0) {
+      const params = new URLSearchParams(filtros).toString();
+      url += `?${params}`;
+    }
+
+    const response = await fetch(url);
+    const resultados = await response.json();
+
+    tabla.innerHTML = '';
+    if (resultados.length === 0) {
+      tabla.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No se encontraron resultados.</td></tr>`;
+      numRegistros.textContent = '0';
+      return;
+    }
+
+    resultados.forEach(p => {
+      let riesgoClass = '';
+      if (p.riesgo?.toUpperCase() === 'ALTO') riesgoClass = 'historial-riesgo-alta';
+      else if (p.riesgo?.toUpperCase() === 'BAJO') riesgoClass = 'historial-riesgo-bajo';
+      else if (p.riesgo?.toUpperCase() === 'MEDIO') riesgoClass = 'historial-riesgo-medio';
+
+      tabla.innerHTML += `
+        <tr>
+          <td class="text-start">${p.nombre_solicitante}</td>
+          <td class="text-center">${p.fecha_prediccion}</td>
+          <td class="text-center">${p.probabilidad !== null ? (p.probabilidad * 100).toFixed(2) + '%' : '-'}</td>
+          <td class="text-center">
+            <span class="historial-riesgo-label ${riesgoClass}">${p.riesgo ?? '-'}</span>
+          </td>
+          <td class="text-center">
+            <a href="/ver_reporte/${p.id}" class="btn btn-sm btn-info">  <i class="bi bi-eye"></i> Ver reporte</a>
+          </td>
+        </tr>
+      `;
+    });
+
+    numRegistros.textContent = resultados.length;
+
+  } catch (err) {
+    console.error("Error al buscar predicciones:", err);
+    tabla.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error al cargar resultados.</td></tr>`;
+    numRegistros.textContent = '0';
+  }
+}
+</script>
+
+
+{% endblock %}
+

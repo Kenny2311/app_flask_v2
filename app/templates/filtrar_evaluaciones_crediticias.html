@@ -1,0 +1,388 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="historial-basico-container">
+
+    <h2 class="historial-basico-title bi bi-funnel"> Explorar evaluaciones predictivas por filtros</h2>
+  
+    
+        <!----------------------------- Sección buscar preddicciones ----------------------------->
+        <div id="buscar-predicciones">
+
+            <!-- Botón para abrir modal, pegado a la derecha -->
+            <div class="historial-csv-container">
+                <button id="btn-ver-resumen-evaluaciones" type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalResumenEstadisticas">
+                    <i class="bi bi-bar-chart-fill"></i> Resumen General
+                </button>
+            </div>
+
+            <!-- Modal de Resumen de Estadísticas -->
+            <div class="modal fade" id="modalResumenEstadisticas" tabindex="-1" aria-labelledby="modalResumenEstadisticasLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalResumenEstadisticasLabel">
+                    <i class="bi bi-bar-chart-fill me-2"></i> Resumen de Evaluaciones
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Resumen de estadísticas -->
+                    <div id="resumen-estadisticas" class="sidebar-summary">
+
+                    <!-- Total Predicciones -->
+                    <div class="summary-item total mb-4">
+                        <div class="text-wrapper">
+                        <span class="label">Total Predicciones</span>
+                        <div class="metric-block">
+                            <span class="metric-title">Cantidad:</span>
+                            <span class="metric-value">{{ total_predicciones }}</span>
+                        </div>
+                        </div>
+                        <i class="bi bi-clipboard-data fs-3"></i>
+                    </div>
+
+                    <!-- Riesgo Bajo -->
+                    <div class="summary-item low mb-4">
+                        <div class="text-wrapper">
+                        <span class="label">Riesgo Bajo</span>
+                        <div class="metric-block">
+                            <span class="metric-title">Cantidad:</span>
+                            <span class="metric-value">{{ total_bajo }}</span>
+                        </div>
+                        <div class="metric-block">
+                            <span class="metric-title">Probabilidad promedio:</span>
+                            <span class="metric-prob">{{ (promedio_bajo * 100)|round(1) }}%</span>
+                        </div>
+                        </div>
+                        <i class="bi bi-emoji-smile fs-3"></i>
+                    </div>
+
+                    <!-- Riesgo Medio -->
+                    <div class="summary-item medium mb-4">
+                        <div class="text-wrapper">
+                        <span class="label">Riesgo Medio</span>
+                        <div class="metric-block">
+                            <span class="metric-title">Cantidad:</span>
+                            <span class="metric-value">{{ total_medio }}</span>
+                        </div>
+                        <div class="metric-block">
+                            <span class="metric-title">Probabilidad promedio:</span>
+                            <span class="metric-prob">{{ (promedio_medio * 100)|round(1) }}%</span>
+                        </div>
+                        </div>
+                        <i class="bi bi-exclamation-triangle fs-3"></i>
+                    </div>
+
+                    <!-- Riesgo Alto -->
+                    <div class="summary-item high mb-4">
+                        <div class="text-wrapper">
+                        <span class="label">Riesgo Alto</span>
+                        <div class="metric-block">
+                            <span class="metric-title">Cantidad:</span>
+                            <span class="metric-value">{{ total_alto }}</span>
+                        </div>
+                        <div class="metric-block">
+                            <span class="metric-title">Probabilidad promedio:</span>
+                            <span class="metric-prob">{{ (promedio_alto * 100)|round(1) }}%</span>
+                        </div>
+                        </div>
+                        <i class="bi bi-emoji-frown fs-3"></i>
+                    </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                </div>
+            </div>
+            </div>            
+                        
+            <!-- Tabla filtro por dni importante -->
+            <div class="historial-tabla-wrapper">
+
+                <div class="filtro-card-custom">
+
+                    <!-- Formulario de filtros -->
+                    <h5 class="mt-2 mb-4 fs-5">Ingresa datos para filtrar</h5>
+
+                    <form id="formBuscarPredicciones" class="mb-4">
+                        <div class="row g-3">
+
+                            <!-- DNI del solicitante -->
+                            <div class="prediccion-form-group floating col-md-4">
+                                        
+                                <input 
+                                    type="text" 
+                                    id="dniSolicitante" 
+                                    name="dni_solicitante" 
+                                    class="prediccion-form-control form-input" 
+                                    placeholder=""
+                                >
+
+                                <label for="dniSolicitante" class="prediccion-form-label">DNI del solicitante para realizar la búsqueda</label>
+                            
+                            </div>
+
+                            <!-- Nivel de riesgo -->
+                            <div class="prediccion-form-group floating col-md-4">
+                                
+                                <select 
+                                    id="nivelRiesgo" 
+                                    name="nivel_riesgo" 
+                                    class="prediccion-form-control form-input"
+                                >
+                                    <option value="">Todos</option>
+                                    <option value="BAJO">Bajo</option>
+                                    <option value="MEDIO">Medio</option>
+                                    <option value="ALTO">Alto</option>
+                                </select>
+
+                                <label for="nivelRiesgo" class="prediccion-form-label">Nivel de riesgo:</label>
+
+                            </div>
+
+                            <!-- Fecha desde -->
+                            <div class="prediccion-form-group floating col-md-2">
+                                
+                                <input 
+                                    type="date" 
+                                    id="fechaDesde" 
+                                    name="fecha_desde" 
+                                    class="prediccion-form-control form-input"
+                                >
+                            
+                                <label for="fechaDesde" class="prediccion-form-label">Desde:</label>
+
+                            </div>
+
+                            <!-- Fecha hasta -->
+                            <div class="prediccion-form-group floating col-md-2">
+                                
+                                <input 
+                                    type="date" 
+                                    id="fechaHasta" 
+                                    name="fecha_hasta" 
+                                    class="prediccion-form-control form-input"
+                                >
+                            
+                                <label for="fechaHasta" class="prediccion-form-label">Hasta:</label>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="prediccion-botones-container mt-2">
+                            <button type="submit" class="prediccion-btn-evaluar" style="min-width: 150px;">Buscar</button>
+                            <button type="button" class="prediccion-btn-limpiar" id="btnLimpiarFiltros" style="min-width: 150px;">Limpiar filtros</button>
+                        </div>
+                        
+                    </form>
+
+                </div>
+            
+                <!-- -------------------- Resultados -------------------- -->
+                <div class="filtro-card-custom mt-4">
+
+                    <!-- Título del bloque -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h5 class="mt-3 mb-2 fs-5">Resultados de la búsqueda</h5>
+                        <span id="numRegistros">0 registros encontrados</span>
+                    </div>
+
+                    <!-- Tabla de resultados -->
+                    <div style="overflow-y: auto; max-height: 385px;">
+                        <table class="filtros-table-custom align-middle text-center w-100">
+                            <thead class="table-light">
+                                <tr>
+                                <th class="text-start">DNI</th>
+                                <th class="text-start">Nombre Solicitante</th>
+                                <th class="text-center">Fecha Predicción</th>
+                                <th class="text-center">Probabilidad</th>
+                                <th class="text-center">Riesgo</th>
+                                <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaResultados">
+                                <tr>
+                                <td colspan="15" class="text-center text-muted">Ingrese filtros y haga clic en Buscar.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- MODAL -->
+                        <div class="modal fade" id="modalReporte" tabindex="-1">
+                            <div class="modal-dialog modal-xl modal-dialog-scrollable" style="max-height: 90vh; margin: 1.5rem auto;">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Reporte del Solicitante</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+
+                                    <div class="modal-body" id="modalReporteContenido" style="overflow-y: auto; max-height: calc(90vh - 120px);">
+                                        Cargando reporte...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            
+        </div>  
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Cargar todos los registros al inicio
+    cargarResultados();
+});
+
+async function cargarResultados(filtros = {}) {
+    const tbody = document.getElementById('tablaResultados');
+    const numRegistros = document.getElementById('numRegistros');
+
+    // Mostrar "Cargando..." mientras llega la respuesta
+    tbody.replaceChildren(
+        Object.assign(document.createElement("tr"), {
+            innerHTML: `<td colspan="6" class="text-center text-muted">Cargando...</td>`
+        })
+    );
+
+    try {
+        let url = '/buscar_predicciones';
+        if (Object.keys(filtros).length > 0) {
+            url += `?${new URLSearchParams(filtros).toString()}`;
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Error al consultar datos");
+
+        const resultados = await response.json();
+
+        tbody.innerHTML = ''; // Limpiar filas previas
+
+        if (!resultados.length) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No se encontraron resultados.</td></tr>`;
+            numRegistros.textContent = '0 registros encontrados';
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        resultados.forEach(p => {
+            let riesgoClass = '';
+            if (p.riesgo?.toUpperCase() === 'ALTO') riesgoClass = 'historial-riesgo-alta';
+            else if (p.riesgo?.toUpperCase() === 'MEDIO') riesgoClass = 'historial-riesgo-medio';
+            else if (p.riesgo?.toUpperCase() === 'BAJO') riesgoClass = 'historial-riesgo-bajo';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-start">${p.dni_solicitante}</td>
+                <td class="text-start">${p.nombre_solicitante ?? '-'}</td>
+                <td class="text-center">${p.fecha_prediccion}</td>
+                <td class="text-center">${p.probabilidad !== null ? (p.probabilidad * 100).toFixed(2) + '%' : '-'}</td>
+                <td class="text-center">
+                    <span class="historial-riesgo-label ${riesgoClass}">${p.riesgo ?? '-'}</span>
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-info btn-ver-reporte" data-id="${p.id}">
+                        <i class="bi bi-eye"></i> Ver reporte
+                    </button>
+                </td>
+            `;
+            fragment.appendChild(tr);
+        });
+
+        tbody.appendChild(fragment);
+        numRegistros.textContent = `${resultados.length} registros encontrados`;
+
+    } catch (error) {
+        console.error("Error:", error);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error al cargar datos.</td></tr>`;
+        numRegistros.textContent = '0 registros encontrados';
+    }
+}
+
+// ===========================
+// 🔍 Filtros
+// ===========================
+const form = document.getElementById('formBuscarPredicciones');
+form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const filtros = {
+        dni_solicitante: document.getElementById('dniSolicitante').value.trim() || undefined,
+        fecha_desde: document.getElementById('fechaDesde').value || undefined,
+        fecha_hasta: document.getElementById('fechaHasta').value || undefined,
+        nivel_riesgo: document.getElementById('nivelRiesgo').value || undefined
+    };
+    Object.keys(filtros).forEach(k => filtros[k] === undefined && delete filtros[k]);
+    cargarResultados(filtros);
+});
+
+// ===========================
+// 🧹 Botón limpiar
+// ===========================
+document.getElementById('btnLimpiarFiltros')?.addEventListener('click', () => {
+    ['dniSolicitante', 'fechaDesde', 'fechaHasta', 'nivelRiesgo'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    // Volver a mostrar todos los registros
+    cargarResultados();
+});
+</script>
+
+
+<!-- SCRIPT -->
+<script>
+document.addEventListener("click", async function(e) {
+    if (e.target.closest(".btn-ver-reporte")) {
+        const id = e.target.closest(".btn-ver-reporte").dataset.id;
+        const modalBody = document.getElementById("modalReporteContenido");
+
+        modalBody.innerHTML = "<p>Cargando reporte...</p>";
+
+        try {
+            const resp = await fetch(`/ver_reporte/${id}`);
+            const html = await resp.text();
+            modalBody.innerHTML = html;
+
+            const modalEl = document.getElementById("modalReporte");
+            const modal = new bootstrap.Modal(modalEl);
+
+            modalEl.addEventListener('show.bs.modal', () => {
+                document.body.style.paddingRight = '0px';
+            });
+
+            modalEl.addEventListener('hidden.bs.modal', () => {
+                document.body.style.paddingRight = '';
+            });
+
+            modal.show();
+
+        } catch (error) {
+            modalBody.innerHTML = `<p class="text-danger">Error al cargar el reporte.</p>`;
+            console.error(error);
+        }
+    }
+});
+</script>
+
+
+{% endblock %}
+

@@ -1,0 +1,2108 @@
+{% extends "menu_kfintech.html" %}
+
+{% block private_content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+<!-- CSS exclusivo -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+
+<div class="prediccion-container">
+
+  <h2 class="prediccion-title bi bi-file-earmark-text-fill"> Formulario de evaluación crediticia</h2>
+  <!--<h3>Complete la información necesaria para evaluar la solicitud de crédito.</h3>-->
+  <!--<link rel="stylesheet" href="{{ url_for('static', filename='css/prediccion.css') }}"> -->
+
+  <div class="csv-upload-container">
+      <label for="csvInput" class="csv-label">📄 Subir archivo CSV</label>
+        <input type="file" id="csvInput" accept=".csv" class="btn-csv">
+
+          <button onclick="importarCSV()" type="button" class="btn-csv">
+              <i class="bi bi-upload"></i> Cargar CSV
+          </button>
+
+          
+          <!-- Botón para abrir modal de recomendaciones -->
+          <div style="margin-left: auto;">
+              <button id="btn-ver-recomendaciones" type="button" class="btn btn-warning">
+                  <i class="bi bi-lightbulb-fill"></i> Ver Recomendaciones
+              </button>
+          </div>
+
+  </div>
+
+  
+<!-- Modal de Recomendaciones basadas en campos importantes del modelo -->
+<div class="modal fade" id="modalRecomendaciones" tabindex="-1" aria-labelledby="modalRecomendacionesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content modal-evaluacion">
+
+      <!-- Header -->
+      <div class="modal-evaluacion-header d-flex justify-content-between align-items-center">
+        <h5 class="modal-title d-flex align-items-center" id="modalRecomendacionesLabel">
+          <i class="bi bi-lightbulb-fill me-2"></i> Recomendaciones basadas en el modelo
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-evaluacion-body">
+        <div class="d-flex flex-column gap-3">
+
+          <!-- Recomendaciones financieras clave -->
+          <div class="modal-item p-3 rounded-2" style="background: rgba(40, 167, 69, 0.1);">
+            <h6>Campos financieros clave para el modelo</h6>
+            <ul>
+              <li><strong>Ingreso Anual / Salario Mensual:</strong> Asegúrese de ingresar valores consistentes; el modelo los usa para calcular ratios de endeudamiento.</li>
+              <li><strong>Deuda Pendiente:</strong> Incluya todas las deudas activas; valores subestimados pueden afectar la predicción de riesgo.</li>
+              <li><strong>Ratio Deuda/Ingreso:</strong> Revise que esté correctamente calculado; es uno de los indicadores más importantes para la predicción.</li>
+              <li><strong>Ratio EMI/Ingreso:</strong> Indica carga mensual de préstamos; valores coherentes ayudan a que el modelo identifique riesgo de default.</li>
+              <li><strong>EMI Total Mensual:</strong> Refleja compromisos financieros mensuales; datos incorrectos reducen la precisión.</li>
+              <li><strong>Monto Invertido Mensualmente / Ahorro Mensual:</strong> Ayuda al modelo a distinguir estabilidad financiera.</li>
+            </ul>
+          </div>
+
+          <!-- Recomendaciones sobre historial y consultas -->
+          <div class="modal-item p-3 rounded-2" style="background: rgba(0, 123, 255, 0.1);">
+            <h6>Historial de crédito y consultas</h6>
+            <ul>
+              <li><strong>Nro Consultas Crédito:</strong> Incluya todas las consultas recientes; el modelo lo usa para detectar riesgo de sobreendeudamiento.</li>
+              <li><strong>Antiguedad Historial Crédito:</strong> Años de historial; más histórico ayuda al modelo a diferenciar solicitantes confiables.</li>
+              <li><strong>Infocorp Flag:</strong> Indica si el solicitante tiene registros negativos; información correcta es crucial para evaluar riesgo.</li>
+            </ul>
+          </div>
+
+          <!-- Recomendaciones sobre otros campos importantes -->
+          <div class="modal-item p-3 rounded-2" style="background: rgba(255, 193, 7, 0.1);">
+            <h6>Otros campos relevantes para el modelo</h6>
+            <ul>
+              <li><strong>Nro Cuentas Bancarias / Nro Tarjetas Crédito:</strong> El modelo utiliza estos valores para estimar exposición financiera.</li>
+              <li><strong>Tasa Interes / Tipo Prestamo:</strong> Información precisa sobre tasas y tipo de préstamos ayuda a predecir riesgo.</li>
+              <li><strong>Cambio Limite Credito:</strong> Refleja cambios recientes en disponibilidad de crédito; puede indicar riesgo emergente.</li>
+              <li><strong>Sector Económico / Region:</strong> Contextualiza el comportamiento financiero según actividad y ubicación.</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!----------------------------- Contenido Evaluacion Crediticia ------------------------------->    
+  <form class="prediccion-form" id="form-prediccion" method="POST" action="{{ url_for('prediccion.prediccion') }}"> 
+
+
+              <!-- Versión del modelo (oculta) -->
+              <input 
+                type="hidden" 
+                id="modelo_version" 
+                name="modelo_version" 
+                value="v1.0"> 
+
+              <!-- Fecha de Prediccion -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-calendar prediccion-input-icon"></i>
+
+                <input 
+                  type="date" 
+                  id="fecha_prediccion" 
+                  name="fecha_prediccion" 
+                  class="prediccion-form-control form-input" 
+                  required
+                >
+
+                <label for="fecha_prediccion" class="prediccion-form-label">Fecha de predicción</label>
+
+                <div class="prediccion-invalid-feedback-custom">
+                  La fecha debe ser la del día actual.
+                </div>
+
+              </div>
+
+              <!-- DNI del solicitante -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-credit-card prediccion-input-icon"></i>
+
+                <input 
+                  type="text" 
+                  id="dni_solicitante" 
+                  name="dni_solicitante" 
+                  class="prediccion-form-control form-input"
+                  placeholder=" "
+                  required 
+                  pattern="\d{8}" 
+                  maxlength="8"
+                >
+                <label for="dni_solicitante" class="prediccion-form-label">Ingrese el dni del solicitante</label>
+
+                <div class="prediccion-invalid-feedback-custom">
+                  El DNI debe contener exactamente 8 dígitos.
+                </div>
+
+              </div>
+      
+
+              <!-- Nombre del solicitante -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-person prediccion-input-icon"></i>
+
+                <input 
+                  type="text" 
+                  id="nombre_solicitante" 
+                  name="nombre_solicitante" 
+                  class="prediccion-form-control form-input"
+                  placeholder=""
+                  required
+                >
+
+                <label for="nombre_solicitante" class="prediccion-form-label">Nombre del solicitante</label>
+                
+                <div class="prediccion-invalid-feedback-custom">
+                  Ingrese nombre y apellido (solo letras y espacios).
+                </div>
+              </div>
+
+
+
+              <!------------- Campos para la prediccion ------------>
+              <!-- Edad -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-person-badge prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    id="Edad" 
+                    name="Edad" 
+                    class="prediccion-form-control form-input"
+                    placeholder=""
+                    required 
+                    min="18" 
+                    max="70"
+                  >
+
+                  <label for="Edad"  class="prediccion-form-label">Edad del solicitante (en años)</label>
+
+                  <div class="prediccion-invalid-feedback-custom">
+                    La edad debe estar entre 18 y 70 años.
+                  </div>
+              </div>
+
+              <!-- Región -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-geo-alt prediccion-input-icon"></i>
+                  
+                  <select 
+                    id="Region" 
+                    name="Region" 
+                    class="prediccion-form-control form-input"
+                    required
+                  >
+                    <option value="" selected disabled hidden>Seleccionar</option>
+                    <option value="0">Amazonas</option>
+                    <option value="1">Áncash</option>
+                    <option value="2">Apurímac</option>
+                    <option value="3">Arequipa</option>
+                    <option value="4">Ayacucho</option>
+                    <option value="5">Cajamarca</option>
+                    <option value="6">Callao</option>
+                    <option value="7">Cusco</option>
+                    <option value="8">Huancavelica</option>
+                    <option value="9">Huánuco</option>
+                    <option value="10">Ica</option>
+                    <option value="11">Junín</option>
+                    <option value="12">La Libertad</option>
+                    <option value="13">Lambayeque</option>
+                    <option value="14">Lima</option>
+                    <option value="15">Loreto</option>
+                    <option value="16">Madre de Dios</option>
+                    <option value="17">Moquegua</option>
+                    <option value="18">Pasco</option>
+                    <option value="19">Piura</option>
+                    <option value="20">Puno</option>
+                    <option value="21">San Martín</option>
+                    <option value="22">Tacna</option>
+                    <option value="23">Tumbes</option>
+                    <option value="24">Ucayali</option>
+                  </select>
+
+                  <label for="Region" class="prediccion-form-label">Región Geográfica</label>
+
+                  <div class="prediccion-invalid-feedback-custom">
+                    Seleccione una opción.
+                  </div>
+              </div>
+
+              <!-- Ocupación -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-briefcase prediccion-input-icon"></i>
+
+                  <select 
+                    id="Ocupacion"
+                    name="Ocupacion"
+                    class="prediccion-form-control form-input"   
+                    required
+                  >
+                    <option value="" selected disabled hidden>Seleccionar</option>
+                    <option value="0">Artista</option>
+                    <option value="1">Comunicador</option>
+                    <option value="2">Desempleado</option>
+                    <option value="3">Gerente</option>
+                    <option value="4">Negocios</option>
+                    <option value="5">Profesional</option>
+                    <option value="6">Técnico</option>
+                    <option value="7">Tecnología</option>
+                  </select>
+
+                  <label for="Ocupacion"class="prediccion-form-label">Ocupación actual</label>
+
+                  <div class="prediccion-invalid-feedback-custom">
+                      Seleccione una opción.
+                  </div>
+
+              </div>
+
+              <!-- Sector Económico -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-building prediccion-input-icon"></i>
+                  
+                  <select
+                    id="Sector_Economico" 
+                    name="Sector_Economico"
+                    class="prediccion-form-control form-input"   
+                    required
+                  >
+                    <option value="" selected disabled hidden>Seleccionar</option>
+                    <option value="0">Formal</option>
+                    <option value="1">Informal</option>
+                  </select>
+
+                  <label for="Sector_Economico" class="prediccion-form-label">Sector económico</label>
+                  
+                  <div class="prediccion-invalid-feedback-custom">
+                      Seleccione una opción.
+                  </div>
+
+              </div>
+
+              <!-- Salario mensual del solicitante-->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-cash-coin prediccion-input-icon"></i>
+   
+                <input 
+                  type="number" 
+                  class="prediccion-form-control form-input" 
+                  id="Salario_Mensual_Mano" 
+                  name="Salario_Mensual_Mano" 
+                  placeholder="" 
+                  required
+                >
+
+                <label for="Salario_Mensual_Mano" class="prediccion-form-label">Ingreso mensual del solicitante (S/.)</label>  
+              
+                <div class="prediccion-invalid-feedback-custom">
+                    Ingreso mensual no válido (Ingrese un ingreso mensual mayor a S/.500.00).
+                </div>
+
+              </div>
+
+              <!-- Salario anual del solicitante-->
+              <div class="prediccion-form-group floating">    
+                  <i class="bi bi-wallet2 prediccion-input-icon"></i>
+
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Ingreso_Anual" 
+                    name="Ingreso_Anual" 
+                    placeholder="" 
+                    required
+                  >
+
+                  <label for="Ingreso_Anual" class="prediccion-form-label">Ingreso anual del solicitante (S/.)</label>
+
+                  <div class="prediccion-invalid-feedback-custom">
+                      Ingreso anual no válido (Ingrese un ingreso anual mayor a S/.6000.00).
+                  </div>
+              </div>
+
+              <!-- Ahorro mensual del solicitante-->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-wallet2 prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Ahorro_Mensual" 
+                    name="Ahorro_Mensual" 
+                    placeholder="" 
+                    required
+                    step="0.01"
+                  >
+                  
+                  <label for="Ahorro_Mensual" class="prediccion-form-label">Ahorro estimado mensual del solicitante (S/.)</label>
+
+                  <div class="prediccion-invalid-feedback-custom">
+                      El ahorro mensual debe ser mayor o igual a 0.
+                  </div>
+
+              </div>
+
+              <!-- Numero de cuentas bancarias del solicitante-->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-credit-card prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Nro_Cuentas_Bancarias" 
+                    name="Nro_Cuentas_Bancarias" 
+                    placeholder="" 
+                    required
+                  >
+
+                  <label for="Nro_Cuentas_Bancarias" class="prediccion-form-label">Numero de cuentas bancarias del solicitante</label>
+              
+                  <div class="prediccion-invalid-feedback-custom">
+                      El numero de cuentas bancarias debe ser menor a o igual a 10.
+                  </div>
+
+              </div>
+
+              <!-- Numero de tarjetas de credito del solicitante-->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-credit-card prediccion-input-icon"></i>
+
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Nro_Tarjetas_Credito" 
+                    name="Nro_Tarjetas_Credito" 
+                    placeholder="" 
+                    required
+                  >
+                  
+                  <label for="Nro_Tarjetas_Credito" class="prediccion-form-label">Número de tarjetas de crédito del solicitante</label>
+                  
+                  <div class="prediccion-invalid-feedback-custom">
+                      Ingreso de numero de tarjatas de crédito no válido (Ingrese un número menor o igual a 5).
+                  </div>
+
+              </div>
+
+              <!-- Variación del limite de credito -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-arrow-up-right-circle prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Cambio_Limite_Credito" 
+                    name="Cambio_Limite_Credito" 
+                    placeholder="%" 
+                    required
+                    step="0.01" 
+                  >
+                  <label for="Cambio_Limite_Credito" class="prediccion-form-label">Cambio del límite de crédito del solicitante en los últimos 6 meses (%)</label>
+              </div>
+
+              <!-- Campo de inforcorp -->
+              <div class="prediccion-form-group floating">
+                  <label for="Infocorp_Flag">¿Está reportado negativamente en Infocorp? </label>
+                  <input 
+                    type="checkbox" 
+                    class="form-control-checkbox" 
+                    id="Infocorp_Flag" 
+                    name="Infocorp_Flag" 
+                    value="on">
+              </div>
+
+              <!-- Antiguedad de historial de crédito -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-wallet2 prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Antiguedad_Historial_Credito" 
+                    name="Antiguedad_Historial_Credito" 
+                    placeholder="" 
+                    required
+                    min="0"
+                    step="1" 
+                  >
+                  <label for="Antiguedad_Historial_Credito" class="prediccion-form-label">Años de historial crediticio del solicitante</label>
+                  
+                  <div class="prediccion-invalid-feedback-custom">
+                    Ingrese un número entero válido (0 o más años).
+                  </div>
+
+              </div>
+
+              <!-- Puntaje crediticio del solicitante -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-speedometer2 prediccion-input-icon"></i>
+
+                  <select 
+                    class="prediccion-form-control form-input" 
+                    id="Puntaje_Credito" 
+                    name="Puntaje_Credito" 
+                    required
+                  >
+                    <option value="" selected disabled hidden>Seleccionar</option>
+                    <option value="0">Bajo</option>
+                    <option value="1">Regular</option>
+                    <option value="2">Alto</option>
+                  </select>
+
+                  <label for="Puntaje_Credito" class="prediccion-form-label">Puntaje crediticio actual del solicitante</label>
+
+              </div>
+
+              <!-- Número de consultas de crédito -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-clock-history prediccion-input-icon"></i>
+   
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Nro_Consultas_Credito" 
+                    name="Nro_Consultas_Credito" 
+                    placeholder="" 
+                    required
+                  >
+                  
+                  <label for="Nro_Consultas_Credito" class="prediccion-form-label">Consultas de crédito del solicitante en las últimas 2 semanas</label>
+
+              </div>
+
+              <!-- Numero de prestamos recientes -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-wallet2 prediccion-input-icon"></i>
+    
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Nro_Prestamos" 
+                    name="Nro_Prestamos" 
+                    placeholder=""
+                    required
+                  >
+              
+                  <label for="Nro_Prestamos" class="prediccion-form-label">Número total de préstamos activos</label>
+
+              </div>
+
+              <!-- Tipo de prestamo mas reciente -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-bank prediccion-input-icon"></i>
+
+                  <select 
+                    class="prediccion-form-control form-input" 
+                    id="Tipo_Prestamo" 
+                    name="Tipo_Prestamo" 
+                    required
+                  >
+                    <option value="" selected disabled hidden>Seleccionar</option>
+                    <option value="0">Educativo</option>
+                    <option value="1">Microcrédito</option>
+                    <option value="2">Personal</option>
+                  </select>
+
+                  <label for="Tipo_Prestamo" class="prediccion-form-label">Seleccionar el tipo de préstamo</label>
+
+              </div>
+
+              <!-- Monto de deuda pendiente -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-coin prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Deuda_Pendiente" 
+                    name="Deuda_Pendiente" 
+                    placeholder="" 
+                    required
+                  >
+
+                  <label for="Deuda_Pendiente" class="prediccion-form-label">Ingrese el monto total de deuda pendiente (S/.)</label>
+
+              </div>
+
+              <!-- Monto mensual de pago de deuda -->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-journal-text prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="EMI_Total_Mensual" 
+                    name="EMI_Total_Mensual" 
+                    placeholder="" 
+                    required
+                  >
+
+                  <label for="EMI_Total_Mensual" class="prediccion-form-label">Monto de pago mensual por crédito (S/.)</label>
+
+              </div>
+
+              <!-- Tasa de interes -->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-percent prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Tasa_Interes" 
+                    name="Tasa_Interes" 
+                    placeholder="" 
+                    required
+                    step="0.01" 
+                  >
+
+                  <label for="Tasa_Interes" class="prediccion-form-label">Tasa de interés promedio de créditos del solicitante (%)</label>
+              </div>
+
+              <!-- Porcentaje de utilización-->
+              <div class="prediccion-form-group floating">
+                <i class="bi bi-percent prediccion-input-icon"></i>
+
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Ratio_Utilizacion_Credito" 
+                    name="Ratio_Utilizacion_Credito" 
+                    placeholder="" 
+                    required
+                    step="0.01" 
+                  >
+
+                  <label for="Ratio_Utilizacion_Credito" class="prediccion-form-label">Porcentaje del crédito utilizado por el solicitante (%)</label>
+              
+              </div>
+                
+              <!-- Porcentaje de Ratio de deuda de ingreso-->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-percent prediccion-input-icon"></i>
+
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Ratio_Deuda_Ingreso" 
+                    name="Ratio_Deuda_Ingreso" 
+                    placeholder="" 
+                    required
+                    step="0.01" 
+                  >
+
+                  <label for="Ratio_Deuda_Ingreso" class="prediccion-form-label">Porcentaje de deuda respecto a los ingresos (%)</label>  
+              </div>
+
+              <!-- Porcentaje EMI Ingreso-->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-percent prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Ratio_EMI_Ingreso" 
+                    name="Ratio_EMI_Ingreso" 
+                    placeholder="%" 
+                    required
+                    step="0.01" 
+                  >     
+
+                  <label for="Ratio_EMI_Ingreso" class="prediccion-form-label">Porcentaje de los ingresos mensuales destinado a pagos de préstamos (%)</label>
+
+              </div>
+
+              <!-- Monto invertido mensualmente-->
+              <div class="prediccion-form-group floating">
+                  <i class="bi bi-coin prediccion-input-icon"></i>
+                  
+                  <input 
+                    type="number" 
+                    class="prediccion-form-control form-input" 
+                    id="Monto_Invertido_Mensualmente" 
+                    name="Monto_Invertido_Mensualmente" 
+                    placeholder="" 
+                    required
+                    >
+
+                  <label for="Monto_Invertido_Mensualmente" class="prediccion-form-label">Monto promedio que invierte el solicitante cada mes (S/.)</label>
+
+              </div>
+
+              <!-- botones -->
+              <div class="prediccion-botones-container">
+                  <button type="submit" class="prediccion-btn-evaluar">Evaluar solicitante</button>
+                  <button type="button" onclick="limpiarFormulario()" class="prediccion-btn-limpiar">
+                    Limpiar
+                  </button>
+              </div> 
+                      
+  </form>
+
+  <!-- Modal Resultado -->
+  <div class="modal fade" id="resultadoModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content modal-evaluacion">
+
+              <div class="modal-header modal-evaluacion-header">
+                  <h5 class="modal-title">Resultado de la evaluación</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body modal-evaluacion-body">
+
+                  <div class="modal-item">
+                      <span class="label">Solicitante:</span>
+                      <span id="resultadoNombre" class="value"></span>
+                  </div>
+
+                  <div class="modal-item">
+                      <span class="label">DNI:</span>
+                      <span id="resultadoDNI" class="value"></span>
+                  </div>
+
+                  <div class="modal-probabilidad">
+                      Probabilidad: <span id="resultadoPorcentaje"></span>
+                  </div>
+
+                  <div class="modal-item">
+                      <span class="label">Riesgo:</span>
+                      <span id="resultadoRiesgo" class="value"></span>
+                  </div>
+
+                  <hr>
+
+                  <div class="modal-item">
+                      <span class="label">Mensaje personalizado:</span>
+                      <p id="resultadoMensaje" class="value"></p>
+                  </div>
+
+                  <div class="modal-item">
+                      <span class="label">Monto recomendado:</span>
+                      <span id="resultadoMonto" class="value"></span>
+                  </div>
+
+              </div>
+
+          </div>
+      </div>
+  </div>
+
+
+</div>
+
+<!----------------------------- Opciones de plataforma de prediccion ------------------------------->
+
+<!-- Para realizar evaluación -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.getElementById("form-prediccion");
+    const modalElement = document.getElementById("resultadoModal");
+    const modal = new bootstrap.Modal(modalElement);
+
+    form.addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            });
+
+            const rawText = await response.text();
+
+            let data;
+            try {
+                data = JSON.parse(rawText);
+            } catch (err) {
+                console.error("No es JSON válido:", rawText);
+                alert("El servidor devolvió una respuesta no válida.");
+                return;
+            }
+
+            if (data.error) {
+                alert("Error: " + data.error);
+                return;
+            }
+
+            // 🔥 Llenar campos del modal
+            document.getElementById("resultadoNombre").textContent = data.nombre || "No disponible";
+            document.getElementById("resultadoDNI").textContent = data.dni || "No disponible";
+            document.getElementById("resultadoPorcentaje").textContent = `${(data.probabilidad * 100).toFixed(2)}%`;
+            document.getElementById("resultadoRiesgo").textContent = data.riesgo;
+            document.getElementById("resultadoMensaje").textContent = data.mensaje;
+            document.getElementById("resultadoMonto").textContent = `S/ ${data.monto_recomendado}`;
+
+            // Mostrar modal
+            modal.show();
+
+        } catch (err) {
+            console.error("Error en fetch:", err);
+            alert("Ocurrió un error al procesar la predicción.");
+        }
+    });
+
+    // 🔥 Reiniciar formulario cuando se cierre el modal
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        form.reset();
+
+        // Quitar estilos de readonly si se habían bloqueado
+        const nombreInput = document.getElementById('nombre_solicitante');
+        const edadInput = document.getElementById('Edad');
+
+        nombreInput.readOnly = false;
+        edadInput.readOnly = false;
+        nombreInput.classList.remove("input-readonly");
+        edadInput.classList.remove("input-readonly");
+
+        // Quitar clases de validación
+        const dniInput = document.getElementById('dni_solicitante');
+        dniInput.classList.remove('is-valid', 'is-invalid');
+        const feedback = dniInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+        if (feedback) feedback.style.display = 'none';
+    });
+
+});
+</script>
+
+<!-- Función para limpiar el formulario -->
+<script>
+function limpiarFormulario() {
+    const form = document.getElementById("form-prediccion");
+    if (form) form.reset();
+
+    // Restaurar fecha de hoy
+    const fechaInput = document.getElementById("fecha_prediccion");
+    if (fechaInput) {
+        const hoy = new Date();
+        const year = hoy.getFullYear();
+        const month = String(hoy.getMonth() + 1).padStart(2, "0");
+        const day = String(hoy.getDate()).padStart(2, "0");
+        fechaInput.value = `${year}-${month}-${day}`;
+    }
+
+    // 🔥 Limpiar mensajes de error
+    const errors = document.querySelectorAll(".prediccion-invalid-feedback-custom");
+    errors.forEach(err => {
+        err.style.display = "none"; // NO BORRAR EL TEXTO
+    });
+
+    // 🔥 Quitar clases invalid/valid de los inputs
+    const invalidInputs = document.querySelectorAll(".is-invalid, .is-valid");
+    invalidInputs.forEach(input => input.classList.remove("is-invalid", "is-valid"));
+
+    // 🔥 Restaurar inputs autocompletados (nombre y edad)
+    const nombreInput = document.getElementById("nombre_solicitante");
+    const edadInput = document.getElementById("Edad");
+    if (nombreInput) {
+        nombreInput.value = "";
+        nombreInput.readOnly = false;
+        nombreInput.classList.remove("input-readonly");
+    }
+    if (edadInput) {
+        edadInput.value = "";
+        edadInput.readOnly = false;
+        edadInput.classList.remove("input-readonly");
+    }
+}
+</script>
+
+
+
+<!-- Validación avanzada para el campo DNI del Solicitante -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const dniInput = document.getElementById('dni_solicitante');
+  const feedback = dniInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarDNI() {
+    const value = dniInput.value.trim();
+
+    // Campo vacío
+    if (!value) {
+      feedback.textContent = "El DNI es obligatorio.";
+      setInvalid();
+      return false;
+    }
+
+    // Debe tener exactamente 8 dígitos numéricos
+    if (!/^\d{8}$/.test(value)) {
+      feedback.textContent = "El DNI debe contener exactamente 8 dígitos numéricos.";
+      setInvalid();
+      return false;
+    }
+
+    // Evitar números repetidos (todos iguales)
+    if (/^(\d)\1{7}$/.test(value)) {
+      feedback.textContent = "Número de DNI inválido (todos los dígitos iguales).";
+      setInvalid();
+      return false;
+    }
+
+    // Evitar secuencias ascendentes o descendentes completas
+    const ascendente = '0123456789';
+    const descendente = '9876543210';
+    if (ascendente.includes(value) || descendente.includes(value)) {
+      feedback.textContent = "Número de DNI inválido (secuencia consecutiva).";
+      setInvalid();
+      return false;
+    }
+
+    // Evitar secuencias parcialmente repetitivas (ej: 11223344 o 12341234)
+    if (/(\d{2,4})\1+/.test(value)) {
+      feedback.textContent = "Número de DNI inválido (patrón repetitivo detectado).";
+      setInvalid();
+      return false;
+    }
+
+    // Evitar empezar con 0 (opcional según reglas locales)
+    if (value.startsWith('0')) {
+      feedback.textContent = "Número de DNI inválido (no puede empezar con 0).";
+      setInvalid();
+      return false;
+    }
+
+    // Si pasó todas las validaciones
+    setValid();
+    return true;
+  }
+
+  function setInvalid() {
+    dniInput.classList.add('is-invalid');
+    dniInput.classList.remove('is-valid');
+    feedback.style.display = 'block';
+  }
+
+  function setValid() {
+    dniInput.classList.remove('is-invalid');
+    dniInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+  }
+
+  // Eventos para validar al escribir o salir del campo
+  dniInput.addEventListener('input', validarDNI);
+  dniInput.addEventListener('blur', validarDNI);
+});
+</script>
+
+<!-- Validación avanzada para el campo Nombre del Solicitante -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const nombreInput = document.getElementById('nombre_solicitante');
+  const feedback = nombreInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarNombre() {
+    const value = nombreInput.value.trim();
+
+    // Campo vacío
+    if (!value) {
+      feedback.textContent = "El nombre es obligatorio.";
+      nombreInput.classList.add('is-invalid');
+      nombreInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const palabras = value.split(/\s+/);
+
+    // Debe tener al menos nombre y dos apellidos
+    if (palabras.length < 3) {
+      feedback.textContent = "Debe ingresar nombre y dos apellidos.";
+      nombreInput.classList.add('is-invalid');
+      nombreInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    for (let palabra of palabras) {
+      // Primera letra mayúscula
+      if (!/^[A-ZÁÉÍÓÚÑ]/.test(palabra)) {
+        feedback.textContent = "Cada palabra debe empezar con mayúscula.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+
+      // Solo letras
+      if (!/^[A-ZÁÉÍÓÚÑa-záéíóúñ]+$/.test(palabra)) {
+        feedback.textContent = "Solo se permiten letras y espacios.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+
+      // Evitar palabras con muchas letras repetidas (ej. Wwwww)
+      if (/([a-zA-ZáéíóúñÁÉÍÓÚÑ])\1{3,}/.test(palabra)) {
+        feedback.textContent = "Palabra con caracteres repetidos excesivamente.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+
+      // Limitar longitud de cada palabra (2 a 30 letras)
+      if (palabra.length < 2 || palabra.length > 30) {
+        feedback.textContent = "Cada palabra debe tener entre 2 y 30 letras.";
+        nombreInput.classList.add('is-invalid');
+        nombreInput.classList.remove('is-valid');
+        feedback.style.display = 'block';
+        return false;
+      }
+    }
+
+    // Si pasó todas las validaciones
+    nombreInput.classList.remove('is-invalid');
+    nombreInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  nombreInput.addEventListener('input', validarNombre);
+  nombreInput.addEventListener('blur', validarNombre);
+});
+</script>
+
+<!-- Validación avanzada para el campo Fecha de Predicción -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const fechaInput = document.getElementById("fecha_prediccion");
+  const feedback = fechaInput.nextElementSibling; // la burbuja
+
+  // Función para obtener la fecha actual en formato YYYY-MM-DD
+  function fechaHoy() {
+    const hoy = new Date();
+    const año = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoy.getDate()).padStart(2, "0");
+    return `${año}-${mes}-${dia}`;
+  }
+
+  // Establecer la fecha automáticamente y readonly
+  fechaInput.value = fechaHoy();
+  fechaInput.setAttribute("readonly", true);
+
+  // Validación por si alguien intenta modificar el campo
+  function validarFecha() {
+    if (fechaInput.value !== fechaHoy()) {
+      feedback.textContent = "La fecha debe ser la del día actual.";
+      fechaInput.classList.add("is-invalid");
+      fechaInput.classList.remove("is-valid");
+      feedback.style.display = "block";
+      return false;
+    } else {
+      fechaInput.classList.remove("is-invalid");
+      fechaInput.classList.add("is-valid");
+      feedback.style.display = "none";
+      return true;
+    }
+  }
+
+  fechaInput.addEventListener("input", validarFecha);
+  fechaInput.addEventListener("blur", validarFecha);
+});
+</script>
+
+<!-- Validación avanzada para el campo Edad del Solicitante -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  const edadInput = document.getElementById('Edad');
+  const feedback = edadInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarEdad() {
+    const value = edadInput.value.trim();
+
+    // Vacío
+    if (!value) {
+      feedback.textContent = "La edad es obligatoria.";
+      setInvalid();
+      return false;
+    }
+
+    const edad = Number(value);
+
+    // No numérico
+    if (!Number.isInteger(edad)) {
+      feedback.textContent = "Ingrese un número válido.";
+      setInvalid();
+      return false;
+    }
+
+    // Rango permitido
+    if (edad < 18 || edad > 70) {
+      feedback.textContent = "La edad debe estar entre 18 y 70 años.";
+      setInvalid();
+      return false;
+    }
+
+    // ✔ Todo bien
+    setValid();
+    return true;
+  }
+
+  function setInvalid() {
+    edadInput.classList.add('is-invalid');
+    edadInput.classList.remove('is-valid');
+    feedback.style.display = 'block';
+  }
+
+  function setValid() {
+    edadInput.classList.remove('is-invalid');
+    edadInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+  }
+
+  edadInput.addEventListener('input', validarEdad);
+  edadInput.addEventListener('blur', validarEdad);
+});
+</script>
+
+<!-- Validación avanzada para el campo Región Geográfica -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const regionSelect = document.getElementById('Region');
+  const feedback = regionSelect.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarRegion() {
+    if (!regionSelect.value) {
+      feedback.textContent = "Seleccione una región válida.";
+      regionSelect.classList.add('is-invalid');
+      regionSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Si todo está bien
+    regionSelect.classList.remove('is-invalid');
+    regionSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  regionSelect.addEventListener('change', validarRegion);
+  regionSelect.addEventListener('blur', validarRegion);
+});
+</script>
+
+<!-- Validación avanzada para el campo Ocupación Actual -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ocupacionSelect = document.getElementById('Ocupacion');
+
+  // Crear la burbuja de error dinámicamente si no existe
+  let feedback = ocupacionSelect.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    feedback.textContent = "Seleccione una ocupación válida.";
+    ocupacionSelect.parentNode.appendChild(feedback);
+  }
+
+  function validarOcupacion() {
+    if (!ocupacionSelect.value) {
+      feedback.textContent = "Seleccione una ocupación válida.";
+      ocupacionSelect.classList.add('is-invalid');
+      ocupacionSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Si todo está bien
+    ocupacionSelect.classList.remove('is-invalid');
+    ocupacionSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  ocupacionSelect.addEventListener('change', validarOcupacion);
+  ocupacionSelect.addEventListener('blur', validarOcupacion);
+});
+</script>
+
+<!-- Validación avanzada para el campo Sector Económico -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sectorSelect = document.getElementById('Sector_Economico');
+
+  // Crear la burbuja de error dinámicamente si no existe
+  let feedback = sectorSelect.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    feedback.textContent = "Seleccione un sector económico válido.";
+    sectorSelect.parentNode.appendChild(feedback);
+  }
+
+  function validarSector() {
+    if (!sectorSelect.value) {
+      feedback.textContent = "Seleccione un sector económico válido.";
+      sectorSelect.classList.add('is-invalid');
+      sectorSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Si todo está bien
+    sectorSelect.classList.remove('is-invalid');
+    sectorSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  sectorSelect.addEventListener('change', validarSector);
+  sectorSelect.addEventListener('blur', validarSector);
+});
+</script>
+
+<!-- Validación avanzada para el campo Salario Mensual Neto -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const salarioInput = document.getElementById('Salario_Mensual_Mano');
+
+  // Crear burbuja de error si no existe
+  let feedback = salarioInput.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    salarioInput.parentNode.appendChild(feedback);
+  }
+
+  function validarSalario() {
+    const value = parseFloat(salarioInput.value);
+
+    if (!salarioInput.value) {
+      feedback.textContent = "El salario es obligatorio.";
+      salarioInput.classList.add('is-invalid');
+      salarioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 500) {
+      feedback.textContent = "Ingrese un salario realista (mín. S/.500.00)";
+      salarioInput.classList.add('is-invalid');
+      salarioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+    if (value > 50000) {
+      feedback.textContent = "Ingrese un salario realista (máx. 50,000 S/.)";
+      salarioInput.classList.add('is-invalid');
+      salarioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    salarioInput.classList.remove('is-invalid');
+    salarioInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  salarioInput.addEventListener('input', validarSalario);
+  salarioInput.addEventListener('blur', validarSalario);
+});
+</script>
+
+<!-- Validación avanzada para el campo Ingreso Anual Declarado -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ingresoAnualInput = document.getElementById('Ingreso_Anual');
+  const salarioMensualInput = document.getElementById('Salario_Mensual_Mano');
+  const feedback = ingresoAnualInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  const ingresoMin = 5000;       // mínimo realista anual
+  const ingresoMax = 1000000;    // máximo razonable anual
+
+  function actualizarIngresoAnual() {
+    const salarioMensual = parseFloat(salarioMensualInput.value);
+
+    if (!salarioMensual || salarioMensual <= 0) {
+      ingresoAnualInput.value = '';
+      ingresoAnualInput.classList.remove('is-valid', 'is-invalid');
+      feedback.style.display = 'none';
+      return;
+    }
+
+    // calcular ingreso anual automáticamente
+    const ingresoAnual = salarioMensual * 12;
+    ingresoAnualInput.value = ingresoAnual.toFixed(0);
+
+    // validar rango
+    if (ingresoAnual < ingresoMin) {
+      feedback.textContent = `El ingreso anual mínimo para solicitar crédito es S/. ${ingresoMin.toLocaleString()}.`;
+      ingresoAnualInput.classList.add('is-invalid');
+      ingresoAnualInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+    } else if (ingresoAnual > ingresoMax) {
+      feedback.textContent = `Ingrese un valor menor o igual a S/. ${ingresoMax.toLocaleString()}.`;
+      ingresoAnualInput.classList.add('is-invalid');
+      ingresoAnualInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+    } else {
+      ingresoAnualInput.classList.remove('is-invalid');
+      ingresoAnualInput.classList.add('is-valid');
+      feedback.style.display = 'none';
+    }
+  }
+
+  // actualizar al escribir salario mensual
+  salarioMensualInput.addEventListener('input', actualizarIngresoAnual);
+  salarioMensualInput.addEventListener('blur', actualizarIngresoAnual);
+});
+</script>
+
+<!-- Validación avanzada para el campo Ahorro Mensual Promedio -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ahorroInput = document.getElementById('Ahorro_Mensual');
+
+  // Crear burbuja de error si no existe
+  let feedback = ahorroInput.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    ahorroInput.parentNode.appendChild(feedback);
+  }
+
+  function validarAhorro() {
+    const value = parseFloat(ahorroInput.value);
+
+    if (!ahorroInput.value) {
+      feedback.textContent = "El ahorro mensual es obligatorio.";
+      ahorroInput.classList.add('is-invalid');
+      ahorroInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0) {
+      feedback.textContent = "El ahorro debe ser mayor o igual a 0.";
+      ahorroInput.classList.add('is-invalid');
+      ahorroInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value > 50000) {
+      feedback.textContent = "Ingrese un ahorro realista (máx. 50,000).";
+      ahorroInput.classList.add('is-invalid');
+      ahorroInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    ahorroInput.classList.remove('is-invalid');
+    ahorroInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  ahorroInput.addEventListener('input', validarAhorro);
+  ahorroInput.addEventListener('blur', validarAhorro);
+});
+</script>
+
+<!-- Validación avanzada para el campo Número de Cuentas Bancarias -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cuentasInput = document.getElementById('Nro_Cuentas_Bancarias');
+
+  // Crear burbuja de error si no existe
+  let feedback = cuentasInput.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    cuentasInput.parentNode.appendChild(feedback);
+  }
+
+  function validarCuentas() {
+    const value = parseInt(cuentasInput.value);
+
+    if (!cuentasInput.value) {
+      feedback.textContent = "Este campo es obligatorio.";
+      cuentasInput.classList.add('is-invalid');
+      cuentasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (!Number.isInteger(value)) {
+      feedback.textContent = "Ingrese un número entero válido.";
+      cuentasInput.classList.add('is-invalid');
+      cuentasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0) {
+      feedback.textContent = "El número de cuentas no puede ser negativo.";
+      cuentasInput.classList.add('is-invalid');
+      cuentasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value > 10) {
+      feedback.textContent = "Ingrese un número realista de cuentas (máx. 10).";
+      cuentasInput.classList.add('is-invalid');
+      cuentasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    cuentasInput.classList.remove('is-invalid');
+    cuentasInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  cuentasInput.addEventListener('input', validarCuentas);
+  cuentasInput.addEventListener('blur', validarCuentas);
+});
+</script>
+
+<!-- Validación avanzada para el campo Número de Tarjetas de Crédito -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tarjetasInput = document.getElementById('Nro_Tarjetas_Credito');
+
+  // Crear burbuja de error si no existe
+  let feedback = tarjetasInput.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    tarjetasInput.parentNode.appendChild(feedback);
+  }
+
+  function validarTarjetas() {
+    const value = parseInt(tarjetasInput.value);
+
+    if (!tarjetasInput.value) {
+      feedback.textContent = "Este campo es obligatorio.";
+      tarjetasInput.classList.add('is-invalid');
+      tarjetasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (!Number.isInteger(value)) {
+      feedback.textContent = "Ingrese un número entero válido.";
+      tarjetasInput.classList.add('is-invalid');
+      tarjetasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value < 0) {
+      feedback.textContent = "El número de tarjetas no puede ser negativo.";
+      tarjetasInput.classList.add('is-invalid');
+      tarjetasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (value > 5) {
+      feedback.textContent = "Ingrese un número realista de tarjetas (máx. 5).";
+      tarjetasInput.classList.add('is-invalid');
+      tarjetasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    tarjetasInput.classList.remove('is-invalid');
+    tarjetasInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  tarjetasInput.addEventListener('input', validarTarjetas);
+  tarjetasInput.addEventListener('blur', validarTarjetas);
+});
+</script>
+
+<!-- Validación avanzada para el campo Variación en Límite de Crédito -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const cambioInput = document.getElementById('Cambio_Limite_Credito');
+
+  let feedback = cambioInput.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    cambioInput.parentNode.appendChild(feedback);
+  }
+
+  function validarCambio() {
+    const valueStr = cambioInput.value.trim();
+
+    if (!valueStr) {
+      feedback.textContent = "Este campo es obligatorio.";
+      cambioInput.classList.add('is-invalid');
+      cambioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (/,/.test(valueStr)) {
+      feedback.textContent = "Use punto (.) para decimales, no coma.";
+      cambioInput.classList.add('is-invalid');
+      cambioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const value = parseFloat(valueStr);
+
+    if (isNaN(value)) {
+      feedback.textContent = "Ingrese un número válido.";
+      cambioInput.classList.add('is-invalid');
+      cambioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Validar rango
+    if (value < -100 || value > 100) {
+      feedback.textContent = "Ingrese un porcentaje entre -100 y 100.";
+      cambioInput.classList.add('is-invalid');
+      cambioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Validar máximo 2 decimales
+    if (!/^-?\d+(\.\d{1,2})?$/.test(valueStr)) {
+      feedback.textContent = "Máximo 2 decimales permitidos.";
+      cambioInput.classList.add('is-invalid');
+      cambioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    cambioInput.classList.remove('is-invalid');
+    cambioInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  cambioInput.addEventListener('input', validarCambio);
+  cambioInput.addEventListener('blur', validarCambio);
+});
+</script>
+
+<!-- Validación avanzada para el campo Antigüedad del Historial Crediticio -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const historialInput = document.getElementById('Antiguedad_Historial_Credito');
+  const feedback = historialInput.parentElement.querySelector('.prediccion-invalid-feedback-custom');
+
+  function validarHistorial() {
+    const value = historialInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "La antigüedad es obligatoria.";
+      historialInput.classList.add('is-invalid');
+      historialInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const numero = Number(value);
+    if (!Number.isInteger(numero) || numero < 0 || numero > 50) {
+      feedback.textContent = "Ingrese un número entero válido entre 0 y 50 años.";
+      historialInput.classList.add('is-invalid');
+      historialInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    historialInput.classList.remove('is-invalid');
+    historialInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  historialInput.addEventListener('input', validarHistorial);
+  historialInput.addEventListener('blur', validarHistorial);
+});
+</script>
+
+<!-- Validación avanzada para el campo Puntaje Crediticio -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const puntajeSelect = document.getElementById('Puntaje_Credito');
+
+  // Crear burbuja de error si no existe
+  let feedback = puntajeSelect.nextElementSibling;
+  if (!feedback || !feedback.classList.contains('prediccion-invalid-feedback-custom')) {
+    feedback = document.createElement('div');
+    feedback.className = 'prediccion-invalid-feedback-custom';
+    feedback.style.display = 'none';
+    puntajeSelect.parentNode.appendChild(feedback);
+  }
+
+  function validarPuntaje() {
+    if (!puntajeSelect.value) {
+      feedback.textContent = "Seleccione un puntaje crediticio válido.";
+      puntajeSelect.classList.add('is-invalid');
+      puntajeSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    puntajeSelect.classList.remove('is-invalid');
+    puntajeSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  puntajeSelect.addEventListener('change', validarPuntaje);
+  puntajeSelect.addEventListener('blur', validarPuntaje);
+});
+</script>
+
+<!-- Validación avanzada para el campo Número de Consultas de Crédito -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const consultasInput = document.getElementById('Nro_Consultas_Credito');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  consultasInput.parentNode.appendChild(feedback);
+
+  function validarConsultas() {
+    const value = consultasInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "El número de consultas es obligatorio.";
+      consultasInput.classList.add('is-invalid');
+      consultasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const numero = Number(value);
+    if (!Number.isInteger(numero) || numero < 0) {
+      feedback.textContent = "Ingrese un número entero válido (0 o más).";
+      consultasInput.classList.add('is-invalid');
+      consultasInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    consultasInput.classList.remove('is-invalid');
+    consultasInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  consultasInput.addEventListener('input', validarConsultas);
+  consultasInput.addEventListener('blur', validarConsultas);
+});
+</script>
+
+<!-- Validación avanzada para el campo Número de Préstamos Activos -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const prestamosInput = document.getElementById('Nro_Prestamos');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  prestamosInput.parentNode.appendChild(feedback);
+
+  function validarPrestamos() {
+    const value = prestamosInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "El número de préstamos es obligatorio.";
+      prestamosInput.classList.add('is-invalid');
+      prestamosInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    const numero = Number(value);
+    if (!Number.isInteger(numero) || numero < 0) {
+      feedback.textContent = "Ingrese un número entero válido (0 o más).";
+      prestamosInput.classList.add('is-invalid');
+      prestamosInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    prestamosInput.classList.remove('is-invalid');
+    prestamosInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  prestamosInput.addEventListener('input', validarPrestamos);
+  prestamosInput.addEventListener('blur', validarPrestamos);
+});
+</script>
+
+<!-- Validación avanzada para el campo Tipo de Préstamo Solicitado -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tipoPrestamoSelect = document.getElementById('Tipo_Prestamo');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  tipoPrestamoSelect.parentNode.appendChild(feedback);
+
+  function validarTipoPrestamo() {
+    if (!tipoPrestamoSelect.value) {
+      feedback.textContent = "Seleccione un tipo de préstamo válido.";
+      tipoPrestamoSelect.classList.add('is-invalid');
+      tipoPrestamoSelect.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+    tipoPrestamoSelect.classList.remove('is-invalid');
+    tipoPrestamoSelect.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  tipoPrestamoSelect.addEventListener('change', validarTipoPrestamo);
+  tipoPrestamoSelect.addEventListener('blur', validarTipoPrestamo);
+});
+</script>
+
+<!-- Validación avanzada para el campo Monto de Deuda Pendiente -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const deudaInput = document.getElementById('Deuda_Pendiente');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  deudaInput.parentNode.appendChild(feedback);
+
+  function validarDeuda() {
+    const value = parseFloat(deudaInput.value);
+    
+    if (!deudaInput.value) {
+      feedback.textContent = "El monto de deuda es obligatorio.";
+      deudaInput.classList.add('is-invalid');
+      deudaInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (isNaN(value) || value < 0) {
+      feedback.textContent = "Ingrese un monto válido (positivo, puede incluir decimales).";
+      deudaInput.classList.add('is-invalid');
+      deudaInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    deudaInput.classList.remove('is-invalid');
+    deudaInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  deudaInput.addEventListener('input', validarDeuda);
+  deudaInput.addEventListener('blur', validarDeuda);
+});
+</script>
+
+<!-- Validación avanzada para el campo Pago Mensual Total -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const emiInput = document.getElementById('EMI_Total_Mensual');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  emiInput.parentNode.appendChild(feedback);
+
+  function validarEMI() {
+    const value = parseFloat(emiInput.value);
+    
+    if (!emiInput.value) {
+      feedback.textContent = "El pago mensual total es obligatorio.";
+      emiInput.classList.add('is-invalid');
+      emiInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (isNaN(value) || value < 0) {
+      feedback.textContent = "Ingrese un monto válido (positivo, puede incluir decimales).";
+      emiInput.classList.add('is-invalid');
+      emiInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    emiInput.classList.remove('is-invalid');
+    emiInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  emiInput.addEventListener('input', validarEMI);
+  emiInput.addEventListener('blur', validarEMI);
+});
+</script>
+
+<!-- Validación avanzada para el campo Tasa de Interés -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const tasaInput = document.getElementById('Tasa_Interes');
+
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  tasaInput.parentNode.appendChild(feedback);
+
+  function validarTasa() {
+    let value = tasaInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "La tasa de interés es obligatoria.";
+      tasaInput.classList.add('is-invalid');
+      tasaInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    value = parseFloat(value);
+
+    if (isNaN(value) || value < 0 || value > 100) {
+      feedback.textContent = "Ingrese un porcentaje válido (0 - 100).";
+      tasaInput.classList.add('is-invalid');
+      tasaInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // Ya no redondeamos ni forzamos 2 decimales en el input
+    // tasaInput.value = value.toFixed(2);
+
+    tasaInput.classList.remove('is-invalid');
+    tasaInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  tasaInput.addEventListener('blur', validarTasa);
+  tasaInput.addEventListener('input', function() {
+    // Permitir escribir mientras valida parcialmente
+    tasaInput.classList.remove('is-invalid');
+    feedback.style.display = 'none';
+  });
+});
+</script>
+
+<!-- Validación avanzada para el campo Ratio de Utilización de Crédito -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ratioInput = document.getElementById('Ratio_Utilizacion_Credito');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  ratioInput.parentNode.appendChild(feedback);
+
+  function validarRatio() {
+    let value = ratioInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "El porcentaje de utilización es obligatorio.";
+      ratioInput.classList.add('is-invalid');
+      ratioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    value = parseFloat(value);
+
+    if (isNaN(value) || value < 0 || value > 100) {
+      feedback.textContent = "Ingrese un porcentaje válido (0 - 100).";
+      ratioInput.classList.add('is-invalid');
+      ratioInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // No redondeamos ni forzamos 2 decimales
+
+    ratioInput.classList.remove('is-invalid');
+    ratioInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  ratioInput.addEventListener('blur', validarRatio);
+  ratioInput.addEventListener('input', function() {
+    ratioInput.classList.remove('is-invalid');
+    feedback.style.display = 'none';
+  });
+});
+</script>
+
+<!-- Validación avanzada para el campo Ratio Deuda/Ingreso -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ratioDIInput = document.getElementById('Ratio_Deuda_Ingreso');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  ratioDIInput.parentNode.appendChild(feedback);
+
+  function validarRatioDI() {
+    let value = ratioDIInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "El ratio Deuda/Ingreso es obligatorio.";
+      ratioDIInput.classList.add('is-invalid');
+      ratioDIInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    value = parseFloat(value);
+
+    if (isNaN(value) || value < 0 || value > 100) {
+      feedback.textContent = "Ingrese un porcentaje válido (0 - 100).";
+      ratioDIInput.classList.add('is-invalid');
+      ratioDIInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // No redondeamos ni forzamos 2 decimales
+    ratioDIInput.classList.remove('is-invalid');
+    ratioDIInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  ratioDIInput.addEventListener('blur', validarRatioDI);
+  ratioDIInput.addEventListener('input', function() {
+    ratioDIInput.classList.remove('is-invalid');
+    feedback.style.display = 'none';
+  });
+});
+</script>
+
+<!-- Validación avanzada para el campo Ratio EMI/Ingreso -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ratioEMIInput = document.getElementById('Ratio_EMI_Ingreso');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  ratioEMIInput.parentNode.appendChild(feedback);
+
+  function validarRatioEMI() {
+    let value = ratioEMIInput.value.trim();
+
+    if (!value) {
+      feedback.textContent = "El ratio EMI/Ingreso es obligatorio.";
+      ratioEMIInput.classList.add('is-invalid');
+      ratioEMIInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    value = parseFloat(value);
+
+    if (isNaN(value) || value < 0 || value > 100) {
+      feedback.textContent = "Ingrese un porcentaje válido (0 - 100).";
+      ratioEMIInput.classList.add('is-invalid');
+      ratioEMIInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    // No redondeamos ni forzamos 2 decimales
+    ratioEMIInput.classList.remove('is-invalid');
+    ratioEMIInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  ratioEMIInput.addEventListener('blur', validarRatioEMI);
+  ratioEMIInput.addEventListener('input', function() {
+    ratioEMIInput.classList.remove('is-invalid');
+    feedback.style.display = 'none';
+  });
+});
+</script>
+
+<!-- Validación avanzada para el campo Monto Invertido Mensualmente -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const montoInvertidoInput = document.getElementById('Monto_Invertido_Mensualmente');
+  const feedback = document.createElement('div');
+  feedback.className = 'prediccion-invalid-feedback-custom';
+  montoInvertidoInput.parentNode.appendChild(feedback);
+
+  function validarMontoInvertido() {
+    const value = parseFloat(montoInvertidoInput.value);
+
+    if (!montoInvertidoInput.value) {
+      feedback.textContent = "El monto invertido es obligatorio.";
+      montoInvertidoInput.classList.add('is-invalid');
+      montoInvertidoInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    if (isNaN(value) || value < 0) {
+      feedback.textContent = "Ingrese un monto válido (0 o más).";
+      montoInvertidoInput.classList.add('is-invalid');
+      montoInvertidoInput.classList.remove('is-valid');
+      feedback.style.display = 'block';
+      return false;
+    }
+
+    montoInvertidoInput.classList.remove('is-invalid');
+    montoInvertidoInput.classList.add('is-valid');
+    feedback.style.display = 'none';
+    return true;
+  }
+
+  montoInvertidoInput.addEventListener('input', validarMontoInvertido);
+  montoInvertidoInput.addEventListener('blur', validarMontoInvertido);
+});
+</script>
+
+
+
+<!-- Código actualizado para recomendaciones -->
+<script>
+let modalRecomendaciones = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    modalRecomendaciones = new bootstrap.Modal(document.getElementById('modalRecomendaciones'), {
+        backdrop: true,
+        keyboard: true
+    });
+
+    document.getElementById('btn-ver-recomendaciones')?.addEventListener('click', () => {
+        modalRecomendaciones.show();
+    });
+});
+</script>
+
+
+
+<!-- Código para importar datos desde CSV -->
+<script>
+async function importarCSV() {
+    const archivo = document.getElementById("csvInput").files[0];
+    if (!archivo) {
+        alert("Selecciona un archivo CSV primero.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", archivo);
+
+    const res = await fetch("cargar_csv", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+        alert("Error: " + data.message);
+        return;
+    }
+
+    const valores = data.data;
+
+    Object.keys(valores).forEach(key => {
+        const campo = document.querySelector(`[name="${key}"]`);
+
+        if (!campo) return;
+
+        const valor = valores[key];
+
+        // 1) INPUTS NORMALES
+        if (campo.tagName === "INPUT") {
+            campo.value = valor;
+        }
+
+        // 2) SELECTS
+        else if (campo.tagName === "SELECT") {
+            let existe = Array.from(campo.options).some(opt => opt.value == valor);
+
+            if (existe) {
+                campo.value = valor;              // selecciona la opción correcta
+            } else {
+                campo.value = "";                // limpia si no coincide
+                console.warn(`⚠ Valor no coincide con opciones del select: ${key} = ${valor}`);
+            }
+        }
+
+        // 3) RADIOS
+        else if (campo.type === "radio") {
+            const radio = document.querySelector(`input[name="${key}"][value="${valor}"]`);
+            if (radio) radio.checked = true;
+        }
+    });
+}
+</script>
+
+<!-- Validación de existencia de registro de solicitante -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const dniInput = document.getElementById('dni_solicitante');
+  const nombreInput = document.getElementById('nombre_solicitante');
+  const edadInput = document.getElementById('Edad');
+
+  async function verificarSolicitante(dni) {
+    try {
+      const response = await fetch(`/buscar_solicitante?dni=${dni}`);
+      const data = await response.json();
+
+      if (data.existe) {
+        // Autocompleta y bloquea edición
+        nombreInput.value = data.nombre_solicitante;
+        edadInput.value = data.edad_solicitante;
+        nombreInput.readOnly = true;
+        edadInput.readOnly = true;
+        nombreInput.classList.add("input-readonly");
+        edadInput.classList.add("input-readonly");
+      } else {
+        // Permite editar
+        nombreInput.readOnly = false;
+        edadInput.readOnly = false;
+        nombreInput.classList.remove("input-readonly");
+        edadInput.classList.remove("input-readonly");
+      }
+    } catch (err) {
+      console.error("Error al verificar DNI:", err);
+    }
+  }
+
+  dniInput.addEventListener('blur', function () {
+    const dni = dniInput.value.trim();
+    if (/^\d{8}$/.test(dni)) {  // solo si el DNI es válido
+      verificarSolicitante(dni);
+    }
+  });
+});
+</script>
+
+
+{% endblock %}
